@@ -31,5 +31,13 @@ public class ProductController {
         // Trả về sản phẩm vừa tạo với status 201 CREATED
         return new ResponseEntity<>(createdProduct, HttpStatus.CREATED);
     }
+    // API này sẽ xử lý yêu cầu DELETE đến /api/v1/products/{id}
+    // Ví dụ: /api/v1/products/1
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
+        productService.deleteProduct(id);
+        // Trả về status 204 No Content, báo hiệu xóa thành công và không có body trả về.
+        return ResponseEntity.noContent().build();
+    }
     
 }

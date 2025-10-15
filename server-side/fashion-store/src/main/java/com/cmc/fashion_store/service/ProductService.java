@@ -16,5 +16,9 @@ public interface ProductService {
      * @return Product đã được tạo và lưu trong DB.
      */
     Product createProduct(CreateProductRequest request);
-    
+    /**
+     * Xóa một sản phẩm dựa vào ID.
+     * @param id ID của sản phẩm cần xóa.
+     */
+    void deleteProduct(Long id);
 }
