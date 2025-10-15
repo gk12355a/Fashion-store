@@ -33,6 +33,7 @@ public class ProductController {
     }
     // API này sẽ xử lý yêu cầu DELETE đến /api/v1/products/{id}
     // Ví dụ: /api/v1/products/1
+    // Ví dụ: /api/v1/products/12
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
         productService.deleteProduct(id);
