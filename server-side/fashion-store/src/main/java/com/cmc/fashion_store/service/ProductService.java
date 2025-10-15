@@ -3,14 +3,17 @@ package com.cmc.fashion_store.service;
 import com.cmc.fashion_store.dto.CreateProductRequest; // Import DTO mới
 import com.cmc.fashion_store.dto.UpdateProductRequest; // Import DTO mới
 import com.cmc.fashion_store.model.Product;
+import org.springframework.data.domain.Page; // Import Page
+import org.springframework.data.domain.Pageable; // Import Pageable
 import java.util.List;
 
 public interface ProductService {
     /**
-     * Lấy danh sách tất cả sản phẩm.
-     * @return danh sách Product.
+     * Lấy danh sách tất cả sản phẩm có phân trang.
+     * @param pageable đối tượng chứa thông tin phân trang (số trang, kích thước trang).
+     * @return một trang (Page) chứa danh sách Product và thông tin phân trang.
      */
-    List<Product> getAllProducts();
+    Page<Product> getAllProducts(Pageable pageable);
     /**
      * Tạo một sản phẩm mới dựa trên thông tin yêu cầu.
      * @param request đối tượng chứa thông tin sản phẩm mới.

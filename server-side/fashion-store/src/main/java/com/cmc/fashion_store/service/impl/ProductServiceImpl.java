@@ -5,10 +5,10 @@ import com.cmc.fashion_store.dto.UpdateProductRequest; // Import DTO mới
 import com.cmc.fashion_store.model.Product;
 import com.cmc.fashion_store.repository.ProductRepository;
 import com.cmc.fashion_store.service.ProductService;
-
 import jakarta.persistence.EntityNotFoundException;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page; // Import Page
+import org.springframework.data.domain.Pageable; // Import Pageable
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,8 +20,9 @@ public class ProductServiceImpl implements ProductService {
     private ProductRepository productRepository;
 
     @Override
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
+    public Page<Product> getAllProducts(Pageable pageable) {
+        // Chỉ cần gọi hàm findAll có sẵn của JpaRepository với tham số pageable
+        return productRepository.findAll(pageable);
     }
     @Override
     public Product createProduct(CreateProductRequest request) {
