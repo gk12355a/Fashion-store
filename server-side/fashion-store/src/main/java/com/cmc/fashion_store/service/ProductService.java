@@ -21,4 +21,10 @@ public interface ProductService {
      * @param id ID của sản phẩm cần xóa.
      */
     void deleteProduct(Long id);
+    /**
+     * Tìm kiếm sản phẩm dựa trên các tiêu chí.
+     * @param query Từ khóa tìm kiếm chung.
+     * @return Danh sách sản phẩm phù hợp.
+     */
+    List<Product> searchProducts(String query);
 }

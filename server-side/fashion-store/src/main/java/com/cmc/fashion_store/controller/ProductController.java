@@ -40,5 +40,12 @@ public class ProductController {
         // Trả về status 204 No Content, báo hiệu xóa thành công và không có body trả về.
         return ResponseEntity.noContent().build();
     }
+    // API này sẽ xử lý yêu cầu GET đến /api/v1/products/search
+    // Ví dụ: /api/v1/products/search?q=áo
+    @GetMapping("/search")
+    public ResponseEntity<List<Product>> searchProducts(@RequestParam(name = "q") String query) {
+        List<Product> products = productService.searchProducts(query);
+        return ResponseEntity.ok(products);
+    }
     
 }
