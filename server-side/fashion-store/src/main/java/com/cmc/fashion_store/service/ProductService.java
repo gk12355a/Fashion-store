@@ -1,6 +1,7 @@
 package com.cmc.fashion_store.service;
 
-import com.cmc.fashion_store.dto.CreateProductRequest;
+import com.cmc.fashion_store.dto.CreateProductRequest; // Import DTO mới
+import com.cmc.fashion_store.dto.UpdateProductRequest; // Import DTO mới
 import com.cmc.fashion_store.model.Product;
 import java.util.List;
 
@@ -27,4 +28,11 @@ public interface ProductService {
      * @return Danh sách sản phẩm phù hợp.
      */
     List<Product> searchProducts(String query);
+    /**
+     * Cập nhật thông tin một sản phẩm đã có.
+     * @param id ID của sản phẩm cần cập nhật.
+     * @param request Đối tượng chứa thông tin mới.
+     * @return Product đã được cập nhật.
+     */
+    Product updateProduct(Long id, UpdateProductRequest request);
 }

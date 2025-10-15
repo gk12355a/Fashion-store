@@ -1,6 +1,7 @@
 package com.cmc.fashion_store.controller;
 
 import com.cmc.fashion_store.dto.CreateProductRequest; // Import DTO
+import com.cmc.fashion_store.dto.UpdateProductRequest;
 import com.cmc.fashion_store.model.Product;
 import com.cmc.fashion_store.service.ProductService;
 import jakarta.validation.Valid; // Import cho @Valid
@@ -46,6 +47,12 @@ public class ProductController {
     public ResponseEntity<List<Product>> searchProducts(@RequestParam(name = "q") String query) {
         List<Product> products = productService.searchProducts(query);
         return ResponseEntity.ok(products);
+    }
+    // API này sẽ xử lý yêu cầu PUT đến /api/v1/products/{id}
+    @PutMapping("/{id}")
+    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @Valid @RequestBody UpdateProductRequest request) {
+        Product updatedProduct = productService.updateProduct(id, request);
+        return ResponseEntity.ok(updatedProduct); // Trả về sản phẩm đã cập nhật và status 200 OK
     }
     
 }
