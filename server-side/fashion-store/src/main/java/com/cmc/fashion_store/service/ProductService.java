@@ -1,5 +1,6 @@
 package com.cmc.fashion_store.service;
 
+import com.cmc.fashion_store.dto.CreateProductRequest;
 import com.cmc.fashion_store.model.Product;
 import java.util.List;
 
@@ -9,4 +10,11 @@ public interface ProductService {
      * @return danh sách Product.
      */
     List<Product> getAllProducts();
+    /**
+     * Tạo một sản phẩm mới dựa trên thông tin yêu cầu.
+     * @param request đối tượng chứa thông tin sản phẩm mới.
+     * @return Product đã được tạo và lưu trong DB.
+     */
+    Product createProduct(CreateProductRequest request);
+    
 }
