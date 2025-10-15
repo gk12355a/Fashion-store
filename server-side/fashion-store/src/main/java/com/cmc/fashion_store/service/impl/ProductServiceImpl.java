@@ -46,6 +46,13 @@ public class ProductServiceImpl implements ProductService {
         }
         productRepository.deleteById(id);
     }
+    @Override
+    public List<Product> searchProducts(String query) {
+        // Truyền cùng một query cho tất cả các tham số của phương thức trong repository
+        return productRepository.findByNameContainingIgnoreCaseOrTypeContainingIgnoreCaseOrSizeContainingIgnoreCaseOrColorContainingIgnoreCase(
+                query, query, query, query
+        );
+    }
 
 
 }
