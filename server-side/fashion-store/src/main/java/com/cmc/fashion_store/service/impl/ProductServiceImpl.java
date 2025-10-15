@@ -1,6 +1,7 @@
 package com.cmc.fashion_store.service.impl;
 
 import com.cmc.fashion_store.dto.CreateProductRequest;
+import com.cmc.fashion_store.dto.UpdateProductRequest; // Import DTO mới
 import com.cmc.fashion_store.model.Product;
 import com.cmc.fashion_store.repository.ProductRepository;
 import com.cmc.fashion_store.service.ProductService;
@@ -52,6 +53,24 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.findByNameContainingIgnoreCaseOrTypeContainingIgnoreCaseOrSizeContainingIgnoreCaseOrColorContainingIgnoreCase(
                 query, query, query, query
         );
+    }
+    @Override
+    public Product updateProduct(Long id, UpdateProductRequest request) {
+        // 1. Tìm sản phẩm trong DB bằng ID. Nếu không thấy, ném ra lỗi.
+        Product existingProduct = productRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy sản phẩm với ID: " + id));
+
+        // 2. Cập nhật các trường của sản phẩm đã tìm thấy với dữ liệu từ request
+        existingProduct.setName(request.getName());
+        existingProduct.setImageUrl(request.getImageUrl());
+        existingProduct.setType(request.getType());
+        existingProduct.setSize(request.getSize());
+        existingProduct.setColor(request.getColor());
+        existingProduct.setPrice(request.getPrice());
+        existingProduct.setStockQuantity(request.getStockQuantity());
+
+        // 3. Lưu lại sản phẩm đã được cập nhật vào DB
+        return productRepository.save(existingProduct);
     }
 
 
