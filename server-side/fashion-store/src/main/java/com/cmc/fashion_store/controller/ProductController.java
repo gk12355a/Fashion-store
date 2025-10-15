@@ -6,6 +6,8 @@ import com.cmc.fashion_store.model.Product;
 import com.cmc.fashion_store.service.ProductService;
 import jakarta.validation.Valid; // Import cho @Valid
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page; // Import Page
+import org.springframework.data.domain.Pageable; // Import Pageable
 import org.springframework.http.HttpStatus; // Import HttpStatus
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,11 +21,11 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
-    // API này sẽ xử lý yêu cầu GET đến /api/v1/products
+    // API này giờ sẽ nhận các tham số như page, size
     @GetMapping
-    public ResponseEntity<List<Product>> getAllProducts() {
-        List<Product> products = productService.getAllProducts();
-        return ResponseEntity.ok(products); // Trả về danh sách sản phẩm với status 200 OK
+    public ResponseEntity<Page<Product>> getAllProducts(Pageable pageable) {
+        Page<Product> productsPage = productService.getAllProducts(pageable);
+        return ResponseEntity.ok(productsPage);
     }
     // API này sẽ xử lý yêu cầu POST đến /api/v1/products
     @PostMapping
