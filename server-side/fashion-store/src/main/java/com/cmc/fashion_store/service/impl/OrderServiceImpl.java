@@ -43,6 +43,15 @@ public class OrderServiceImpl implements OrderService {
         // 3. Lưu vào database
         return orderRepository.save(newOrder);
     }
+    @Override
+    public void deleteOrder(Long id) {
+        // Kiểm tra xem đơn hàng có tồn tại không trước khi xóa
+        if (!orderRepository.existsById(id)) {
+            // Nếu không tìm thấy, ném ra một exception để báo lỗi
+            throw new EntityNotFoundException("Không tìm thấy đơn hàng với ID: " + id);
+        }
+        orderRepository.deleteById(id);
+    }
 
 
 }
