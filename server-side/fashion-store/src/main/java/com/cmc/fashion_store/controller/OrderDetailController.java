@@ -39,6 +39,7 @@ public class OrderDetailController {
         return ResponseEntity.noContent().build();
     }
     // API này sẽ xử lý yêu cầu GET đến /api/v1/order-details/search
+    //http://localhost:8080/api/v1/order-details/search?orderId=2
     @GetMapping("/search")
     public ResponseEntity<List<OrderDetail>> searchOrderDetails(
             @RequestParam(required = false) Long orderId,
