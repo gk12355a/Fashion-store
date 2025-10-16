@@ -16,4 +16,9 @@ public interface OrderService {
      * @return Order đã được tạo.
      */
     Order createOrder(CreateOrderRequest request);
+    /**
+     * Xóa một đơn hàng dựa vào ID.
+     * @param id ID của đơn hàng cần xóa.
+     */
+    void deleteOrder(Long id);
 }

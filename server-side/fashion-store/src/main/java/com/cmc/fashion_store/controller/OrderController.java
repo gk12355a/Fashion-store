@@ -31,4 +31,11 @@ public class OrderController {
         // Trả về đơn hàng vừa tạo với status 201 CREATED
         return new ResponseEntity<>(createdOrder, HttpStatus.CREATED);
     }
+    // API này sẽ xử lý yêu cầu DELETE đến /api/v1/orders/{id}
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteOrder(@PathVariable Long id) {
+        orderService.deleteOrder(id);
+        // Trả về status 204 No Content, báo hiệu xóa thành công
+        return ResponseEntity.noContent().build();
+    }
 }
