@@ -1,5 +1,7 @@
 package com.cmc.fashion_store.service.impl;
 
+import org.springframework.data.domain.Page; // Import Page
+import org.springframework.data.domain.Pageable; // Import Pageable
 import com.cmc.fashion_store.dto.CreateOrderDetailRequest;
 import com.cmc.fashion_store.dto.UpdateOrderDetailRequest; // Import DTO mới    
 import com.cmc.fashion_store.model.Order;
@@ -29,8 +31,8 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     private ProductRepository productRepository; // Inject ProductRepository
   
     @Override
-    public List<OrderDetail> getAllOrderDetails() {
-        return orderDetailRepository.findAll();
+    public Page<OrderDetail> getAllOrderDetails(Pageable pageable) {
+        return orderDetailRepository.findAll(pageable);
     }
     @Override
     public OrderDetail createOrderDetail(CreateOrderDetailRequest request) {
