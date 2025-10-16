@@ -1,6 +1,7 @@
 package com.cmc.fashion_store.service;
 
 import com.cmc.fashion_store.dto.CreateOrderDetailRequest; // Import DTO
+import com.cmc.fashion_store.dto.UpdateOrderDetailRequest; // Import DTO mới
 import com.cmc.fashion_store.model.OrderDetail;
 import java.util.List;
 
@@ -28,4 +29,11 @@ public interface OrderDetailService {
      * @return Danh sách chi tiết đơn hàng (Entity) phù hợp.
      */
     List<OrderDetail> searchOrderDetails(Long orderId, Long productId);
+    /**
+     * Cập nhật thông tin một chi tiết đơn hàng.
+     * @param id ID của chi tiết đơn hàng cần cập nhật.
+     * @param request Đối tượng chứa thông tin mới.
+     * @return OrderDetail đã được cập nhật.
+     */
+    OrderDetail updateOrderDetail(Long id, UpdateOrderDetailRequest request);
 }

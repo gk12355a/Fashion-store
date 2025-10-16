@@ -1,6 +1,7 @@
 package com.cmc.fashion_store.service.impl;
 
 import com.cmc.fashion_store.dto.CreateOrderDetailRequest;
+import com.cmc.fashion_store.dto.UpdateOrderDetailRequest; // Import DTO mới    
 import com.cmc.fashion_store.model.Order;
 import com.cmc.fashion_store.model.OrderDetail;
 import com.cmc.fashion_store.model.Product;
@@ -70,5 +71,18 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         }
         // Nếu không có tham số nào được cung cấp, trả về danh sách rỗng
         return Collections.emptyList();
+    }
+    @Override
+    public OrderDetail updateOrderDetail(Long id, UpdateOrderDetailRequest request) {
+        // 1. Tìm chi tiết đơn hàng trong DB, nếu không thấy thì báo lỗi
+        OrderDetail existingDetail = orderDetailRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy chi tiết đơn hàng với ID: " + id));
+
+        // 2. Cập nhật thông tin
+        existingDetail.setQuantity(request.getQuantity());
+        existingDetail.setUnitPrice(request.getUnitPrice());
+
+        // 3. Lưu lại vào DB
+        return orderDetailRepository.save(existingDetail);
     }
 }
