@@ -7,6 +7,8 @@ import com.cmc.fashion_store.repository.CustomerRepository;
 import com.cmc.fashion_store.service.CustomerService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,8 +20,9 @@ public class CustomerServiceImpl implements CustomerService {
     private CustomerRepository customerRepository;
 
     @Override
-    public List<Customer> getAllCustomers() {
-        return customerRepository.findAll();
+    public Page<Customer> getAllCustomers(Pageable pageable) {
+        // Chỉ cần gọi hàm findAll có sẵn của JpaRepository với tham số pageable
+        return customerRepository.findAll(pageable);
     }
     @Override
     public Customer createCustomer(CreateCustomerRequest request) {
