@@ -5,12 +5,14 @@ import lombok.Getter;
 import lombok.Setter;
 import java.math.BigDecimal;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @Entity
 @Table(name = "products")
 @Getter
 @Setter
 public class Product {
-
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -35,4 +37,9 @@ public class Product {
 
     @Column(name = "stock_quantity", nullable = false)
     private int stockQuantity;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference("product-orderdetail")
+    private java.util.List<OrderDetail> orderDetails;
+
 }
