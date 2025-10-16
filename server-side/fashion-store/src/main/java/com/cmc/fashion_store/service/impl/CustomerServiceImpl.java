@@ -1,6 +1,7 @@
 package com.cmc.fashion_store.service.impl;
 
 import com.cmc.fashion_store.dto.CreateCustomerRequest; // Import DTO
+import com.cmc.fashion_store.dto.UpdateCustomerRequest; // Import DTO mới
 import com.cmc.fashion_store.model.Customer;
 import com.cmc.fashion_store.repository.CustomerRepository;
 import com.cmc.fashion_store.service.CustomerService;
@@ -48,6 +49,22 @@ public class CustomerServiceImpl implements CustomerService {
         return customerRepository.findByNameContainingIgnoreCaseOrPhoneNumberContainingIgnoreCaseOrEmailContainingIgnoreCase(
                 query, query, query
         );
+    }
+    @Override
+    public Customer updateCustomer(Long id, UpdateCustomerRequest request) {
+        // 1. Tìm khách hàng trong DB, nếu không thấy thì báo lỗi
+        Customer existingCustomer = customerRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy khách hàng với ID: " + id));
+
+        // 2. Cập nhật thông tin
+        existingCustomer.setName(request.getName());
+        existingCustomer.setPhoneNumber(request.getPhoneNumber());
+        existingCustomer.setEmail(request.getEmail());
+        existingCustomer.setMembershipType(request.getMembershipType());
+        existingCustomer.setRewardPoints(request.getRewardPoints());
+
+        // 3. Lưu lại vào DB
+        return customerRepository.save(existingCustomer);
     }
 
 }

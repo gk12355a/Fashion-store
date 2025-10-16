@@ -1,6 +1,7 @@
 package com.cmc.fashion_store.controller;
 
 import com.cmc.fashion_store.dto.CreateCustomerRequest; // Import DTO
+import com.cmc.fashion_store.dto.UpdateCustomerRequest; // Import DTO mới
 import com.cmc.fashion_store.model.Customer;
 import com.cmc.fashion_store.service.CustomerService;
 import jakarta.validation.Valid; // Import cho @Valid
@@ -45,5 +46,11 @@ public class CustomerController {
     public ResponseEntity<List<Customer>> searchCustomers(@RequestParam(name = "q") String query) {
         List<Customer> customers = customerService.searchCustomers(query);
         return ResponseEntity.ok(customers);
+    }
+    // API này sẽ xử lý yêu cầu PUT đến /api/v1/customers/{id}
+    @PutMapping("/{id}")
+    public ResponseEntity<Customer> updateCustomer(@PathVariable Long id, @Valid @RequestBody UpdateCustomerRequest request) {
+        Customer updatedCustomer = customerService.updateCustomer(id, request);
+        return ResponseEntity.ok(updatedCustomer); // Trả về khách hàng đã cập nhật và status 200 OK
     }
 }
