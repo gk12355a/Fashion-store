@@ -9,7 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus; // Import HttpStatus
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.data.domain.Page; // Import Page
+import org.springframework.data.domain.Pageable; // Import Pageable
 import java.util.List;
 
 @RestController
@@ -21,9 +22,9 @@ public class OrderDetailController {
 
     // API này sẽ xử lý yêu cầu GET đến /api/v1/order-details
     @GetMapping
-    public ResponseEntity<List<OrderDetail>> getAllOrderDetails() {
-        List<OrderDetail> orderDetails = orderDetailService.getAllOrderDetails();
-        return ResponseEntity.ok(orderDetails);
+    public ResponseEntity<Page<OrderDetail>> getAllOrderDetails(Pageable pageable) {
+        Page<OrderDetail> orderDetailsPage = orderDetailService.getAllOrderDetails(pageable);
+        return ResponseEntity.ok(orderDetailsPage);
     }
     // API này sẽ xử lý yêu cầu POST đến /api/v1/order-details
     @PostMapping
