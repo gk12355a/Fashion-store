@@ -12,7 +12,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -50,5 +50,25 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 
         // 4. Lưu vào database
         return orderDetailRepository.save(newOrderDetail);
+    }
+    @Override
+    public void deleteOrderDetail(Long id) {
+        // Kiểm tra xem chi tiết đơn hàng có tồn tại không trước khi xóa
+        if (!orderDetailRepository.existsById(id)) {
+            // Nếu không tìm thấy, ném ra một exception để báo lỗi
+            throw new EntityNotFoundException("Không tìm thấy chi tiết đơn hàng với ID: " + id);
+        }
+        orderDetailRepository.deleteById(id);
+    }
+    @Override
+    public List<OrderDetail> searchOrderDetails(Long orderId, Long productId) {
+        if (orderId != null) {
+            return orderDetailRepository.findByOrderId(orderId);
+        }
+        if (productId != null) {
+            return orderDetailRepository.findByProductId(productId);
+        }
+        // Nếu không có tham số nào được cung cấp, trả về danh sách rỗng
+        return Collections.emptyList();
     }
 }

@@ -31,4 +31,19 @@ public class OrderDetailController {
         // Trả về chi tiết đơn hàng vừa tạo với status 201 CREATED
         return new ResponseEntity<>(createdOrderDetail, HttpStatus.CREATED);
     }
+    // API này sẽ xử lý yêu cầu DELETE đến /api/v1/order-details/{id}
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteOrderDetail(@PathVariable Long id) {
+        orderDetailService.deleteOrderDetail(id);
+        // Trả về status 204 No Content, báo hiệu xóa thành công
+        return ResponseEntity.noContent().build();
+    }
+    // API này sẽ xử lý yêu cầu GET đến /api/v1/order-details/search
+    @GetMapping("/search")
+    public ResponseEntity<List<OrderDetail>> searchOrderDetails(
+            @RequestParam(required = false) Long orderId,
+            @RequestParam(required = false) Long productId) {
+        List<OrderDetail> orderDetails = orderDetailService.searchOrderDetails(orderId, productId);
+        return ResponseEntity.ok(orderDetails);
+    }
 }

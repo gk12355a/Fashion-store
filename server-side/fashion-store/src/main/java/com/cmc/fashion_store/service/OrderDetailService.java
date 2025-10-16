@@ -16,4 +16,16 @@ public interface OrderDetailService {
      * @return OrderDetail đã được tạo.
      */
     OrderDetail createOrderDetail(CreateOrderDetailRequest request);
+    /**
+     * Xóa một chi tiết đơn hàng dựa vào ID.
+     * @param id ID của chi tiết đơn hàng cần xóa.
+     */
+    void deleteOrderDetail(Long id);
+    /**
+     * Tìm kiếm chi tiết đơn hàng và trả về danh sách Entity.
+     * @param orderId ID của đơn hàng (có thể null).
+     * @param productId ID của sản phẩm (có thể null).
+     * @return Danh sách chi tiết đơn hàng (Entity) phù hợp.
+     */
+    List<OrderDetail> searchOrderDetails(Long orderId, Long productId);
 }
