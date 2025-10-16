@@ -9,7 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus; // Import HttpStatus
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.data.domain.Page; // Import Page
+import org.springframework.data.domain.Pageable; // Import Pageable
 import java.util.List;
 
 @RestController
@@ -19,11 +20,11 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
 
-    // API này sẽ xử lý yêu cầu GET đến /api/v1/orders
-    @GetMapping
-    public ResponseEntity<List<Order>> getAllOrders() {
-        List<Order> orders = orderService.getAllOrders();
-        return ResponseEntity.ok(orders); // Trả về danh sách đơn hàng và status 200 OK
+    // API này giờ sẽ nhận các tham số như page, size từ URL
+    @org.springframework.web.bind.annotation.GetMapping
+    public ResponseEntity<Page<Order>> getAllOrders(Pageable pageable) {
+        Page<Order> ordersPage = orderService.getAllOrders(pageable);
+        return ResponseEntity.ok(ordersPage);
     }
     // API này sẽ xử lý yêu cầu POST đến /api/v1/orders
     @PostMapping

@@ -11,6 +11,8 @@ import jakarta.persistence.EntityNotFoundException; // Import Exception
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Collections;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page; // Import Page
+import org.springframework.data.domain.Pageable; // Import Pageable
 
 import java.time.LocalDateTime; // Import LocalDateTime
 import java.util.List;
@@ -25,8 +27,9 @@ public class OrderServiceImpl implements OrderService {
     private CustomerRepository customerRepository; // Inject CustomerRepository
 
     @Override
-    public List<Order> getAllOrders() {
-        return orderRepository.findAll();
+    public Page<Order> getAllOrders(Pageable pageable) {
+        // Chỉ cần gọi hàm findAll có sẵn của JpaRepository với tham số pageable
+        return orderRepository.findAll(pageable);
     }
 
     @Override
