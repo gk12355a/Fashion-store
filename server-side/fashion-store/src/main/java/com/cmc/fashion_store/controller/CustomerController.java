@@ -32,4 +32,11 @@ public class CustomerController {
         // Trả về khách hàng vừa tạo với status 201 CREATED
         return new ResponseEntity<>(createdCustomer, HttpStatus.CREATED);
     }
+    // API này sẽ xử lý yêu cầu DELETE đến /api/v1/customers/{id}
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteCustomer(@PathVariable Long id) {
+        customerService.deleteCustomer(id);
+        // Trả về status 204 No Content, báo hiệu xóa thành công
+        return ResponseEntity.noContent().build();
+    }
 }

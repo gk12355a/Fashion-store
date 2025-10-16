@@ -16,5 +16,10 @@ public interface CustomerService {
      * @return Customer đã được tạo.
      */
     Customer createCustomer(CreateCustomerRequest request);
+    /**
+     * Xóa một khách hàng dựa vào ID.
+     * @param id ID của khách hàng cần xóa.
+     */
+    void deleteCustomer(Long id);
 
 }
