@@ -35,6 +35,6 @@ public class Order {
     private Customer customer;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference("order-orderdetail") // Thêm tên định danh
+    @JsonBackReference
     private List<OrderDetail> orderDetails;
 }
