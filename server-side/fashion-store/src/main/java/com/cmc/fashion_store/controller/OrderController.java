@@ -1,6 +1,7 @@
 package com.cmc.fashion_store.controller;
 
 import com.cmc.fashion_store.dto.CreateOrderRequest; // Import DTO
+import com.cmc.fashion_store.dto.UpdateOrderRequest; // Import DTO mới
 import com.cmc.fashion_store.model.Order;
 import com.cmc.fashion_store.service.OrderService;
 import jakarta.validation.Valid; // Import cho @Valid
@@ -45,5 +46,11 @@ public class OrderController {
             @RequestParam(required = false) String status) {
         List<Order> orders = orderService.searchOrders(customerId, status);
         return ResponseEntity.ok(orders);
+    }
+    // API này sẽ xử lý yêu cầu PUT đến /api/v1/orders/{id}
+    @PutMapping("/{id}")
+    public ResponseEntity<Order> updateOrder(@PathVariable Long id, @Valid @RequestBody UpdateOrderRequest request) {
+        Order updatedOrder = orderService.updateOrder(id, request);
+        return ResponseEntity.ok(updatedOrder); // Trả về đơn hàng đã cập nhật và status 200 OK
     }
 }

@@ -1,6 +1,7 @@
 package com.cmc.fashion_store.service.impl;
 
 import com.cmc.fashion_store.dto.CreateOrderRequest;
+import com.cmc.fashion_store.dto.UpdateOrderRequest; // Import DTO mới
 import com.cmc.fashion_store.model.Customer;
 import com.cmc.fashion_store.model.Order;
 import com.cmc.fashion_store.repository.CustomerRepository; // Import CustomerRepository
@@ -32,7 +33,8 @@ public class OrderServiceImpl implements OrderService {
     public Order createOrder(CreateOrderRequest request) {
         // 1. Kiểm tra xem khách hàng với customerId có tồn tại không.
         Customer customer = customerRepository.findById(request.getCustomerId())
-                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy khách hàng với ID: " + request.getCustomerId()));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Không tìm thấy khách hàng với ID: " + request.getCustomerId()));
 
         // 2. Chuyển đổi từ DTO sang Entity
         Order newOrder = new Order();
@@ -44,6 +46,7 @@ public class OrderServiceImpl implements OrderService {
         // 3. Lưu vào database
         return orderRepository.save(newOrder);
     }
+
     @Override
     public void deleteOrder(Long id) {
         // Kiểm tra xem đơn hàng có tồn tại không trước khi xóa
@@ -53,6 +56,7 @@ public class OrderServiceImpl implements OrderService {
         }
         orderRepository.deleteById(id);
     }
+
     @Override
     public List<Order> searchOrders(Long customerId, String status) {
         if (customerId != null) {
@@ -65,5 +69,18 @@ public class OrderServiceImpl implements OrderService {
         return Collections.emptyList();
     }
 
+    @Override
+    public Order updateOrder(Long id, UpdateOrderRequest request) {
+        // 1. Tìm đơn hàng trong DB, nếu không thấy thì báo lỗi
+        Order existingOrder = orderRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy đơn hàng với ID: " + id));
+
+        // 2. Cập nhật các trường cho phép
+        existingOrder.setStatus(request.getStatus());
+        existingOrder.setTotalAmount(request.getTotalAmount());
+
+        // 3. Lưu lại vào DB
+        return orderRepository.save(existingOrder);
+    }
 
 }
