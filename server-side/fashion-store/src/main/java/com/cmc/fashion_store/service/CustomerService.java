@@ -3,14 +3,17 @@ package com.cmc.fashion_store.service;
 import com.cmc.fashion_store.dto.CreateCustomerRequest; // Import DTO
 import com.cmc.fashion_store.dto.UpdateCustomerRequest; // Import DTO mới
 import com.cmc.fashion_store.model.Customer;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface CustomerService {
     /**
-     * Lấy danh sách tất cả khách hàng.
-     * @return danh sách Customer.
+     * Lấy danh sách khách hàng có phân trang.
+     * @param pageable đối tượng chứa thông tin phân trang (số trang, kích thước trang).
+     * @return một trang (Page) chứa danh sách Customer và thông tin phân trang.
      */
-    List<Customer> getAllCustomers();
+    Page<Customer> getAllCustomers(Pageable pageable);
     /**
      * Tạo một khách hàng mới.
      * @param request thông tin khách hàng mới.

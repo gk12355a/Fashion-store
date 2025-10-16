@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus; // Import HttpStatus
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Page; // Import Page
+import org.springframework.data.domain.Pageable; // Import Pageable
 
 
 import java.util.List;
@@ -22,9 +24,9 @@ public class CustomerController {
 
     // API này sẽ xử lý yêu cầu GET đến /api/v1/customers
     @GetMapping
-    public ResponseEntity<List<Customer>> getAllCustomers() {
-        List<Customer> customers = customerService.getAllCustomers();
-        return ResponseEntity.ok(customers); // Trả về danh sách khách hàng và status 200 OK
+    public ResponseEntity<Page<Customer>> getAllCustomers(Pageable pageable) {
+        Page<Customer> customersPage = customerService.getAllCustomers(pageable);
+        return ResponseEntity.ok(customersPage);
     }
     // API này sẽ xử lý yêu cầu POST đến /api/v1/customers
     @PostMapping
