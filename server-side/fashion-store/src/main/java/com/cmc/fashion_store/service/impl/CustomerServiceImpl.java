@@ -42,5 +42,12 @@ public class CustomerServiceImpl implements CustomerService {
         }
         customerRepository.deleteById(id);
     }
+    @Override
+    public List<Customer> searchCustomers(String query) {
+        // Pass the same query to all parameters of the repository method
+        return customerRepository.findByNameContainingIgnoreCaseOrPhoneNumberContainingIgnoreCaseOrEmailContainingIgnoreCase(
+                query, query, query
+        );
+    }
 
 }

@@ -21,5 +21,11 @@ public interface CustomerService {
      * @param id ID của khách hàng cần xóa.
      */
     void deleteCustomer(Long id);
+    /**
+     * Searches for customers based on a query.
+     * @param query The search keyword.
+     * @return A list of matching customers.
+     */
+    List<Customer> searchCustomers(String query);
 
 }
