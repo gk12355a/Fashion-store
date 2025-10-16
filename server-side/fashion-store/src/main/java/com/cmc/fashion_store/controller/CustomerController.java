@@ -39,4 +39,11 @@ public class CustomerController {
         // Trả về status 204 No Content, báo hiệu xóa thành công
         return ResponseEntity.noContent().build();
     }
+    // This API will handle GET requests to /api/v1/customers/search
+    // Example: /api/v1/customers/search?q=nguyen
+    @GetMapping("/search")
+    public ResponseEntity<List<Customer>> searchCustomers(@RequestParam(name = "q") String query) {
+        List<Customer> customers = customerService.searchCustomers(query);
+        return ResponseEntity.ok(customers);
+    }
 }
