@@ -38,4 +38,12 @@ public class OrderController {
         // Trả về status 204 No Content, báo hiệu xóa thành công
         return ResponseEntity.noContent().build();
     }
+    // API này sẽ xử lý yêu cầu GET đến /api/v1/orders/search
+    @GetMapping("/search")
+    public ResponseEntity<List<Order>> searchOrders(
+            @RequestParam(required = false) Long customerId,
+            @RequestParam(required = false) String status) {
+        List<Order> orders = orderService.searchOrders(customerId, status);
+        return ResponseEntity.ok(orders);
+    }
 }

@@ -8,6 +8,7 @@ import com.cmc.fashion_store.repository.OrderRepository;
 import com.cmc.fashion_store.service.OrderService;
 import jakarta.persistence.EntityNotFoundException; // Import Exception
 import org.springframework.beans.factory.annotation.Autowired;
+import java.util.Collections;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime; // Import LocalDateTime
@@ -51,6 +52,17 @@ public class OrderServiceImpl implements OrderService {
             throw new EntityNotFoundException("Không tìm thấy đơn hàng với ID: " + id);
         }
         orderRepository.deleteById(id);
+    }
+    @Override
+    public List<Order> searchOrders(Long customerId, String status) {
+        if (customerId != null) {
+            return orderRepository.findByCustomerId(customerId);
+        }
+        if (status != null && !status.isBlank()) {
+            return orderRepository.findByStatusContainingIgnoreCase(status);
+        }
+        // Nếu không có tham số nào được cung cấp, trả về danh sách rỗng
+        return Collections.emptyList();
     }
 
 

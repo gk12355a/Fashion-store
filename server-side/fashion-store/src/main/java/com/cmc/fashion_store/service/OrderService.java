@@ -21,4 +21,11 @@ public interface OrderService {
      * @param id ID của đơn hàng cần xóa.
      */
     void deleteOrder(Long id);
+    /**
+     * Tìm kiếm đơn hàng dựa trên các tiêu chí tùy chọn.
+     * @param customerId ID của khách hàng (có thể null).
+     * @param status Trạng thái đơn hàng (có thể null).
+     * @return Danh sách đơn hàng phù hợp.
+     */
+    List<Order> searchOrders(Long customerId, String status);
 }
