@@ -1,6 +1,7 @@
 package com.cmc.fashion_store.controller;
 
 import com.cmc.fashion_store.dto.CreateOrderDetailRequest; // Import DTO
+import com.cmc.fashion_store.dto.UpdateOrderDetailRequest; // Import DTO mới
 import com.cmc.fashion_store.model.OrderDetail;
 import com.cmc.fashion_store.service.OrderDetailService;
 import jakarta.validation.Valid; // Import cho @Valid
@@ -46,5 +47,11 @@ public class OrderDetailController {
             @RequestParam(required = false) Long productId) {
         List<OrderDetail> orderDetails = orderDetailService.searchOrderDetails(orderId, productId);
         return ResponseEntity.ok(orderDetails);
+    }
+    // API này sẽ xử lý yêu cầu PUT đến /api/v1/order-details/{id}
+    @PutMapping("/{id}")
+    public ResponseEntity<OrderDetail> updateOrderDetail(@PathVariable Long id, @Valid @RequestBody UpdateOrderDetailRequest request) {
+        OrderDetail updatedDetail = orderDetailService.updateOrderDetail(id, request);
+        return ResponseEntity.ok(updatedDetail);
     }
 }
