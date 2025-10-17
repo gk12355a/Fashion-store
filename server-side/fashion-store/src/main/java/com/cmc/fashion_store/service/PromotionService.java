@@ -2,6 +2,8 @@ package com.cmc.fashion_store.service;
 
 import com.cmc.fashion_store.dto.CreatePromotionRequest; // Thêm import này
 import com.cmc.fashion_store.dto.PromotionResponse;
+import com.cmc.fashion_store.dto.UpdatePromotionRequest;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -24,4 +26,18 @@ public interface PromotionService {
      * @param id ID của khuyến mãi cần xóa.
      */
     void deletePromotion(Long id);
+    /**
+     * Cập nhật thông tin một chương trình khuyến mãi.
+     * @param id ID của khuyến mãi cần cập nhật.
+     * @param request Đối tượng chứa thông tin mới.
+     * @return PromotionResponse đã được cập nhật.
+     */
+    PromotionResponse updatePromotion(Long id, UpdatePromotionRequest request);
+    /**
+     * Tìm kiếm khuyến mãi theo từ khóa.
+     * @param keyword Từ khóa để tìm kiếm trong Tên hoặc Loại.
+     * @param pageable Thông tin phân trang.
+     * @return Một trang các khuyến mãi phù hợp.
+     */
+    Page<PromotionResponse> searchPromotions(String keyword, Pageable pageable);
 }
