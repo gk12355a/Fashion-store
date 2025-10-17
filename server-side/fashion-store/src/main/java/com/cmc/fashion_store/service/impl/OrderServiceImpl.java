@@ -1,9 +1,12 @@
 package com.cmc.fashion_store.service.impl;
 
+import com.cmc.fashion_store.dto.OrderResponse; // Import DTO mới
 import com.cmc.fashion_store.dto.CreateOrderRequest;
+import com.cmc.fashion_store.dto.OrderDetailResponse;
 import com.cmc.fashion_store.dto.UpdateOrderRequest; // Import DTO mới
 import com.cmc.fashion_store.model.Customer;
 import com.cmc.fashion_store.model.Order;
+import com.cmc.fashion_store.model.OrderDetail;
 import com.cmc.fashion_store.repository.CustomerRepository; // Import CustomerRepository
 import com.cmc.fashion_store.repository.OrderRepository;
 import com.cmc.fashion_store.service.OrderService;
@@ -16,6 +19,7 @@ import org.springframework.data.domain.Pageable; // Import Pageable
 
 import java.time.LocalDateTime; // Import LocalDateTime
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -27,9 +31,44 @@ public class OrderServiceImpl implements OrderService {
     private CustomerRepository customerRepository; // Inject CustomerRepository
 
     @Override
-    public Page<Order> getAllOrders(Pageable pageable) {
-        // Chỉ cần gọi hàm findAll có sẵn của JpaRepository với tham số pageable
-        return orderRepository.findAll(pageable);
+    public Page<OrderResponse> getAllOrders(Pageable pageable) {
+        Page<Order> orderPage = orderRepository.findAll(pageable);
+        return orderPage.map(this::convertOrderToDto);
+    }
+
+    // --- HÀM HELPER CHUYỂN ĐỔI ---
+
+    private OrderResponse convertOrderToDto(Order order) {
+        OrderResponse orderDto = new OrderResponse();
+        orderDto.setId(order.getId());
+        orderDto.setOrderDate(order.getOrderDate());
+        orderDto.setStatus(order.getStatus());
+        orderDto.setTotalAmount(order.getTotalAmount());
+        if (order.getCustomer() != null) {
+            orderDto.setCustomerId(order.getCustomer().getId());
+        }
+        if (order.getOrderDetails() != null) {
+            orderDto.setOrderDetails(
+                order.getOrderDetails().stream()
+                     .map(this::convertOrderDetailToDto)
+                     .collect(Collectors.toList())
+            );
+        }
+        return orderDto;
+    }
+
+    private OrderDetailResponse convertOrderDetailToDto(OrderDetail orderDetail) {
+        OrderDetailResponse detailDto = new OrderDetailResponse();
+        detailDto.setId(orderDetail.getId());
+        detailDto.setQuantity(orderDetail.getQuantity());
+        detailDto.setUnitPrice(orderDetail.getUnitPrice());
+        if (orderDetail.getOrder() != null) {
+            detailDto.setOrderId(orderDetail.getOrder().getId());
+        }
+        if (orderDetail.getProduct() != null) {
+            detailDto.setProductId(orderDetail.getProduct().getId());
+        }
+        return detailDto;
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.cmc.fashion_store.controller;
 
 import com.cmc.fashion_store.dto.CreateOrderRequest; // Import DTO
 import com.cmc.fashion_store.dto.UpdateOrderRequest; // Import DTO mới
+import com.cmc.fashion_store.dto.OrderResponse; // Import DTO
 import com.cmc.fashion_store.model.Order;
 import com.cmc.fashion_store.service.OrderService;
 import jakarta.validation.Valid; // Import cho @Valid
@@ -20,10 +21,10 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
 
-    // API này giờ sẽ nhận các tham số như page, size từ URL
-    @org.springframework.web.bind.annotation.GetMapping
-    public ResponseEntity<Page<Order>> getAllOrders(Pageable pageable) {
-        Page<Order> ordersPage = orderService.getAllOrders(pageable);
+    // API này giờ sẽ trả về Page<DTO>
+    @GetMapping
+    public ResponseEntity<Page<OrderResponse>> getAllOrders(Pageable pageable) {
+        Page<OrderResponse> ordersPage = orderService.getAllOrders(pageable);
         return ResponseEntity.ok(ordersPage);
     }
     // API này sẽ xử lý yêu cầu POST đến /api/v1/orders
