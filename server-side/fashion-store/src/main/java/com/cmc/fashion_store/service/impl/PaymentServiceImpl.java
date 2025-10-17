@@ -1,6 +1,7 @@
 package com.cmc.fashion_store.service.impl;
 
 import com.cmc.fashion_store.dto.CreatePaymentRequest;
+import com.cmc.fashion_store.dto.UpdatePaymentRequest; // Import DTO mới
 import com.cmc.fashion_store.dto.PaymentResponse;
 import com.cmc.fashion_store.model.Order; // Import Order
 import com.cmc.fashion_store.model.Payment;
@@ -14,6 +15,8 @@ import java.time.LocalDateTime; // Import LocalDateTime
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.data.domain.Page; // Import Page
+import org.springframework.data.domain.Pageable; // Import Pageable
 
 @Service
 public class PaymentServiceImpl implements PaymentService {
@@ -25,11 +28,12 @@ public class PaymentServiceImpl implements PaymentService {
     private OrderRepository orderRepository; // Inject OrderRepository
 
     @Override
-    public List<PaymentResponse> getAllPayments() {
-        return paymentRepository.findAll()
-                .stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
+    public Page<PaymentResponse> getAllPayments(Pageable pageable) {
+        // 1. Lấy Page<Entity> từ repository
+        Page<Payment> paymentPage = paymentRepository.findAll(pageable);
+
+        // 2. Dùng .map() để chuyển đổi Page<Entity> thành Page<DTO>
+        return paymentPage.map(this::convertToDto);
     }
 
     // Hàm helper để chuyển đổi Entity sang DTO
@@ -83,5 +87,21 @@ public class PaymentServiceImpl implements PaymentService {
         return results.stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
+    }
+    @Override
+    public PaymentResponse updatePayment(Long id, UpdatePaymentRequest request) {
+        // 1. Tìm thanh toán trong DB
+        Payment existingPayment = paymentRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy thanh toán với ID: " + id));
+
+        // 2. Cập nhật thông tin
+        existingPayment.setPaymentMethod(request.getPaymentMethod());
+        existingPayment.setAmount(request.getAmount());
+
+        // 3. Lưu lại vào DB
+        Payment updatedPayment = paymentRepository.save(existingPayment);
+
+        // 4. Chuyển đổi Entity đã cập nhật sang DTO để trả về
+        return convertToDto(updatedPayment);
     }
 }
