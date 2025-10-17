@@ -59,4 +59,13 @@ public class PaymentServiceImpl implements PaymentService {
         // 3. Lưu vào database
         return paymentRepository.save(newPayment);
     }
+    @Override
+    public void deletePayment(Long id) {
+        // Kiểm tra xem thanh toán có tồn tại không trước khi xóa
+        if (!paymentRepository.existsById(id)) {
+            // Nếu không tìm thấy, ném ra một exception để báo lỗi
+            throw new EntityNotFoundException("Không tìm thấy thanh toán với ID: " + id);
+        }
+        paymentRepository.deleteById(id);
+    }
 }

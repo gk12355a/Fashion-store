@@ -17,4 +17,9 @@ public interface PaymentService {
      * @return Payment (Entity) đã được tạo.
      */
     Payment createPayment(CreatePaymentRequest request);
+    /**
+     * Xóa một giao dịch thanh toán dựa vào ID.
+     * @param id ID của thanh toán cần xóa.
+     */
+    void deletePayment(Long id);
 }
