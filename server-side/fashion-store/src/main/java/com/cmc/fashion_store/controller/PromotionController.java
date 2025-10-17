@@ -9,6 +9,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.cmc.fashion_store.dto.CreatePromotionRequest;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("${api.prefix}/promotions") // -> /api/v1/promotions
@@ -25,5 +30,10 @@ public class PromotionController {
     public ResponseEntity<Page<PromotionResponse>> getAllPromotions(Pageable pageable) {
         Page<PromotionResponse> promotions = promotionService.getAllPromotions(pageable);
         return ResponseEntity.ok(promotions);
+    }
+    @PostMapping
+    public ResponseEntity<PromotionResponse> createPromotion(@Valid @RequestBody CreatePromotionRequest request) {
+        PromotionResponse createdPromotion = promotionService.createPromotion(request);
+        return new ResponseEntity<>(createdPromotion, HttpStatus.CREATED);
     }
 }
