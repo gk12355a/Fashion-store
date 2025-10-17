@@ -36,4 +36,12 @@ public class PaymentController {
         // Trả về status 204 No Content, báo hiệu xóa thành công
         return ResponseEntity.noContent().build();
     }
+    // API này sẽ xử lý yêu cầu GET đến /api/v1/payments/search
+    @GetMapping("/search")
+    public ResponseEntity<List<PaymentResponse>> searchPayments(
+            @RequestParam(required = false) Long orderId,
+            @RequestParam(required = false) String paymentMethod) {
+        List<PaymentResponse> payments = paymentService.searchPayments(orderId, paymentMethod);
+        return ResponseEntity.ok(payments);
+    }
 }
