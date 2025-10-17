@@ -1,5 +1,6 @@
 package com.cmc.fashion_store.service;
 
+import com.cmc.fashion_store.dto.OrderDetailResponse; // Import DTO
 import com.cmc.fashion_store.dto.CreateOrderDetailRequest; // Import DTO
 import com.cmc.fashion_store.dto.UpdateOrderDetailRequest; // Import DTO mới
 import com.cmc.fashion_store.model.OrderDetail;
@@ -13,7 +14,7 @@ public interface OrderDetailService {
      * @param pageable đối tượng chứa thông tin phân trang.
      * @return một trang (Page) chứa danh sách OrderDetail.
      */
-    Page<OrderDetail> getAllOrderDetails(Pageable pageable);
+    Page<OrderDetailResponse> getAllOrderDetails(Pageable pageable);
     /**
      * Tạo một chi tiết đơn hàng mới.
      * @param request thông tin chi tiết đơn hàng mới.

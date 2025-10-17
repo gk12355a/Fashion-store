@@ -2,6 +2,7 @@ package com.cmc.fashion_store.controller;
 
 import com.cmc.fashion_store.dto.CreateOrderDetailRequest; // Import DTO
 import com.cmc.fashion_store.dto.UpdateOrderDetailRequest; // Import DTO mới
+import com.cmc.fashion_store.dto.OrderDetailResponse; // Import DTO
 import com.cmc.fashion_store.model.OrderDetail;
 import com.cmc.fashion_store.service.OrderDetailService;
 import jakarta.validation.Valid; // Import cho @Valid
@@ -22,8 +23,8 @@ public class OrderDetailController {
 
     // API này sẽ xử lý yêu cầu GET đến /api/v1/order-details
     @GetMapping
-    public ResponseEntity<Page<OrderDetail>> getAllOrderDetails(Pageable pageable) {
-        Page<OrderDetail> orderDetailsPage = orderDetailService.getAllOrderDetails(pageable);
+    public ResponseEntity<Page<OrderDetailResponse>> getAllOrderDetails(Pageable pageable) {
+        Page<OrderDetailResponse> orderDetailsPage = orderDetailService.getAllOrderDetails(pageable);
         return ResponseEntity.ok(orderDetailsPage);
     }
     // API này sẽ xử lý yêu cầu POST đến /api/v1/order-details

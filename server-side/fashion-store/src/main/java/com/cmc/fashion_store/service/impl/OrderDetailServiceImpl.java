@@ -1,5 +1,6 @@
 package com.cmc.fashion_store.service.impl;
 
+import com.cmc.fashion_store.dto.OrderDetailResponse; // Import DTO
 import org.springframework.data.domain.Page; // Import Page
 import org.springframework.data.domain.Pageable; // Import Pageable
 import com.cmc.fashion_store.dto.CreateOrderDetailRequest;
@@ -31,8 +32,28 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     private ProductRepository productRepository; // Inject ProductRepository
   
     @Override
-    public Page<OrderDetail> getAllOrderDetails(Pageable pageable) {
-        return orderDetailRepository.findAll(pageable);
+    public Page<OrderDetailResponse> getAllOrderDetails(Pageable pageable) {
+        // 1. Lấy Page<Entity> từ repository
+        Page<OrderDetail> orderDetailPage = orderDetailRepository.findAll(pageable);
+
+        // 2. Dùng .map() để chuyển đổi Page<Entity> thành Page<DTO>
+        return orderDetailPage.map(this::convertToDto);
+    }
+
+    // Hàm helper để chuyển đổi một Entity sang một DTO
+    private OrderDetailResponse convertToDto(OrderDetail orderDetail) {
+        OrderDetailResponse dto = new OrderDetailResponse();
+        dto.setId(orderDetail.getId());
+        dto.setQuantity(orderDetail.getQuantity());
+        dto.setUnitPrice(orderDetail.getUnitPrice());
+        // Lấy ID từ các đối tượng liên quan (có kiểm tra null để an toàn)
+        if (orderDetail.getOrder() != null) {
+            dto.setOrderId(orderDetail.getOrder().getId());
+        }
+        if (orderDetail.getProduct() != null) {
+            dto.setProductId(orderDetail.getProduct().getId());
+        }
+        return dto;
     }
     @Override
     public OrderDetail createOrderDetail(CreateOrderDetailRequest request) {
