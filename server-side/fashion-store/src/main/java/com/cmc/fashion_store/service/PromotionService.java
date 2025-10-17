@@ -1,5 +1,6 @@
 package com.cmc.fashion_store.service;
 
+import com.cmc.fashion_store.dto.CreatePromotionRequest; // Thêm import này
 import com.cmc.fashion_store.dto.PromotionResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,4 +13,10 @@ public interface PromotionService {
      * @return một trang (Page) chứa danh sách PromotionResponse.
      */
     Page<PromotionResponse> getAllPromotions(Pageable pageable);
+    /**
+     * Tạo một chương trình khuyến mãi mới.
+     * @param request thông tin khuyến mãi cần tạo.
+     * @return PromotionResponse của khuyến mãi vừa được tạo.
+     */
+    PromotionResponse createPromotion(CreatePromotionRequest request);
 }

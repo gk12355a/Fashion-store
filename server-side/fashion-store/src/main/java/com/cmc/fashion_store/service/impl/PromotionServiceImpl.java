@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import com.cmc.fashion_store.dto.CreatePromotionRequest;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class PromotionServiceImpl implements PromotionService {
@@ -34,5 +36,22 @@ public class PromotionServiceImpl implements PromotionService {
         dto.setDiscountValue(promotion.getDiscountValue());
         dto.setExpiryDate(promotion.getExpiryDate()); // Cập nhật để lấy từ expiryDate
         return dto;
+    }
+
+    @Override
+    @Transactional
+    public PromotionResponse createPromotion(CreatePromotionRequest request) {
+        // 1. Chuyển đổi từ DTO sang Entity
+        Promotion newPromotion = new Promotion();
+        newPromotion.setName(request.getName());
+        newPromotion.setType(request.getType());
+        newPromotion.setDiscountValue(request.getDiscountValue());
+        newPromotion.setExpiryDate(request.getExpiryDate());
+
+        // 2. Lưu vào database
+        Promotion savedPromotion = promotionRepository.save(newPromotion);
+
+        // 3. Chuyển đổi sang DTO để trả về cho client
+        return convertToDto(savedPromotion);
     }
 }
