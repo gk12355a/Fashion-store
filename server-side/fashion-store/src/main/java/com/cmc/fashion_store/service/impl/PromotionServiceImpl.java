@@ -1,6 +1,7 @@
 package com.cmc.fashion_store.service.impl;
 
 import com.cmc.fashion_store.dto.PromotionResponse;
+import com.cmc.fashion_store.dto.UpdatePromotionRequest;
 import com.cmc.fashion_store.model.Promotion;
 import com.cmc.fashion_store.repository.PromotionRepository;
 import com.cmc.fashion_store.service.PromotionService;
@@ -66,5 +67,31 @@ public class PromotionServiceImpl implements PromotionService {
         }
         // 2. Nếu tồn tại, tiến hành xóa
         promotionRepository.deleteById(id);
+    }
+    @Override
+    @Transactional
+    public PromotionResponse updatePromotion(Long id, UpdatePromotionRequest request) {
+        // 1. Tìm khuyến mãi trong DB, nếu không thấy thì báo lỗi
+        Promotion existingPromotion = promotionRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy khuyến mãi với ID: " + id));
+
+        // 2. Cập nhật thông tin từ DTO vào entity đã tồn tại
+        existingPromotion.setName(request.getName());
+        existingPromotion.setType(request.getType());
+        existingPromotion.setDiscountValue(request.getDiscountValue());
+        existingPromotion.setExpiryDate(request.getExpiryDate());
+
+        // 3. Lưu lại vào DB
+        Promotion updatedPromotion = promotionRepository.save(existingPromotion);
+
+        // 4. Chuyển đổi sang DTO để trả về
+        return convertToDto(updatedPromotion);
+    }
+    @Override
+    @Transactional(readOnly = true) // readOnly = true để tối ưu hiệu năng cho các truy vấn chỉ đọc
+    public Page<PromotionResponse> searchPromotions(String keyword, Pageable pageable) {
+        // Gọi phương thức repository mới, truyền keyword cho cả 2 tham số name và type
+        Page<Promotion> promotionPage = promotionRepository.findByNameContainingIgnoreCaseOrTypeContainingIgnoreCase(keyword, keyword, pageable);
+        return promotionPage.map(this::convertToDto);
     }
 }

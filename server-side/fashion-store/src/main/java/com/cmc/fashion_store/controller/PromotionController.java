@@ -1,6 +1,7 @@
 package com.cmc.fashion_store.controller;
 
 import com.cmc.fashion_store.dto.PromotionResponse;
+import com.cmc.fashion_store.dto.UpdatePromotionRequest;
 import com.cmc.fashion_store.service.PromotionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -10,11 +11,13 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.cmc.fashion_store.dto.CreatePromotionRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
@@ -43,5 +46,17 @@ public class PromotionController {
         promotionService.deletePromotion(id);
         // Trả về status 204 No Content, báo hiệu xóa thành công và không có nội dung trả về
         return ResponseEntity.noContent().build();
+    }
+    @PutMapping("/{id}")
+    public ResponseEntity<PromotionResponse> updatePromotion(@PathVariable Long id, @Valid @RequestBody UpdatePromotionRequest request) {
+        PromotionResponse updatedPromotion = promotionService.updatePromotion(id, request);
+        return ResponseEntity.ok(updatedPromotion);
+    }
+    @GetMapping("/search")
+    public ResponseEntity<Page<PromotionResponse>> searchPromotions(
+            @RequestParam String keyword,
+            Pageable pageable) {
+        Page<PromotionResponse> promotions = promotionService.searchPromotions(keyword, pageable);
+        return ResponseEntity.ok(promotions);
     }
 }
