@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import com.cmc.fashion_store.dto.CreatePromotionRequest;
 import org.springframework.transaction.annotation.Transactional;
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class PromotionServiceImpl implements PromotionService {
@@ -53,5 +54,17 @@ public class PromotionServiceImpl implements PromotionService {
 
         // 3. Chuyển đổi sang DTO để trả về cho client
         return convertToDto(savedPromotion);
+    }
+
+    @Override
+    @Transactional
+    public void deletePromotion(Long id) {
+        // 1. Kiểm tra xem khuyến mãi có tồn tại không
+        if (!promotionRepository.existsById(id)) {
+            // Nếu không tìm thấy, ném ra một exception để báo lỗi
+            throw new EntityNotFoundException("Không tìm thấy khuyến mãi với ID: " + id);
+        }
+        // 2. Nếu tồn tại, tiến hành xóa
+        promotionRepository.deleteById(id);
     }
 }
