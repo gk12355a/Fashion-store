@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.cmc.fashion_store.dto.CreatePromotionRequest;
@@ -35,5 +37,11 @@ public class PromotionController {
     public ResponseEntity<PromotionResponse> createPromotion(@Valid @RequestBody CreatePromotionRequest request) {
         PromotionResponse createdPromotion = promotionService.createPromotion(request);
         return new ResponseEntity<>(createdPromotion, HttpStatus.CREATED);
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletePromotion(@PathVariable Long id) {
+        promotionService.deletePromotion(id);
+        // Trả về status 204 No Content, báo hiệu xóa thành công và không có nội dung trả về
+        return ResponseEntity.noContent().build();
     }
 }

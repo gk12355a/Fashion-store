@@ -19,4 +19,9 @@ public interface PromotionService {
      * @return PromotionResponse của khuyến mãi vừa được tạo.
      */
     PromotionResponse createPromotion(CreatePromotionRequest request);
+    /**
+     * Xóa một chương trình khuyến mãi dựa vào ID.
+     * @param id ID của khuyến mãi cần xóa.
+     */
+    void deletePromotion(Long id);
 }
