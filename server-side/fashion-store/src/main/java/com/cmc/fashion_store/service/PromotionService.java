@@ -1,0 +1,15 @@
+package com.cmc.fashion_store.service;
+
+import com.cmc.fashion_store.dto.PromotionResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+public interface PromotionService {
+
+    /**
+     * Lấy danh sách khuyến mãi có phân trang và sắp xếp.
+     * @param pageable đối tượng chứa thông tin phân trang và sắp xếp.
+     * @return một trang (Page) chứa danh sách PromotionResponse.
+     */
+    Page<PromotionResponse> getAllPromotions(Pageable pageable);
+}
