@@ -11,6 +11,7 @@ import jakarta.persistence.EntityNotFoundException; // Import Exception
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime; // Import LocalDateTime
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -67,5 +68,20 @@ public class PaymentServiceImpl implements PaymentService {
             throw new EntityNotFoundException("Không tìm thấy thanh toán với ID: " + id);
         }
         paymentRepository.deleteById(id);
+    }
+    @Override
+    public List<PaymentResponse> searchPayments(Long orderId, String paymentMethod) {
+        List<Payment> results;
+        if (orderId != null) {
+            results = paymentRepository.findByOrderId(orderId);
+        } else if (paymentMethod != null && !paymentMethod.isBlank()) {
+            results = paymentRepository.findByPaymentMethodContainingIgnoreCase(paymentMethod);
+        } else {
+            return Collections.emptyList();
+        }
+        // Chuyển đổi kết quả tìm kiếm sang DTO
+        return results.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
     }
 }

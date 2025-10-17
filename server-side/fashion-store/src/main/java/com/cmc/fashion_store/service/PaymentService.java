@@ -22,4 +22,11 @@ public interface PaymentService {
      * @param id ID của thanh toán cần xóa.
      */
     void deletePayment(Long id);
+    /**
+     * Tìm kiếm thanh toán dựa trên các tiêu chí tùy chọn.
+     * @param orderId ID của đơn hàng (có thể null).
+     * @param paymentMethod Phương thức thanh toán (có thể null).
+     * @return Danh sách thanh toán phù hợp dưới dạng DTO.
+     */
+    List<PaymentResponse> searchPayments(Long orderId, String paymentMethod);
 }
