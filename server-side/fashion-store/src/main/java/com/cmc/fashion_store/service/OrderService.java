@@ -1,5 +1,6 @@
 package com.cmc.fashion_store.service;
 
+import com.cmc.fashion_store.dto.OrderResponse; // Import DTO mới
 import com.cmc.fashion_store.dto.CreateOrderRequest; // Import DTO
 import com.cmc.fashion_store.dto.UpdateOrderRequest; // Import DTO mới
 import org.springframework.data.domain.Page;
@@ -13,7 +14,7 @@ public interface OrderService {
      * @param pageable đối tượng chứa thông tin phân trang (số trang, kích thước trang).
      * @return một trang (Page) chứa danh sách Order và thông tin phân trang.
      */
-    Page<Order> getAllOrders(Pageable pageable);
+    Page<OrderResponse> getAllOrders(Pageable pageable);
     /**
      * Tạo một đơn hàng mới.
      * @param request thông tin đơn hàng mới.
