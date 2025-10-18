@@ -106,5 +106,3 @@
     }
 ]
 ```
-
-This documentation is customized for Fashion Shop Gem. As this is the final module in the order flow, let me know if you'd like a combined guide for all modules or any further adjustments!

@@ -106,4 +106,3 @@
 ]
 ```
 
-This documentation is customized for Fashion Shop Gem. Let me know if there are more modules or if you'd like a comprehensive guide combining all of them!
