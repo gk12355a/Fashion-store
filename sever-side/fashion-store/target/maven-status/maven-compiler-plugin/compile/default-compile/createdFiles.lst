@@ -1,0 +1,12 @@
+com\cmc\fashion_store\model\Promotion.class
+com\cmc\fashion_store\dto\PromotionRequestDTO.class
+com\cmc\fashion_store\config\WebConfig$1.class
+com\cmc\fashion_store\dto\PromotionReponseDTO.class
+com\cmc\fashion_store\PromotionManagementApplication.class
+com\cmc\fashion_store\controller\PromotionController.class
+com\cmc\fashion_store\service\PromotionServiceImpl.class
+com\cmc\fashion_store\config\WebConfig.class
+com\cmc\fashion_store\service\PromotionService.class
+com\cmc\fashion_store\config\DataInitializer.class
+com\cmc\fashion_store\repository\PromotionRepository.class
+com\cmc\fashion_store\exception\GlobalExceptionHandler.class
