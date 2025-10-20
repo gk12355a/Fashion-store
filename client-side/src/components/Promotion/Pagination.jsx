@@ -1,11 +1,17 @@
 import React from "react";
 import "../Pagination.css";
 
-export default function Pagination({ totalPages, currentPage, setCurrentPage }) {
+// Sửa tên prop: setCurrentPage -> onPageChange
+export default function Pagination({ totalPages, currentPage, onPageChange }) {
+  if (totalPages <= 1) return null;
   return (
     <div className="pagination">
       {Array.from({ length: totalPages }, (_, i) => (
-        <button key={i} className={currentPage === i + 1 ? "active" : ""} onClick={() => setCurrentPage(i + 1)}>
+        <button
+          key={i}
+          className={currentPage === i + 1 ? "active" : ""}
+          onClick={() => onPageChange(i + 1)} // Gọi đúng prop
+        >
           {i + 1}
         </button>
       ))}

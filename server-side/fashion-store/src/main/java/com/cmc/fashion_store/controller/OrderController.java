@@ -44,11 +44,12 @@ public class OrderController {
     }
     // API này sẽ xử lý yêu cầu GET đến /api/v1/orders/search
     @GetMapping("/search")
-    public ResponseEntity<List<Order>> searchOrders(
+    public ResponseEntity<List<OrderResponse>> searchOrders( // <-- Sửa kiểu trả về
             @RequestParam(required = false) Long customerId,
             @RequestParam(required = false) String status) {
-        List<Order> orders = orderService.searchOrders(customerId, status);
-        return ResponseEntity.ok(orders);
+        // Gọi service đã được sửa
+        List<OrderResponse> orders = orderService.searchOrders(customerId, status); // <-- Sửa kiểu trả về
+        return ResponseEntity.ok(orders); // Trả về List DTO
     }
     // API này sẽ xử lý yêu cầu PUT đến /api/v1/orders/{id}
     @PutMapping("/{id}")

@@ -33,7 +33,7 @@ public interface OrderService {
      * @param status Trạng thái đơn hàng (có thể null).
      * @return Danh sách đơn hàng phù hợp.
      */
-    List<Order> searchOrders(Long customerId, String status);
+    List<OrderResponse> searchOrders(Long customerId, String status);
     /**
      * Cập nhật thông tin một đơn hàng.
      * @param id ID của đơn hàng cần cập nhật.

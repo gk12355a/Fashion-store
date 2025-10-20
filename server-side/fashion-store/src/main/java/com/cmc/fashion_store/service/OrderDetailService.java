@@ -32,7 +32,7 @@ public interface OrderDetailService {
      * @param productId ID của sản phẩm (có thể null).
      * @return Danh sách chi tiết đơn hàng (Entity) phù hợp.
      */
-    List<OrderDetail> searchOrderDetails(Long orderId, Long productId);
+    List<OrderDetailResponse> searchOrderDetails(Long orderId, Long productId);
     /**
      * Cập nhật thông tin một chi tiết đơn hàng.
      * @param id ID của chi tiết đơn hàng cần cập nhật.

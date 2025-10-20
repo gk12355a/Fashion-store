@@ -28,6 +28,7 @@ public class OrderDetailController {
         Page<OrderDetailResponse> orderDetailsPage = orderDetailService.getAllOrderDetails(pageable);
         return ResponseEntity.ok(orderDetailsPage);
     }
+
     // API này sẽ xử lý yêu cầu POST đến /api/v1/order-details
     @PostMapping
     public ResponseEntity<OrderDetail> createOrderDetail(@Valid @RequestBody CreateOrderDetailRequest request) {
@@ -35,6 +36,7 @@ public class OrderDetailController {
         // Trả về chi tiết đơn hàng vừa tạo với status 201 CREATED
         return new ResponseEntity<>(createdOrderDetail, HttpStatus.CREATED);
     }
+
     // API này sẽ xử lý yêu cầu DELETE đến /api/v1/order-details/{id}
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteOrderDetail(@PathVariable Long id) {
@@ -42,18 +44,24 @@ public class OrderDetailController {
         // Trả về status 204 No Content, báo hiệu xóa thành công
         return ResponseEntity.noContent().build();
     }
+
     // API này sẽ xử lý yêu cầu GET đến /api/v1/order-details/search
-    //http://localhost:8080/api/v1/order-details/search?orderId=2
+    // http://localhost:8080/api/v1/order-details/search?orderId=2
     @GetMapping("/search")
-    public ResponseEntity<List<OrderDetail>> searchOrderDetails(
+    public ResponseEntity<List<OrderDetailResponse>> searchOrderDetails( // <-- Sửa kiểu trả về
             @RequestParam(required = false) Long orderId,
             @RequestParam(required = false) Long productId) {
-        List<OrderDetail> orderDetails = orderDetailService.searchOrderDetails(orderId, productId);
-        return ResponseEntity.ok(orderDetails);
+        // Gọi service đã sửa
+        List<OrderDetailResponse> orderDetails = orderDetailService.searchOrderDetails(orderId, productId); // <-- Sửa
+                                                                                                            // kiểu trả
+                                                                                                            // về
+        return ResponseEntity.ok(orderDetails); // Trả về List DTO
     }
+
     // API này sẽ xử lý yêu cầu PUT đến /api/v1/order-details/{id}
     @PutMapping("/{id}")
-    public ResponseEntity<OrderDetail> updateOrderDetail(@PathVariable Long id, @Valid @RequestBody UpdateOrderDetailRequest request) {
+    public ResponseEntity<OrderDetail> updateOrderDetail(@PathVariable Long id,
+            @Valid @RequestBody UpdateOrderDetailRequest request) {
         OrderDetail updatedDetail = orderDetailService.updateOrderDetail(id, request);
         return ResponseEntity.ok(updatedDetail);
     }
