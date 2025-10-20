@@ -1,0 +1,17 @@
+export const initialCustomers = [
+  { id: 1, name: "Nguyễn Văn An", phone: "0987654321", email: "an.nguyen@gmail.com", type: "Thường", points: 120 },
+  { id: 2, name: "Trần Thị Bình", phone: "0912345678", email: "binh.tran@gmail.com", type: "VIP", points: 880 },
+  { id: 3, name: "Phạm Văn Cường", phone: "0901111222", email: "cuong.pham@gmail.com", type: "Thường", points: 300 },
+  { id: 4, name: "Đỗ Thị Dung", phone: "0934567890", email: "dung.do@gmail.com", type: "VIP", points: 1200 },
+  { id: 5, name: "Lê Văn Đức", phone: "0988244567", email: "duc.le@gmail.com", type: "Thường", points: 450 },
+  { id: 6, name: "Nguyễn Thị Hạnh", phone: "0971234553", email: "hanh.nguyen@gmail.com", type: "VIP", points: 990 },
+  { id: 7, name: "Bùi Văn Hòa", phone: "0919235576", email: "hoa.bui@gmail.com", type: "Thường", points: 230 },
+  { id: 8, name: "Hoàng Thị Hương", phone: "0921254652", email: "huong.hoang@gmail.com", type: "VIP", points: 1050 },
+  { id: 9, name: "Phan Văn Khánh", phone: "0991245446", email: "khanh.phan@gmail.com", type: "Thường", points: 370 },
+  { id: 10, name: "Đào Thị Lan", phone: "0985342368", email: "lan.dao@gmail.com", type: "Thường", points: 60 },
+  { id: 11, name: "Trịnh Văn Long", phone: "0912547793", email: "long.trinh@gmail.com", type: "VIP", points: 1250 },
+  { id: 12, name: "Lương Thị Mai", phone: "0931234567", email: "mai.luong@gmail.com", type: "Thường", points: 210 },
+  { id: 13, name: "Ngô Văn Nam", phone: "0977338956", email: "nam.ngo@gmail.com", type: "VIP", points: 900 },
+  { id: 14, name: "Đặng Thị Oanh", phone: "0973323548", email: "oanh.dang@gmail.com", type: "Thường", points: 310 },
+  { id: 15, name: "Lý Văn Phúc", phone: "0919523574", email: "phuc.ly@gmail.com", type: "VIP", points: 1100 },
+];
