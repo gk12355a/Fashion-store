@@ -15,6 +15,8 @@ public class CreatePaymentRequest {
     @NotBlank(message = "Phương thức thanh toán không được để trống")
     private String paymentMethod;
 
+    @NotNull(message = "Mã nhân viên thực hiện không được để trống")
+    private Long staffId;
     // @NotNull(message = "Số tiền không được để trống")
     // @DecimalMin(value = "0.0", inclusive = true, message = "Số tiền phải lớn hơn hoặc bằng 0")
     // private BigDecimal amount;

@@ -34,7 +34,14 @@ public class Order {
     @JsonBackReference
     private Customer customer;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "promotion_id", nullable = true) // Cho phép null (đơn hàng không có KM)
+    @JsonBackReference
+    private Promotion promotion;
+
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<OrderDetail> orderDetails;
+
+    
 }
