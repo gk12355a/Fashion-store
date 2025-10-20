@@ -3,6 +3,7 @@ package com.cmc.fashion_store.service.impl;
 import com.cmc.fashion_store.dto.CreatePaymentRequest;
 import com.cmc.fashion_store.dto.UpdatePaymentRequest; // Import DTO mới
 import com.cmc.fashion_store.dto.PaymentResponse;
+import com.cmc.fashion_store.dto.StaffResponse;
 import com.cmc.fashion_store.model.Order; // Import Order
 import com.cmc.fashion_store.model.Payment;
 import com.cmc.fashion_store.model.Staff;
@@ -23,7 +24,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Page; // Import Page
 import org.springframework.data.domain.Pageable; // Import Pageable
-
+import org.modelmapper.ModelMapper; // <-- THÊM IMPORT NÀY (Nếu bạn dùng ModelMapper)
 @Service
 public class PaymentServiceImpl implements PaymentService {
 
@@ -35,14 +36,13 @@ public class PaymentServiceImpl implements PaymentService {
     
     @Autowired
     private StaffRepository staffRepository;
+    @Autowired // Inject ModelMapper nếu bạn dùng
+    private ModelMapper modelMapper;
 
     @Override
     public Page<PaymentResponse> getAllPayments(Pageable pageable) {
-        // 1. Lấy Page<Entity> từ repository
         Page<Payment> paymentPage = paymentRepository.findAll(pageable);
-
-        // 2. Dùng .map() để chuyển đổi Page<Entity> thành Page<DTO>
-        return paymentPage.map(this::convertToDto);
+        return paymentPage.map(this::convertToDto); // Hàm này đã được sửa
     }
 
     // Hàm helper để chuyển đổi Entity sang DTO
@@ -55,6 +55,24 @@ public class PaymentServiceImpl implements PaymentService {
         if (payment.getOrder() != null) {
             dto.setOrderId(payment.getOrder().getId());
         }
+
+        // --- THÊM LOGIC LẤY THÔNG TIN STAFF ---
+        if (payment.getStaff() != null) {
+            Staff staffEntity = payment.getStaff();
+            // Cách 1: Dùng ModelMapper (nếu đã cấu hình)
+            StaffResponse staffDto = modelMapper.map(staffEntity, StaffResponse.class);
+            dto.setStaff(staffDto);
+
+            // Cách 2: Gán thủ công (nếu không dùng ModelMapper)
+            // StaffResponse staffDto = new StaffResponse();
+            // staffDto.setId(staffEntity.getId());
+            // staffDto.setName(staffEntity.getName());
+            // dto.setStaff(staffDto);
+        } else {
+             dto.setStaff(null); // Hoặc một StaffResponse rỗng nếu cần
+        }
+        // --- KẾT THÚC THÊM LOGIC ---
+
         return dto;
     }
 
@@ -117,10 +135,9 @@ public class PaymentServiceImpl implements PaymentService {
         }
         // Chuyển đổi kết quả tìm kiếm sang DTO
         return results.stream()
-                .map(this::convertToDto)
+                .map(this::convertToDto) // Vẫn dùng hàm helper đã sửa
                 .collect(Collectors.toList());
     }
-
     @Override
     public PaymentResponse updatePayment(Long id, UpdatePaymentRequest request) {
         // 1. Tìm thanh toán trong DB

@@ -117,15 +117,23 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<Order> searchOrders(Long customerId, String status) {
+    public List<OrderResponse> searchOrders(Long customerId, String status) {
+        List<Order> foundOrders; // Danh sách Entity kết quả
+
+        // 1. Thực hiện tìm kiếm Entity như cũ
         if (customerId != null) {
-            return orderRepository.findByCustomerId(customerId);
+            foundOrders = orderRepository.findByCustomerId(customerId);
+        } else if (status != null && !status.isBlank()) {
+            // Giả sử bạn có hàm findByStatus... trong Repository
+            foundOrders = orderRepository.findByStatusContainingIgnoreCase(status);
+        } else {
+            foundOrders = Collections.emptyList();
         }
-        if (status != null && !status.isBlank()) {
-            return orderRepository.findByStatusContainingIgnoreCase(status);
-        }
-        // Nếu không có tham số nào được cung cấp, trả về danh sách rỗng
-        return Collections.emptyList();
+
+        // 2. Chuyển đổi List<Order> sang List<OrderResponse>
+        return foundOrders.stream()
+                .map(this::convertOrderToDto) // Sử dụng lại hàm helper
+                .collect(Collectors.toList());
     }
 
     @Override

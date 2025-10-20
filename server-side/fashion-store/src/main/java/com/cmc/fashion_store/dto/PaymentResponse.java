@@ -11,4 +11,5 @@ public class PaymentResponse {
     private String paymentMethod; // Phương thức
     private BigDecimal amount; // Số tiền
     private LocalDateTime paymentDate; // Ngày TT
+    private StaffResponse staff; // Mã NV thực hiện
 }

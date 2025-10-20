@@ -55,7 +55,7 @@ public class PromotionController {
     @GetMapping("/search")
     public ResponseEntity<Page<PromotionResponse>> searchPromotions(
             @RequestParam String keyword,
-            Pageable pageable) {
+            @ParameterObject Pageable pageable) {
         Page<PromotionResponse> promotions = promotionService.searchPromotions(keyword, pageable);
         return ResponseEntity.ok(promotions);
     }

@@ -23,6 +23,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderDetailServiceImpl implements OrderDetailService {
@@ -171,15 +172,22 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     }
 
     @Override
-    public List<OrderDetail> searchOrderDetails(Long orderId, Long productId) {
+    public List<OrderDetailResponse> searchOrderDetails(Long orderId, Long productId) {
+        List<OrderDetail> foundDetails; // Danh sách Entity
+
+        // 1. Tìm Entity như cũ
         if (orderId != null) {
-            return orderDetailRepository.findByOrderId(orderId);
+            foundDetails = orderDetailRepository.findByOrderId(orderId);
+        } else if (productId != null) {
+            foundDetails = orderDetailRepository.findByProductId(productId);
+        } else {
+            foundDetails = Collections.emptyList();
         }
-        if (productId != null) {
-            return orderDetailRepository.findByProductId(productId);
-        }
-        // Nếu không có tham số nào được cung cấp, trả về danh sách rỗng
-        return Collections.emptyList();
+
+        // 2. Chuyển đổi sang List DTO
+        return foundDetails.stream()
+                .map(this::convertToDto) // Dùng lại helper
+                .collect(Collectors.toList());
     }
 
     // --- HÀM HELPER MỚI THÊM VÀO ---
