@@ -19,7 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-
+import org.springdoc.core.annotations.ParameterObject; // <-- THÊM IMPORT NÀY
 @RestController
 @RequestMapping("${api.prefix}/promotions") // -> /api/v1/promotions
 public class PromotionController {
@@ -32,7 +32,7 @@ public class PromotionController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<PromotionResponse>> getAllPromotions(Pageable pageable) {
+    public ResponseEntity<Page<PromotionResponse>> getAllPromotions(@ParameterObject Pageable pageable) {
         Page<PromotionResponse> promotions = promotionService.getAllPromotions(pageable);
         return ResponseEntity.ok(promotions);
     }

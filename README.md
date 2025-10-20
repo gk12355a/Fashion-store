@@ -60,3 +60,6 @@ java -jar target/fashion-store-0.0.1-SNAPSHOT.jar
 
 Sau khi chạy lệnh cuối cùng, ứng dụng backend sẽ khởi động và lắng nghe các yêu cầu tại http://localhost:8080.
 
+mvn clean
+mvn install -DskipTests=true
+java -jar target/fashion-store-0.0.1-SNAPSHOT.jar

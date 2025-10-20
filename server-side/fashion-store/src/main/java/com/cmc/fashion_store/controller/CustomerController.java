@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Page; // Import Page
 import org.springframework.data.domain.Pageable; // Import Pageable
-
+import org.springdoc.core.annotations.ParameterObject; // <-- THÊM IMPORT NÀY
 
 import java.util.List;
 
@@ -24,7 +24,7 @@ public class CustomerController {
 
     // API này sẽ xử lý yêu cầu GET đến /api/v1/customers
     @GetMapping
-    public ResponseEntity<Page<Customer>> getAllCustomers(Pageable pageable) {
+    public ResponseEntity<Page<Customer>> getAllCustomers(@ParameterObject Pageable pageable) {
         Page<Customer> customersPage = customerService.getAllCustomers(pageable);
         return ResponseEntity.ok(customersPage);
     }

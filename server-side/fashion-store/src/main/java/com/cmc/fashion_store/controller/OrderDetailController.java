@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Page; // Import Page
 import org.springframework.data.domain.Pageable; // Import Pageable
+import org.springdoc.core.annotations.ParameterObject; // <-- THÊM IMPORT NÀY
 import java.util.List;
 
 @RestController
@@ -23,7 +24,7 @@ public class OrderDetailController {
 
     // API này sẽ xử lý yêu cầu GET đến /api/v1/order-details
     @GetMapping
-    public ResponseEntity<Page<OrderDetailResponse>> getAllOrderDetails(Pageable pageable) {
+    public ResponseEntity<Page<OrderDetailResponse>> getAllOrderDetails(@ParameterObject Pageable pageable) {
         Page<OrderDetailResponse> orderDetailsPage = orderDetailService.getAllOrderDetails(pageable);
         return ResponseEntity.ok(orderDetailsPage);
     }

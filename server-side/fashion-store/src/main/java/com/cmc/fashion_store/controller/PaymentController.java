@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Page; // Import Page
 import org.springframework.data.domain.Pageable; // Import Pageable
+import org.springdoc.core.annotations.ParameterObject; // <-- THÊM IMPORT NÀY
 import java.util.List;
 
 @RestController
@@ -23,7 +24,7 @@ public class PaymentController {
 
     // API này giờ sẽ nhận Pageable và trả về Page<DTO>
     @org.springframework.web.bind.annotation.GetMapping
-    public ResponseEntity<Page<PaymentResponse>> getAllPayments(Pageable pageable) {
+    public ResponseEntity<Page<PaymentResponse>> getAllPayments(@ParameterObject Pageable pageable) {
         Page<PaymentResponse> paymentsPage = paymentService.getAllPayments(pageable);
         return ResponseEntity.ok(paymentsPage);
     }
