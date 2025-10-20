@@ -1,6 +1,18 @@
 import React from "react";
 import "../Table.css";
 
+// Hàm format ngày (ví dụ)
+const formatDate = (dateTimeString) => {
+  if (!dateTimeString) return "";
+  try {
+    const date = new Date(dateTimeString);
+    // Lấy ngày/tháng/năm
+    return date.toLocaleDateString('vi-VN'); 
+  } catch (e) {
+    return dateTimeString; // Trả về chuỗi gốc nếu lỗi
+  }
+}
+
 export default function OrderList({ orders, handleSort, sortField, sortOrder, handleEdit, handleDelete }) {
   return (
     <table className="feature-table">
@@ -8,9 +20,11 @@ export default function OrderList({ orders, handleSort, sortField, sortOrder, ha
         <tr>
           <th>ID</th>
           <th>Mã KH</th>
-          <th className={`sortable ${sortField === "date" ? sortOrder : ""}`} onClick={() => handleSort("date")}>Ngày</th>
+          {/* Sửa sort field */}
+          <th className={`sortable ${sortField === "orderDate" ? sortOrder : ""}`} onClick={() => handleSort("orderDate")}>Ngày</th>
           <th>Trạng thái</th>
-          <th className={`sortable ${sortField === "total" ? sortOrder : ""}`} onClick={() => handleSort("total")}>Tổng tiền (VNĐ)</th>
+          {/* Sửa sort field */}
+          <th className={`sortable ${sortField === "totalAmount" ? sortOrder : ""}`} onClick={() => handleSort("totalAmount")}>Tổng tiền (VNĐ)</th>
           <th>Hành động</th>
         </tr>
       </thead>
@@ -20,9 +34,11 @@ export default function OrderList({ orders, handleSort, sortField, sortOrder, ha
             <tr key={o.id}>
               <td>{o.id}</td>
               <td>{o.customerId}</td>
-              <td>{o.date}</td>
+              {/* Sửa hiển thị */}
+              <td>{formatDate(o.orderDate)}</td>
               <td>{o.status}</td>
-              <td>{o.total.toLocaleString()}</td>
+              <td>{o.totalAmount.toLocaleString()}</td> 
+              {/* ------------ */}
               <td>
                 <button className="edit-btn" onClick={() => handleEdit(o)}>✏️</button>
                 <button className="delete-btn" onClick={() => handleDelete(o.id)}>🗑️</button>

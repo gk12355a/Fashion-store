@@ -7,23 +7,53 @@ export default function OrderForm({ show, formData, errors, onChange, onSave, on
   return (
     <div className="modal-overlay">
       <div className="modal">
-        <h3>{editing ? "Chỉnh sửa đơn hàng" : "Thêm đơn hàng mới"}</h3>
+        <h3>{editing ? "Chỉnh sửa trạng thái đơn hàng" : "Thêm đơn hàng mới"}</h3>
         <div className="form">
           <label>Mã khách hàng</label>
-          <input name="customerId" value={formData.customerId} onChange={onChange} placeholder="VD: KH001" />
+          <input 
+            name="customerId" 
+            value={formData.customerId} 
+            onChange={onChange} 
+            placeholder="VD: 1" 
+            disabled={editing} // Không cho sửa mã KH khi edit
+          />
           {errors.customerId && <p className="error-text">{errors.customerId}</p>}
 
-          <label>Ngày đặt</label>
-          <input type="date" name="date" value={formData.date} onChange={onChange} />
-          {errors.date && <p className="error-text">{errors.date}</p>}
+          {/* ----- BỎ Ô NHẬP NGÀY ----- */}
+          {/* <label>Ngày đặt</label>
+          <input type="date" name="date" value={formData.date} onChange={onChange} disabled={editing}/>
+          {errors.date && <p className="error-text">{errors.date}</p>} */}
 
           <label>Trạng thái</label>
-          <input name="status" value={formData.status} onChange={onChange} placeholder="VD: Hoàn thành" />
+          {/* Chỉ cho phép sửa Status */}
+          <input 
+            name="status" 
+            value={formData.status} 
+            onChange={onChange} 
+            placeholder={editing ? "VD: Đang giao" : "Mặc định: Đang chờ xử lý"} 
+            disabled={!editing} // Chỉ cho sửa khi edit
+          />
           {errors.status && <p className="error-text">{errors.status}</p>}
 
-          <label>Tổng tiền (VNĐ)</label>
-          <input type="number" name="total" value={formData.total} onChange={onChange} placeholder="VD: 1500000" />
-          {errors.total && <p className="error-text">{errors.total}</p>}
+          {/* ----- BỎ Ô NHẬP TỔNG TIỀN ----- */}
+          {/* <label>Tổng tiền (VNĐ)</label>
+          <input type="number" name="totalAmount" value={formData.totalAmount} onChange={onChange} placeholder="Tự động tính" disabled />
+          {errors.totalAmount && <p className="error-text">{errors.totalAmount}</p>} */}
+
+          {/* ----- THÊM Ô NHẬP KHUYẾN MÃI (Chỉ khi tạo mới) ----- */}
+          {!editing && (
+            <>
+              <label>Mã Khuyến mãi (Tùy chọn)</label>
+              <input 
+                type="number" 
+                name="promotionId" 
+                value={formData.promotionId || ''} 
+                onChange={onChange} 
+                placeholder="Nhập ID khuyến mãi (nếu có)" 
+              />
+              {errors.promotionId && <p className="error-text">{errors.promotionId}</p>}
+            </>
+          )}
 
           <div className="form-buttons">
             <button className="save-btn" onClick={onSave}>Lưu</button>
