@@ -11,7 +11,7 @@ import org.springframework.data.domain.Pageable; // Import Pageable
 import org.springframework.http.HttpStatus; // Import HttpStatus
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import org.springdoc.core.annotations.ParameterObject; // <-- THÊM IMPORT NÀY
 import java.util.List;
 
 @RestController
@@ -23,7 +23,7 @@ public class ProductController {
 
     // API này giờ sẽ nhận các tham số như page, size
     @GetMapping
-    public ResponseEntity<Page<Product>> getAllProducts(Pageable pageable) {
+    public ResponseEntity<Page<Product>> getAllProducts(@ParameterObject Pageable pageable) {
         Page<Product> productsPage = productService.getAllProducts(pageable);
         return ResponseEntity.ok(productsPage);
     }
