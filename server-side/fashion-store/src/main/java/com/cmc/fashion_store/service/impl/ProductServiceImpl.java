@@ -4,12 +4,14 @@ import com.cmc.fashion_store.dto.CreateProductRequest;
 import com.cmc.fashion_store.dto.UpdateProductRequest; // Import DTO mới
 import com.cmc.fashion_store.model.Product;
 import com.cmc.fashion_store.repository.ProductRepository;
+import com.cmc.fashion_store.service.IStorageService;
 import com.cmc.fashion_store.service.ProductService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page; // Import Page
 import org.springframework.data.domain.Pageable; // Import Pageable
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -18,6 +20,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private ProductRepository productRepository;
+    @Autowired
+    private IStorageService storageService;
 
     @Override
     public Page<Product> getAllProducts(Pageable pageable) {
@@ -25,18 +29,21 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.findAll(pageable);
     }
     @Override
-    public Product createProduct(CreateProductRequest request) {
-        // Chuyển đổi từ DTO (dữ liệu đầu vào) sang Entity (đối tượng lưu vào DB)
+    public Product createProduct(CreateProductRequest request, MultipartFile file) {
+        // 1. Tải ảnh lên Cloudinary
+        String imageUrl = storageService.storeFile(file);
+
+        // 2. Chuyển đổi từ DTO sang Entity
         Product newProduct = new Product();
         newProduct.setName(request.getName());
-        newProduct.setImageUrl(request.getImageUrl());
+        newProduct.setImageUrl(imageUrl); // <-- SỬ DỤNG LINK TỪ CLOUDINARY
         newProduct.setType(request.getType());
         newProduct.setSize(request.getSize());
         newProduct.setColor(request.getColor());
         newProduct.setPrice(request.getPrice());
         newProduct.setStockQuantity(request.getStockQuantity());
 
-        // Dùng hàm save của JpaRepository để lưu vào DB
+        // 3. Dùng hàm save của JpaRepository để lưu vào DB
         return productRepository.save(newProduct);
     }
     @Override
@@ -56,21 +63,30 @@ public class ProductServiceImpl implements ProductService {
         );
     }
     @Override
-    public Product updateProduct(Long id, UpdateProductRequest request) {
-        // 1. Tìm sản phẩm trong DB bằng ID. Nếu không thấy, ném ra lỗi.
+    public Product updateProduct(Long id, UpdateProductRequest request, MultipartFile file) {
+        // 1. Tìm sản phẩm trong DB bằng ID.
         Product existingProduct = productRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy sản phẩm với ID: " + id));
 
-        // 2. Cập nhật các trường của sản phẩm đã tìm thấy với dữ liệu từ request
+        // 2. Cập nhật các trường thông tin (trừ ảnh)
         existingProduct.setName(request.getName());
-        existingProduct.setImageUrl(request.getImageUrl());
         existingProduct.setType(request.getType());
         existingProduct.setSize(request.getSize());
         existingProduct.setColor(request.getColor());
         existingProduct.setPrice(request.getPrice());
         existingProduct.setStockQuantity(request.getStockQuantity());
 
-        // 3. Lưu lại sản phẩm đã được cập nhật vào DB
+        // 3. Kiểm tra xem có file ảnh mới không
+        if (file != null && !file.isEmpty()) {
+            // (Nên thêm logic xóa ảnh cũ trên Cloudinary ở đây nếu cần)
+            
+            // 3.1. Tải ảnh mới lên
+            String newImageUrl = storageService.storeFile(file);
+            // 3.2. Cập nhật link ảnh mới
+            existingProduct.setImageUrl(newImageUrl);
+        }
+
+        // 4. Lưu lại sản phẩm đã được cập nhật vào DB
         return productRepository.save(existingProduct);
     }
 

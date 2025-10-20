@@ -9,7 +9,7 @@ public class CreateProductRequest {
 
     // Không cần ID vì database sẽ tự sinh ra khi tạo mới
 
-    private String imageUrl;
+    // private String imageUrl;
 
     @NotBlank(message = "Tên sản phẩm không được để trống")
     private String name;

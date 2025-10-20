@@ -11,7 +11,9 @@ import org.springframework.data.domain.Pageable; // Import Pageable
 import org.springframework.http.HttpStatus; // Import HttpStatus
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springdoc.core.annotations.ParameterObject; // <-- THÊM IMPORT NÀY
+import org.springframework.http.MediaType; // <-- THÊM IMPORT NÀY
 import java.util.List;
 
 @RestController
@@ -28,10 +30,12 @@ public class ProductController {
         return ResponseEntity.ok(productsPage);
     }
     // API này sẽ xử lý yêu cầu POST đến /api/v1/products
-    @PostMapping
-    public ResponseEntity<Product> createProduct(@Valid @RequestBody CreateProductRequest request) {
-        Product createdProduct = productService.createProduct(request);
-        // Trả về sản phẩm vừa tạo với status 201 CREATED
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE) // 1. Thay đổi consumes
+    public ResponseEntity<Product> createProduct(
+            @Valid @RequestPart("product") CreateProductRequest request, // 2. Dùng @RequestPart cho JSON
+            @RequestPart("file") MultipartFile file                     // 3. Dùng @RequestPart cho File
+    ) {
+        Product createdProduct = productService.createProduct(request, file);
         return new ResponseEntity<>(createdProduct, HttpStatus.CREATED);
     }
     // API này sẽ xử lý yêu cầu DELETE đến /api/v1/products/{id}
@@ -51,10 +55,14 @@ public class ProductController {
         return ResponseEntity.ok(products);
     }
     // API này sẽ xử lý yêu cầu PUT đến /api/v1/products/{id}
-    @PutMapping("/{id}")
-    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @Valid @RequestBody UpdateProductRequest request) {
-        Product updatedProduct = productService.updateProduct(id, request);
-        return ResponseEntity.ok(updatedProduct); // Trả về sản phẩm đã cập nhật và status 200 OK
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE) // 1. Thay đổi consumes
+    public ResponseEntity<Product> updateProduct(
+            @PathVariable Long id,
+            @Valid @RequestPart("product") UpdateProductRequest request,         // 2. Dùng @RequestPart cho JSON
+            @RequestPart(value = "file", required = false) MultipartFile file  // 3. Dùng @RequestPart (optional)
+    ) {
+        Product updatedProduct = productService.updateProduct(id, request, file);
+        return ResponseEntity.ok(updatedProduct);
     }
     
 }
