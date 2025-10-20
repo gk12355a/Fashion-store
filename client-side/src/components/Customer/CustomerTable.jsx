@@ -24,8 +24,9 @@ export default function CustomerTable({
           <th>Email</th>
           <th>Loại thành viên</th>
           <th
-            className={`sortable ${sortField === "points" ? sortOrder : ""}`}
-            onClick={() => handleSort("points")}
+            // Sửa tên trường sort cho đúng
+            className={`sortable ${sortField === "rewardPoints" ? sortOrder : ""}`}
+            onClick={() => handleSort("rewardPoints")}
           >
             Điểm thưởng
           </th>
@@ -38,10 +39,12 @@ export default function CustomerTable({
             <tr key={c.id}>
               <td>{c.id}</td>
               <td>{c.name}</td>
-              <td>{c.phone}</td>
+              {/* Sửa tên trường (property) cho đúng */}
+              <td>{c.phoneNumber}</td>
               <td>{c.email}</td>
-              <td>{c.type}</td>
-              <td>{c.points}</td>
+              <td>{c.membershipType}</td>
+              <td>{c.rewardPoints}</td>
+              {/* ------------------------------- */}
               <td>
                 <button className="edit-btn" onClick={() => handleEdit(c)}>✏️</button>
                 <button className="delete-btn" onClick={() => handleDelete(c.id)}>🗑️</button>
