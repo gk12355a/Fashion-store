@@ -9,7 +9,7 @@ public class UpdateProductRequest {
 
     // Không cần ID vì ID sẽ được lấy từ URL
 
-    private String imageUrl;
+    // private String imageUrl;
 
     @NotBlank(message = "Tên sản phẩm không được để trống")
     private String name;
