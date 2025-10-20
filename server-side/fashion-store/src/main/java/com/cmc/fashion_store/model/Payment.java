@@ -6,6 +6,8 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 @Entity
 @Table(name = "payments")
 @Getter
@@ -27,5 +29,12 @@ public class Payment {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", referencedColumnName = "id", nullable = false)
+    @JsonBackReference // Giả sử bạn dùng cái này cho Order
     private Order order;
+
+    // --- THÊM QUAN HỆ NÀY ---
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "staff_id") // Tên cột foreign key trong bảng 'payments'
+    @JsonBackReference
+    private Staff staff;
 }

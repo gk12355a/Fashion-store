@@ -8,6 +8,7 @@ import com.cmc.fashion_store.dto.UpdateOrderDetailRequest; // Import DTO mới
 import com.cmc.fashion_store.model.Order;
 import com.cmc.fashion_store.model.OrderDetail;
 import com.cmc.fashion_store.model.Product;
+import com.cmc.fashion_store.model.Promotion;
 import com.cmc.fashion_store.repository.OrderDetailRepository;
 import com.cmc.fashion_store.repository.OrderRepository;
 import com.cmc.fashion_store.repository.ProductRepository;
@@ -19,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 
@@ -33,7 +35,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 
     @Autowired
     private ProductRepository productRepository; // Inject ProductRepository
-  
+
     @Override
     public Page<OrderDetailResponse> getAllOrderDetails(Pageable pageable) {
         // 1. Lấy Page<Entity> từ repository
@@ -58,67 +60,116 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         }
         return dto;
     }
+
     @Override
-    @Transactional // Đảm bảo tất cả thao tác (save + update) cùng thành công
+    @Transactional
     public OrderDetail createOrderDetail(CreateOrderDetailRequest request) {
         // 1. Kiểm tra Mã đơn hợp lệ
         Order order = orderRepository.findById(request.getOrderId())
-                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy Đơn hàng với ID: " + request.getOrderId()));
+                .orElseThrow(
+                        () -> new EntityNotFoundException("Không tìm thấy Đơn hàng với ID: " + request.getOrderId()));
 
-        // 2. Kiểm tra Mã sản phẩm hợp lệ
+        // 2. Kiểm tra Mã sản phẩm VÀ LẤY SẢN PHẨM
         Product product = productRepository.findById(request.getProductId())
-                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy Sản phẩm với ID: " + request.getProductId()));
+                .orElseThrow(
+                        () -> new EntityNotFoundException("Không tìm thấy Sản phẩm với ID: " + request.getProductId()));
+
+        // --- LOGIC MỚI: KIỂM TRA VÀ TRỪ KHO ---
+        int requestedQuantity = request.getQuantity();
+        int currentStock = product.getStockQuantity();
+
+        if (currentStock < requestedQuantity) {
+            // Nếu không đủ hàng, ném ra lỗi
+            throw new RuntimeException("Không đủ hàng. Chỉ còn " + currentStock + " sản phẩm.");
+        }
+
+        // Trừ kho
+        product.setStockQuantity(currentStock - requestedQuantity);
+        productRepository.save(product); // Lưu lại số lượng tồn kho mới
+        // ----------------------------------------
 
         // 3. Chuyển đổi từ DTO sang Entity
         OrderDetail newOrderDetail = new OrderDetail();
         newOrderDetail.setOrder(order);
         newOrderDetail.setProduct(product);
-        newOrderDetail.setQuantity(request.getQuantity());
-        newOrderDetail.setUnitPrice(request.getUnitPrice());
+        newOrderDetail.setQuantity(requestedQuantity); // Dùng biến đã kiểm tra
+        newOrderDetail.setUnitPrice(product.getPrice()); // Tự động lấy giá (đã sửa)
 
-        // 4. Lưu vào database
+        // 4. Lưu chi tiết
         OrderDetail savedDetail = orderDetailRepository.save(newOrderDetail);
 
-        // 5. CẬP NHẬT TỔNG TIỀN (THÊM DÒNG NÀY)
+        // 5. Cập nhật tổng tiền Order (đã sửa)
         updateOrderTotalAmount(savedDetail.getOrder().getId());
 
         return savedDetail;
     }
+
     @Override
     @Transactional
     public OrderDetail updateOrderDetail(Long id, UpdateOrderDetailRequest request) {
-        // 1. Tìm chi tiết đơn hàng trong DB
+        // 1. Tìm chi tiết đơn hàng
         OrderDetail existingDetail = orderDetailRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy chi tiết đơn hàng với ID: " + id));
 
-        // 2. Cập nhật thông tin
-        existingDetail.setQuantity(request.getQuantity());
-        existingDetail.setUnitPrice(request.getUnitPrice());
+        int oldQuantity = existingDetail.getQuantity();
+        int newQuantity = request.getQuantity();
 
-        // 3. Lưu lại vào DB
+        // Nếu số lượng không đổi thì không làm gì
+        if (oldQuantity != newQuantity) {
+            Product product = existingDetail.getProduct();
+            int currentStock = product.getStockQuantity();
+
+            // Tính toán số lượng chênh lệch
+            int quantityDifference = newQuantity - oldQuantity; // > 0 là mua thêm, < 0 là trả bớt
+
+            int newStock = currentStock - quantityDifference;
+
+            // --- LOGIC MỚI: KIỂM TRA VÀ CẬP NHẬT KHO ---
+            if (newStock < 0) {
+                throw new RuntimeException("Không đủ hàng. Chỉ còn " + currentStock + " sản phẩm.");
+            }
+
+            product.setStockQuantity(newStock);
+            productRepository.save(product);
+            // ------------------------------------------
+
+            // 2. Cập nhật số lượng mới
+            existingDetail.setQuantity(newQuantity);
+        }
+
+        // 3. Lưu lại chi tiết vào DB
         OrderDetail updatedDetail = orderDetailRepository.save(existingDetail);
 
-        // 4. CẬP NHẬT TỔNG TIỀN (THÊM DÒNG NÀY)
+        // 4. Cập nhật tổng tiền Order
         updateOrderTotalAmount(updatedDetail.getOrder().getId());
 
         return updatedDetail;
     }
+
     @Override
-    @Transactional // Đảm bảo cả 2 thao tác (xóa + cập nhật) cùng thành công
+    @Transactional
     public void deleteOrderDetail(Long id) {
-        // 1. Tìm chi tiết đơn hàng TRƯỚC KHI XÓA
+        // 1. Tìm chi tiết trước khi xóa
         OrderDetail detailToDelete = orderDetailRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy chi tiết đơn hàng với ID: " + id));
 
-        // 2. Lấy OrderID của nó ra
+        // 2. Lấy OrderID ra
         Long orderId = detailToDelete.getOrder().getId();
 
-        // 3. Xóa chi tiết đơn hàng
+        // --- LOGIC MỚI: HOÀN TRẢ KHO ---
+        Product product = detailToDelete.getProduct();
+        int deletedQuantity = detailToDelete.getQuantity();
+        product.setStockQuantity(product.getStockQuantity() + deletedQuantity);
+        productRepository.save(product);
+        // ---------------------------------
+
+        // 3. Xóa chi tiết
         orderDetailRepository.delete(detailToDelete);
 
-        // 4. Gọi hàm cập nhật tổng tiền cho Order cha
+        // 4. Cập nhật tổng tiền Order
         updateOrderTotalAmount(orderId);
     }
+
     @Override
     public List<OrderDetail> searchOrderDetails(Long orderId, Long productId) {
         if (orderId != null) {
@@ -130,32 +181,61 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         // Nếu không có tham số nào được cung cấp, trả về danh sách rỗng
         return Collections.emptyList();
     }
+
     // --- HÀM HELPER MỚI THÊM VÀO ---
     /**
-     * Tính toán lại tổng tiền của một Đơn hàng dựa trên các Chi tiết đơn hàng của nó
+     * Tính toán lại tổng tiền của một Đơn hàng dựa trên các Chi tiết đơn hàng của
+     * nó
      * và cập nhật lại vào DB.
+     * 
      * @param orderId ID của Đơn hàng cần được cập nhật
      */
     private void updateOrderTotalAmount(Long orderId) {
-        // 1. Tìm tất cả các chi tiết thuộc về đơn hàng này
-        // (Bạn cần thêm hàm này vào OrderDetailRepository)
-        List<OrderDetail> details = orderDetailRepository.findByOrderId(orderId);
+        // 1. Lấy đơn hàng
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy Đơn hàng: " + orderId));
 
-        // 2. Tính tổng tiền mới
-        BigDecimal totalAmount = BigDecimal.ZERO; 
+        // 2. Tính tổng tiền GỐC (Subtotal)
+        List<OrderDetail> details = orderDetailRepository.findByOrderId(orderId);
+        BigDecimal subtotal = BigDecimal.ZERO; 
         for (OrderDetail detail : details) {
             BigDecimal lineTotal = detail.getUnitPrice().multiply(new BigDecimal(detail.getQuantity()));
-            totalAmount = totalAmount.add(lineTotal);
+            subtotal = subtotal.add(lineTotal);
+        }
+        
+        BigDecimal finalTotalAmount = subtotal; // Mặc định tổng cuối = tổng gốc
+
+        // 3. LẤY KHUYẾN MÃI TỪ ĐƠN HÀNG
+        Promotion promotion = order.getPromotion();
+
+        // 4. NẾU CÓ KHUYẾN MÃI, TÍNH TOÁN LẠI
+        if (promotion != null) {
+            // Kiểm tra lại hạn sử dụng (phòng trường hợp đơn hàng để lâu)
+            if (promotion.getExpiryDate() == null || promotion.getExpiryDate().isAfter(LocalDate.now())) {
+                
+                // TODO: Logic này cần mở rộng dựa trên 'promotion.getType()'
+                // Giả sử 'discountValue' là % (ví dụ: 15.00 cho 15%)
+                if ("PERCENTAGE".equals(promotion.getType())) {
+                    BigDecimal discountPercent = promotion.getDiscountValue().divide(new BigDecimal(100));
+                    BigDecimal discountAmount = subtotal.multiply(discountPercent);
+                    finalTotalAmount = subtotal.subtract(discountAmount);
+                } 
+                // Giả sử 'discountValue' là số tiền cố định (ví dụ: 50000)
+                else if ("FIXED_AMOUNT".equals(promotion.getType())) {
+                    finalTotalAmount = subtotal.subtract(promotion.getDiscountValue());
+                }
+                
+                // Đảm bảo tổng tiền không bao giờ âm
+                if (finalTotalAmount.compareTo(BigDecimal.ZERO) < 0) {
+                    finalTotalAmount = BigDecimal.ZERO;
+                }
+            }
         }
 
-        // 3. Lấy đơn hàng cha
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy Đơn hàng với ID: " + orderId));
+        // 5. Cập nhật tổng tiền CUỐI CÙNG (đã giảm giá)
+        order.setTotalAmount(finalTotalAmount);
 
-        // 4. Cập nhật tổng tiền mới
-        order.setTotalAmount(totalAmount);
-
-        // 5. Lưu lại đơn hàng
+        // 6. Lưu lại đơn hàng
         orderRepository.save(order);
     }
 }

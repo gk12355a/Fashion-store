@@ -5,10 +5,14 @@ import com.cmc.fashion_store.dto.UpdatePaymentRequest; // Import DTO mới
 import com.cmc.fashion_store.dto.PaymentResponse;
 import com.cmc.fashion_store.model.Order; // Import Order
 import com.cmc.fashion_store.model.Payment;
+import com.cmc.fashion_store.model.Staff;
 import com.cmc.fashion_store.repository.OrderRepository; // Import OrderRepository
 import com.cmc.fashion_store.repository.PaymentRepository;
+import com.cmc.fashion_store.repository.StaffRepository;
 import com.cmc.fashion_store.service.PaymentService;
 import jakarta.persistence.EntityNotFoundException; // Import Exception
+import jakarta.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +32,9 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Autowired
     private OrderRepository orderRepository; // Inject OrderRepository
+    
+    @Autowired
+    private StaffRepository staffRepository;
 
     @Override
     public Page<PaymentResponse> getAllPayments(Pageable pageable) {
@@ -52,29 +59,40 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
+    @Transactional
     public Payment createPayment(CreatePaymentRequest request) {
-        // 1. Kiểm tra Mã đơn hợp lệ
+        // 1. Tìm Order
         Order order = orderRepository.findById(request.getOrderId())
-                .orElseThrow(
-                        () -> new EntityNotFoundException("Không tìm thấy Đơn hàng với ID: " + request.getOrderId()));
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy Đơn hàng: " + request.getOrderId()));
 
-        // --- THÊM BƯỚC KIỂM TRA NGHIỆP VỤ ---
-        // compareTo(BigDecimal.ZERO) <= 0 có nghĩa là "nhỏ hơn hoặc bằng 0"
+        // 2. Tìm Staff
+        Staff staff = staffRepository.findById(request.getStaffId())
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy Nhân viên: " + request.getStaffId()));
+
+        // 3. Kiểm tra logic (đã làm)
         if (order.getTotalAmount().compareTo(BigDecimal.ZERO) <= 0) {
-            // Ném ra một lỗi rõ ràng
-            throw new IllegalArgumentException("Không thể tạo thanh toán cho đơn hàng có tổng tiền bằng 0.");
+            throw new IllegalArgumentException("Không thể thanh toán cho đơn hàng 0 đồng.");
         }
-        // ------------------------------------
+        if (order.getStatus().equals("Đã thanh toán")) {
+            throw new IllegalArgumentException("Đơn hàng này đã được thanh toán rồi.");
+        }
 
-        // 2. Chuyển đổi từ DTO sang Entity
+        // 4. Tạo Payment
         Payment newPayment = new Payment();
         newPayment.setOrder(order);
         newPayment.setPaymentMethod(request.getPaymentMethod());
+        newPayment.setAmount(order.getTotalAmount());
         newPayment.setPaymentDate(LocalDateTime.now());
-        newPayment.setAmount(order.getTotalAmount()); // Tự động lấy tổng tiền
+        newPayment.setStaff(staff); // <-- GÁN NHÂN VIÊN VÀO THANH TOÁN
 
-        // 3. Lưu vào database
-        return paymentRepository.save(newPayment);
+        // 5. Lưu Payment
+        Payment savedPayment = paymentRepository.save(newPayment);
+
+        // 6. Cập nhật Order Status (đã làm)
+        order.setStatus("Đã thanh toán");
+        orderRepository.save(order);
+
+        return savedPayment;
     }
 
     @Override

@@ -13,8 +13,8 @@ public class UpdateOrderRequest {
     // Việc cập nhật tổng tiền thường sẽ được tính toán lại từ chi tiết đơn hàng.
     // Ở đây chúng ta sẽ làm theo backlog.
 
-    @NotBlank(message = "Trạng thái không được để trống")
-    private String status;
+    // @NotBlank(message = "Trạng thái không được để trống")
+    // private String status;
 
     // @NotNull(message = "Tổng tiền không được để trống")
     // @DecimalMin(value = "0.0", inclusive = false, message = "Tổng tiền phải là một số dương")
