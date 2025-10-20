@@ -11,6 +11,8 @@ import com.cmc.fashion_store.service.PaymentService;
 import jakarta.persistence.EntityNotFoundException; // Import Exception
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 import java.time.LocalDateTime; // Import LocalDateTime
 import java.util.Collections;
 import java.util.List;
@@ -48,22 +50,33 @@ public class PaymentServiceImpl implements PaymentService {
         }
         return dto;
     }
+
     @Override
     public Payment createPayment(CreatePaymentRequest request) {
         // 1. Kiểm tra Mã đơn hợp lệ
         Order order = orderRepository.findById(request.getOrderId())
-                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy Đơn hàng với ID: " + request.getOrderId()));
+                .orElseThrow(
+                        () -> new EntityNotFoundException("Không tìm thấy Đơn hàng với ID: " + request.getOrderId()));
+
+        // --- THÊM BƯỚC KIỂM TRA NGHIỆP VỤ ---
+        // compareTo(BigDecimal.ZERO) <= 0 có nghĩa là "nhỏ hơn hoặc bằng 0"
+        if (order.getTotalAmount().compareTo(BigDecimal.ZERO) <= 0) {
+            // Ném ra một lỗi rõ ràng
+            throw new IllegalArgumentException("Không thể tạo thanh toán cho đơn hàng có tổng tiền bằng 0.");
+        }
+        // ------------------------------------
 
         // 2. Chuyển đổi từ DTO sang Entity
         Payment newPayment = new Payment();
         newPayment.setOrder(order);
         newPayment.setPaymentMethod(request.getPaymentMethod());
-        newPayment.setAmount(request.getAmount());
-        newPayment.setPaymentDate(LocalDateTime.now()); // Tự động lấy ngày giờ hiện tại
+        newPayment.setPaymentDate(LocalDateTime.now());
+        newPayment.setAmount(order.getTotalAmount()); // Tự động lấy tổng tiền
 
         // 3. Lưu vào database
         return paymentRepository.save(newPayment);
     }
+
     @Override
     public void deletePayment(Long id) {
         // Kiểm tra xem thanh toán có tồn tại không trước khi xóa
@@ -73,6 +86,7 @@ public class PaymentServiceImpl implements PaymentService {
         }
         paymentRepository.deleteById(id);
     }
+
     @Override
     public List<PaymentResponse> searchPayments(Long orderId, String paymentMethod) {
         List<Payment> results;
@@ -88,6 +102,7 @@ public class PaymentServiceImpl implements PaymentService {
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
+
     @Override
     public PaymentResponse updatePayment(Long id, UpdatePaymentRequest request) {
         // 1. Tìm thanh toán trong DB
@@ -96,7 +111,12 @@ public class PaymentServiceImpl implements PaymentService {
 
         // 2. Cập nhật thông tin
         existingPayment.setPaymentMethod(request.getPaymentMethod());
-        existingPayment.setAmount(request.getAmount());
+
+        // --- XÓA LOGIC CẬP NHẬT SỐ TIỀN ---
+        // Bạn không nên cho phép cập nhật số tiền của thanh toán một cách độc lập.
+        // Nếu Order thay đổi, nên tạo một thanh toán mới hoặc hủy thanh toán cũ.
+        // Dòng cũ bị xóa: existingPayment.setAmount(request.getAmount());
+        // ---------------------------------
 
         // 3. Lưu lại vào DB
         Payment updatedPayment = paymentRepository.save(existingPayment);

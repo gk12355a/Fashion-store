@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page; // Import Page
 import org.springframework.data.domain.Pageable; // Import Pageable
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime; // Import LocalDateTime
 import java.util.List;
 import java.util.stream.Collectors;
@@ -80,10 +81,16 @@ public class OrderServiceImpl implements OrderService {
 
         // 2. Chuyển đổi từ DTO sang Entity
         Order newOrder = new Order();
-        newOrder.setCustomer(customer); // Gán khách hàng đã tìm thấy
+        newOrder.setCustomer(customer); 
         newOrder.setStatus(request.getStatus());
-        newOrder.setTotalAmount(request.getTotalAmount());
-        newOrder.setOrderDate(LocalDateTime.now()); // Tự động lấy ngày giờ hiện tại
+        
+        // --- THAY ĐỔI Ở ĐÂY ---
+        // Xóa dòng cũ: newOrder.setTotalAmount(request.getTotalAmount());
+        // Thay bằng: Khởi tạo tổng tiền là 0.
+        newOrder.setTotalAmount(BigDecimal.ZERO); 
+        // -----------------------
+
+        newOrder.setOrderDate(LocalDateTime.now()); 
 
         // 3. Lưu vào database
         return orderRepository.save(newOrder);
@@ -119,7 +126,11 @@ public class OrderServiceImpl implements OrderService {
 
         // 2. Cập nhật các trường cho phép
         existingOrder.setStatus(request.getStatus());
-        existingOrder.setTotalAmount(request.getTotalAmount());
+
+        // --- THAY ĐỔI Ở ĐÂY ---
+        // Xóa dòng: existingOrder.setTotalAmount(request.getTotalAmount());
+        // Lý do: Không cho phép cập nhật tổng tiền thủ công.
+        // -----------------------
 
         // 3. Lưu lại vào DB
         return orderRepository.save(existingOrder);
