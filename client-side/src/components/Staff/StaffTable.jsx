@@ -18,9 +18,15 @@ export default function StaffTable({ staffs, handleSort, sortField, sortOrder, h
             className={`sortable ${sortField === "salary" ? sortOrder : ""}`}
             onClick={() => handleSort("salary")}
           >
-            Lương
+            Lương (VNĐ)
           </th>
-          <th>Ca làm việc</th>
+          {/* Sửa sort field */}
+          <th
+             className={`sortable ${sortField === "workShift" ? sortOrder : ""}`}
+             onClick={() => handleSort("workShift")}
+          >
+            Ca làm việc
+          </th>
           <th>Hành động</th>
         </tr>
       </thead>
@@ -31,8 +37,10 @@ export default function StaffTable({ staffs, handleSort, sortField, sortOrder, h
               <td>{s.id}</td>
               <td>{s.name}</td>
               <td>{s.position}</td>
-              <td>{s.salary.toLocaleString()} đ</td>
-              <td>{s.shift}</td>
+              <td>{s.salary.toLocaleString()}</td>
+              {/* Sửa hiển thị */}
+              <td>{s.workShift}</td>
+              {/* ------------ */}
               <td>
                 <button className="edit-btn" onClick={() => handleEdit(s)}>✏️</button>
                 <button className="delete-btn" onClick={() => handleDelete(s.id)}>🗑️</button>

@@ -22,14 +22,16 @@ export default function StaffForm({ show, formData, errors, onChange, onSave, on
           {errors.salary && <p className="error-text">{errors.salary}</p>}
 
           <label>Ca làm việc</label>
-          <select name="shift" value={formData.shift} onChange={onChange}>
+          {/* Sửa name="shift" -> name="workShift" */}
+          <select name="workShift" value={formData.workShift} onChange={onChange}>
             <option value="">-- Chọn ca làm việc --</option>
             <option value="Ca sáng">Ca sáng</option>
             <option value="Ca chiều">Ca chiều</option>
             <option value="Ca tối">Ca tối</option>
             <option value="Hành chính">Hành chính</option>
           </select>
-          {errors.shift && <p className="error-text">{errors.shift}</p>}
+          {/* Sửa errors.shift -> errors.workShift */}
+          {errors.workShift && <p className="error-text">{errors.workShift}</p>}
 
           <div className="form-buttons">
             <button className="save-btn" onClick={onSave}>Lưu</button>
