@@ -1,18 +1,21 @@
 package com.cmc.fashion_store.controller;
 
-import com.cmc.fashion_store.dto.CreateOrderRequest; // Import DTO
-import com.cmc.fashion_store.dto.UpdateOrderRequest; // Import DTO mới
-import com.cmc.fashion_store.dto.OrderResponse; // Import DTO
+import com.cmc.fashion_store.dto.CreateOrderWithDetailsRequest; // <-- 1. Import DTO mới
+import com.cmc.fashion_store.dto.UpdateOrderRequest;
+import com.cmc.fashion_store.dto.OrderResponse;
 import com.cmc.fashion_store.model.Order;
 import com.cmc.fashion_store.service.OrderService;
-import jakarta.validation.Valid; // Import cho @Valid
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus; // Import HttpStatus
+import org.springframework.format.annotation.DateTimeFormat; // <-- 2. Thêm import
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.data.domain.Page; // Import Page
-import org.springframework.data.domain.Pageable; // Import Pageable
-import org.springdoc.core.annotations.ParameterObject; // <-- THÊM IMPORT NÀY
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springdoc.core.annotations.ParameterObject;
+
+import java.time.LocalDate; // <-- 3. Thêm import
 import java.util.List;
 
 @RestController
@@ -22,39 +25,57 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
 
-    // API này giờ sẽ trả về Page<DTO>
+    // --- 4. THAY ĐỔI ENDPOINT GETALL ---
+    /**
+     * Lấy danh sách đơn hàng (có phân trang VÀ tìm kiếm)
+     *
+     * @param pageable   Phân trang (page, size, sort)
+     * @param customerId Lọc theo Mã Khách hàng (tùy chọn)
+     * @param status     Lọc theo Trạng thái (tùy chọn)
+     * @param orderDate  Lọc theo Ngày (tùy chọn, định dạng YYYY-MM-DD)
+     * @return Trang (Page) các Đơn hàng (DTO)
+     */
     @GetMapping
-    public ResponseEntity<Page<OrderResponse>> getAllOrders(@ParameterObject Pageable pageable) {
-        Page<OrderResponse> ordersPage = orderService.getAllOrders(pageable);
+    public ResponseEntity<Page<OrderResponse>> getAllOrders(
+            @ParameterObject Pageable pageable,
+            @RequestParam(required = false) Long customerId,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate orderDate
+    ) {
+        Page<OrderResponse> ordersPage = orderService.getAllOrders(pageable, customerId, status, orderDate);
         return ResponseEntity.ok(ordersPage);
     }
-    // API này sẽ xử lý yêu cầu POST đến /api/v1/orders
+    // ------------------------------------------
+
+    // --- 5. THAY ĐỔI ENDPOINT CREATE (TỪ FILE 5) ---
+    /**
+     * Tạo một đơn hàng mới (bao gồm cả chi tiết đơn hàng).
+     */
     @PostMapping
-    public ResponseEntity<Order> createOrder(@Valid @RequestBody CreateOrderRequest request) {
+    public ResponseEntity<Order> createOrder(@Valid @RequestBody CreateOrderWithDetailsRequest request) {
         Order createdOrder = orderService.createOrder(request);
-        // Trả về đơn hàng vừa tạo với status 201 CREATED
         return new ResponseEntity<>(createdOrder, HttpStatus.CREATED);
     }
-    // API này sẽ xử lý yêu cầu DELETE đến /api/v1/orders/{id}
+    // ------------------------------------------
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteOrder(@PathVariable Long id) {
         orderService.deleteOrder(id);
-        // Trả về status 204 No Content, báo hiệu xóa thành công
         return ResponseEntity.noContent().build();
     }
-    // API này sẽ xử lý yêu cầu GET đến /api/v1/orders/search
+
+    // (Giữ lại endpoint /search cũ để tương thích với logic cũ (File 16))
     @GetMapping("/search")
-    public ResponseEntity<List<OrderResponse>> searchOrders( // <-- Sửa kiểu trả về
+    public ResponseEntity<List<OrderResponse>> searchOrders(
             @RequestParam(required = false) Long customerId,
             @RequestParam(required = false) String status) {
-        // Gọi service đã được sửa
-        List<OrderResponse> orders = orderService.searchOrders(customerId, status); // <-- Sửa kiểu trả về
-        return ResponseEntity.ok(orders); // Trả về List DTO
+        List<OrderResponse> orders = orderService.searchOrders(customerId, status);
+        return ResponseEntity.ok(orders);
     }
-    // API này sẽ xử lý yêu cầu PUT đến /api/v1/orders/{id}
+
     @PutMapping("/{id}")
     public ResponseEntity<Order> updateOrder(@PathVariable Long id, @Valid @RequestBody UpdateOrderRequest request) {
         Order updatedOrder = orderService.updateOrder(id, request);
-        return ResponseEntity.ok(updatedOrder); // Trả về đơn hàng đã cập nhật và status 200 OK
+        return ResponseEntity.ok(updatedOrder);
     }
 }

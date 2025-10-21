@@ -1,27 +1,22 @@
 package com.cmc.fashion_store.service.impl;
 
-import com.cmc.fashion_store.dto.OrderResponse; // Import DTO mới
-import com.cmc.fashion_store.dto.CreateOrderRequest;
-import com.cmc.fashion_store.dto.OrderDetailResponse;
-import com.cmc.fashion_store.dto.UpdateOrderRequest; // Import DTO mới
-import com.cmc.fashion_store.model.Customer;
-import com.cmc.fashion_store.model.Order;
-import com.cmc.fashion_store.model.OrderDetail;
-import com.cmc.fashion_store.model.Promotion;
-import com.cmc.fashion_store.repository.CustomerRepository; // Import CustomerRepository
-import com.cmc.fashion_store.repository.OrderRepository;
-import com.cmc.fashion_store.repository.PromotionRepository;
+import com.cmc.fashion_store.dto.*;
+import com.cmc.fashion_store.model.*;
+import com.cmc.fashion_store.repository.*;
 import com.cmc.fashion_store.service.OrderService;
-import jakarta.persistence.EntityNotFoundException; // Import Exception
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Collections;
 import org.springframework.stereotype.Service;
-import org.springframework.data.domain.Page; // Import Page
-import org.springframework.data.domain.Pageable; // Import Pageable
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime; // Import LocalDateTime
+import java.time.LocalDateTime;
+import java.time.LocalTime; // <-- 1. Thêm import
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,19 +27,200 @@ public class OrderServiceImpl implements OrderService {
     private OrderRepository orderRepository;
 
     @Autowired
-    private CustomerRepository customerRepository; // Inject CustomerRepository
+    private CustomerRepository customerRepository;
 
     @Autowired
     private PromotionRepository promotionRepository;
 
+    // --- 2. INJECT REPO CẦN THIẾT (TỪ FILE 4) ---
+    @Autowired
+    private ProductRepository productRepository;
+
+    @Autowired
+    private OrderDetailRepository orderDetailRepository;
+    // ------------------------------------------
+
+    // --- 3. IMPLEMENT PHƯƠNG THỨC MỚI (TỪ FILE 17) ---
     @Override
-    public Page<OrderResponse> getAllOrders(Pageable pageable) {
-        Page<Order> orderPage = orderRepository.findAll(pageable);
+    @Transactional(readOnly = true)
+    public Page<OrderResponse> getAllOrders(
+            Pageable pageable,
+            Long customerId,
+            String status,
+            LocalDate orderDate) 
+    {
+        // Xử lý tìm kiếm theo Ngày (nếu có)
+        LocalDateTime startOfDay = null;
+        LocalDateTime endOfDay = null;
+        if (orderDate != null) {
+            startOfDay = orderDate.atStartOfDay(); // 00:00:00
+            endOfDay = orderDate.atTime(LocalTime.MAX); // 23:59:59.999...
+        }
+
+        Page<Order> orderPage;
+
+        // Xây dựng logic query phức tạp
+        // (Sẽ cần các phương thức này trong OrderRepository ở file tiếp theo)
+        if (customerId != null && status != null && orderDate != null) {
+            orderPage = orderRepository.findByCustomerIdAndStatusContainingIgnoreCaseAndOrderDateBetween(
+                    customerId, status, startOfDay, endOfDay, pageable);
+        } else if (customerId != null && status != null) {
+            orderPage = orderRepository.findByCustomerIdAndStatusContainingIgnoreCase(
+                    customerId, status, pageable);
+        } else if (customerId != null && orderDate != null) {
+            orderPage = orderRepository.findByCustomerIdAndOrderDateBetween(
+                    customerId, startOfDay, endOfDay, pageable);
+        } else if (status != null && orderDate != null) {
+            orderPage = orderRepository.findByStatusContainingIgnoreCaseAndOrderDateBetween(
+                    status, startOfDay, endOfDay, pageable);
+        } else if (customerId != null) {
+            orderPage = orderRepository.findByCustomerId(customerId, pageable);
+        } else if (status != null) {
+            orderPage = orderRepository.findByStatusContainingIgnoreCase(status, pageable);
+        } else if (orderDate != null) {
+            orderPage = orderRepository.findByOrderDateBetween(startOfDay, endOfDay, pageable);
+        } else {
+            // Không có tiêu chí tìm kiếm
+            orderPage = orderRepository.findAll(pageable);
+        }
+
         return orderPage.map(this::convertOrderToDto);
     }
+    // ----------------------------------------------------
 
-    // --- HÀM HELPER CHUYỂN ĐỔI ---
+    // --- 4. IMPLEMENT PHƯƠNG THỨC createOrder MỚI (TỪ FILE 4) ---
+    @Override
+    @Transactional
+    public Order createOrder(CreateOrderWithDetailsRequest request) {
+        Customer customer = customerRepository.findById(request.getCustomerId())
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy khách hàng: " + request.getCustomerId()));
 
+        Order newOrder = new Order();
+        newOrder.setCustomer(customer);
+        newOrder.setStatus("Đang chờ xử lý");
+        newOrder.setTotalAmount(BigDecimal.ZERO);
+        newOrder.setOrderDate(LocalDateTime.now());
+
+        if (request.getPromotionId() != null) {
+            Promotion promotion = promotionRepository.findById(request.getPromotionId())
+                    .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy khuyến mãi: " + request.getPromotionId()));
+            if (promotion.getExpiryDate() != null && promotion.getExpiryDate().isBefore(LocalDate.now())) {
+                 throw new IllegalArgumentException("Khuyến mãi này đã hết hạn.");
+            }
+            newOrder.setPromotion(promotion);
+        }
+
+        Order savedOrder = orderRepository.save(newOrder);
+        List<OrderDetail> newDetailsList = new ArrayList<>();
+
+        for (OrderDetailItem item : request.getDetails()) {
+            Product product = productRepository.findById(item.getProductId())
+                    .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy Sản phẩm: " + item.getProductId()));
+
+            int requestedQuantity = item.getQuantity();
+            int currentStock = product.getStockQuantity();
+            if (currentStock < requestedQuantity) {
+                throw new RuntimeException("Không đủ hàng cho sản phẩm '" + product.getName() + "'. Chỉ còn " + currentStock);
+            }
+
+            product.setStockQuantity(currentStock - requestedQuantity);
+            productRepository.save(product);
+
+            OrderDetail newDetail = new OrderDetail();
+            newDetail.setOrder(savedOrder);
+            newDetail.setProduct(product);
+            newDetail.setQuantity(requestedQuantity);
+            newDetail.setUnitPrice(product.getPrice());
+            newDetailsList.add(newDetail);
+        }
+
+        orderDetailRepository.saveAll(newDetailsList);
+        updateOrderTotalAmount(savedOrder.getId()); // Gọi hàm helper (File 4)
+        return savedOrder;
+    }
+    // ----------------------------------------------------
+
+    @Override
+    public void deleteOrder(Long id) {
+        if (!orderRepository.existsById(id)) {
+            throw new EntityNotFoundException("Không tìm thấy đơn hàng với ID: " + id);
+        }
+        // TODO: Cần hoàn kho trước khi xóa
+        orderRepository.deleteById(id);
+    }
+
+    // (Giữ lại hàm searchOrders cũ (File 17) để tương thích)
+    @Override
+    public List<OrderResponse> searchOrders(Long customerId, String status) {
+        List<Order> foundOrders; 
+        if (customerId != null) {
+            foundOrders = orderRepository.findByCustomerId(customerId);
+        } else if (status != null && !status.isBlank()) {
+            foundOrders = orderRepository.findByStatusContainingIgnoreCase(status);
+        } else {
+            foundOrders = Collections.emptyList();
+        }
+        return foundOrders.stream()
+                .map(this::convertOrderToDto)
+                .collect(Collectors.toList());
+    }
+
+    // --- 5. SỬA LẠI HÀM updateOrder (TỪ FILE 4 - ĐÃ SỬA LỖI) ---
+    @Override
+    @Transactional
+    public Order updateOrder(Long id, UpdateOrderRequest request) {
+        Order existingOrder = orderRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy đơn hàng với ID: " + id));
+
+        // API này chỉ dùng để cập nhật trạng thái
+        if (request.getStatus() != null) {
+             // Ép kiểu từ Object sang String
+            String statusString = String.valueOf(request.getStatus());
+            if (!statusString.isBlank()) {
+                existingOrder.setStatus(statusString);
+            }
+        }
+        // (Không tính lại tổng tiền, vì đây chỉ là cập nhật status)
+        return orderRepository.save(existingOrder);
+    }
+    // ----------------------------------------------------
+
+    // --- 6. HÀM HELPER TÍNH TỔNG TIỀN (TỪ FILE 4) ---
+    private void updateOrderTotalAmount(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy Đơn hàng: " + orderId));
+
+        List<OrderDetail> details = orderDetailRepository.findByOrderId(orderId);
+        BigDecimal subtotal = BigDecimal.ZERO; 
+        for (OrderDetail detail : details) {
+            BigDecimal lineTotal = detail.getUnitPrice().multiply(new BigDecimal(detail.getQuantity()));
+            subtotal = subtotal.add(lineTotal);
+        }
+        
+        BigDecimal finalTotalAmount = subtotal;
+        Promotion promotion = order.getPromotion();
+
+        if (promotion != null) {
+            if (promotion.getExpiryDate() == null || promotion.getExpiryDate().isAfter(LocalDate.now())) {
+                if ("PERCENTAGE".equals(promotion.getType())) {
+                    BigDecimal discountPercent = promotion.getDiscountValue().divide(new BigDecimal(100));
+                    BigDecimal discountAmount = subtotal.multiply(discountPercent);
+                    finalTotalAmount = subtotal.subtract(discountAmount);
+                } 
+                else if ("FIXED_AMOUNT".equals(promotion.getType())) {
+                    finalTotalAmount = subtotal.subtract(promotion.getDiscountValue());
+                }
+                if (finalTotalAmount.compareTo(BigDecimal.ZERO) < 0) {
+                    finalTotalAmount = BigDecimal.ZERO;
+                }
+            }
+        }
+        order.setTotalAmount(finalTotalAmount);
+        orderRepository.save(order);
+    }
+    // ----------------------------------------------------
+
+    // --- 7. CÁC HÀM HELPER DTO (GIỮ NGUYÊN TỪ FILE CŨ) ---
     private OrderResponse convertOrderToDto(Order order) {
         OrderResponse orderDto = new OrderResponse();
         orderDto.setId(order.getId());
@@ -76,81 +252,4 @@ public class OrderServiceImpl implements OrderService {
         }
         return detailDto;
     }
-
-    @Override
-    public Order createOrder(CreateOrderRequest request) {
-        // 1. Tìm khách hàng
-        Customer customer = customerRepository.findById(request.getCustomerId())
-                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy khách hàng: " + request.getCustomerId()));
-
-        Order newOrder = new Order();
-        newOrder.setCustomer(customer);
-        newOrder.setStatus("Đang chờ xử lý");
-        newOrder.setTotalAmount(BigDecimal.ZERO);
-        newOrder.setOrderDate(LocalDateTime.now());
-
-        // --- LOGIC MỚI: GÁN KHUYẾN MÃI ---
-        if (request.getPromotionId() != null) {
-            Promotion promotion = promotionRepository.findById(request.getPromotionId())
-                    .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy khuyến mãi: " + request.getPromotionId()));
-            
-            // Kiểm tra xem khuyến mãi còn hạn không
-            if (promotion.getExpiryDate() != null && promotion.getExpiryDate().isBefore(LocalDate.now())) {
-                 throw new IllegalArgumentException("Khuyến mãi này đã hết hạn.");
-            }
-            
-            newOrder.setPromotion(promotion);
-        }
-        // ---------------------------------
-
-        return orderRepository.save(newOrder);
-    }
-
-    @Override
-    public void deleteOrder(Long id) {
-        // Kiểm tra xem đơn hàng có tồn tại không trước khi xóa
-        if (!orderRepository.existsById(id)) {
-            // Nếu không tìm thấy, ném ra một exception để báo lỗi
-            throw new EntityNotFoundException("Không tìm thấy đơn hàng với ID: " + id);
-        }
-        orderRepository.deleteById(id);
-    }
-
-    @Override
-    public List<OrderResponse> searchOrders(Long customerId, String status) {
-        List<Order> foundOrders; // Danh sách Entity kết quả
-
-        // 1. Thực hiện tìm kiếm Entity như cũ
-        if (customerId != null) {
-            foundOrders = orderRepository.findByCustomerId(customerId);
-        } else if (status != null && !status.isBlank()) {
-            // Giả sử bạn có hàm findByStatus... trong Repository
-            foundOrders = orderRepository.findByStatusContainingIgnoreCase(status);
-        } else {
-            foundOrders = Collections.emptyList();
-        }
-
-        // 2. Chuyển đổi List<Order> sang List<OrderResponse>
-        return foundOrders.stream()
-                .map(this::convertOrderToDto) // Sử dụng lại hàm helper
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public Order updateOrder(Long id, UpdateOrderRequest request) {
-        Order existingOrder = orderRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy đơn hàng với ID: " + id));
-
-        // --- THAY ĐỔI LOGIC Ở ĐÂY ---
-        // Không cho phép API này cập nhật status,
-        // vì status sẽ được cập nhật tự động bởi Payment
-        // Dòng cũ bị xóa: existingOrder.setStatus(request.getStatus());
-        // -------------------------
-
-        // (Bạn có thể thêm logic cập nhật các trường khác ở đây nếu muốn, ví dụ: địa
-        // chỉ giao hàng)
-
-        return orderRepository.save(existingOrder);
-    }
-
 }

@@ -1,11 +1,11 @@
 import React from "react";
 import "../Table.css";
 
-// Không cần thay đổi props
-export default function ProductTable({ products, handleSort, sortField, sortOrder, handleEdit, handleDelete }) {
+// 1. Xóa props: handleSort, sortField, sortOrder
+export default function ProductTable({ products, handleEdit, handleDelete }) {
   
-  // Sửa 'stock' thành 'stockQuantity'
-  const sortClass = (field) => `sortable ${sortField === field ? sortOrder : ""}`;
+  // 2. Xóa hàm 'sortClass'
+  // const sortClass = (field) => ...
 
   return (
     <table className="feature-table">
@@ -13,13 +13,21 @@ export default function ProductTable({ products, handleSort, sortField, sortOrde
         <tr>
           <th>ID</th>
           <th>Ảnh</th>
-          <th className={sortClass("name")} onClick={() => handleSort("name")}>Tên</th>
+          {/* 3. Xóa class và onClick */}
+          <th /* className={sortClass("name")} onClick={() => handleSort("name")} */>
+            Tên
+          </th>
           <th>Loại</th>
           <th>Size</th>
           <th>Màu</th>
-          <th className={sortClass("price")} onClick={() => handleSort("price")}>Giá</th>
-          {/* Sửa 'stock' thành 'stockQuantity' */}
-          <th className={sortClass("stockQuantity")} onClick={() => handleSort("stockQuantity")}>Số lượng</th>
+          {/* 4. Xóa class và onClick */}
+          <th /* className={sortClass("price")} onClick={() => handleSort("price")} */>
+            Giá
+          </th>
+          {/* 5. Xóa class và onClick */}
+          <th /* className={sortClass("stockQuantity")} onClick={() => handleSort("stockQuantity")} */>
+            Số lượng
+          </th>
           <th>Hành động</th>
         </tr>
       </thead>
@@ -29,7 +37,6 @@ export default function ProductTable({ products, handleSort, sortField, sortOrde
             <tr key={p.id}>
               <td>{p.id}</td>
               <td>
-                {/* Sửa p.image thành p.imageUrl */}
                 <img src={p.imageUrl || "https://via.placeholder.com/80"} alt={p.name} style={{width:80, height:80, objectFit:"cover", borderRadius:6}}/>
               </td>
               <td style={{textAlign:"left", paddingLeft:12}}>{p.name}</td>
@@ -37,7 +44,6 @@ export default function ProductTable({ products, handleSort, sortField, sortOrde
               <td>{p.size}</td>
               <td>{p.color}</td>
               <td>{p.price.toLocaleString()} đ</td>
-              {/* Sửa p.stock thành p.stockQuantity */}
               <td>{p.stockQuantity}</td>
               <td>
                 <button className="action edit" onClick={() => handleEdit(p)}>✏️</button>

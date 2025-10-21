@@ -3,6 +3,9 @@ package com.cmc.fashion_store.service;
 import com.cmc.fashion_store.dto.CreatePromotionRequest; // Thêm import này
 import com.cmc.fashion_store.dto.PromotionResponse;
 import com.cmc.fashion_store.dto.UpdatePromotionRequest;
+import com.cmc.fashion_store.model.Promotion;
+
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -40,4 +43,5 @@ public interface PromotionService {
      * @return Một trang các khuyến mãi phù hợp.
      */
     Page<PromotionResponse> searchPromotions(String keyword, Pageable pageable);
+    List<Promotion> searchActivePromotions(String query);
 }

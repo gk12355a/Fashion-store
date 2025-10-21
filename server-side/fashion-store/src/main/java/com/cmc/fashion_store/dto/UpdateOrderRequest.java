@@ -7,7 +7,10 @@ import lombok.Data;
 // import java.math.BigDecimal;
 
 @Data
-public class UpdateOrderRequest {
+public class UpdateOrderRequest {public Object getStatus() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getStatus'");
+    }
 
     // Trong thực tế, có thể bạn chỉ muốn cho phép cập nhật trạng thái.
     // Việc cập nhật tổng tiền thường sẽ được tính toán lại từ chi tiết đơn hàng.

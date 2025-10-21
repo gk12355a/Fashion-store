@@ -8,6 +8,7 @@ import com.cmc.fashion_store.service.CustomerService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -68,6 +69,12 @@ public class CustomerServiceImpl implements CustomerService {
 
         // 3. Lưu lại vào DB
         return customerRepository.save(existingCustomer);
+    }
+    // --- IMPLEMENT PHƯƠNG THỨC MỚI ---
+    @Override
+    public List<String> getAutocompleteSuggestions(String query) {
+        Pageable limit = PageRequest.of(0, 10); // Lấy 10 gợi ý
+        return customerRepository.findSuggestionsByName(query, limit);
     }
 
 }

@@ -64,5 +64,17 @@ public class ProductController {
         Product updatedProduct = productService.updateProduct(id, request, file);
         return ResponseEntity.ok(updatedProduct);
     }
-    
+    // --- THÊM ENDPOINT MỚI CHO AUTOCOMPLETE ---
+    /**
+     * API lấy gợi ý (autocomplete) cho tên sản phẩm
+     * Ví dụ: GET /api/v1/products/autocomplete?q=áo
+     *
+     * @param query Từ khóa tìm kiếm (lấy từ param 'q')
+     * @return ResponseEntity chứa List<String>
+     */
+    @GetMapping("/autocomplete")
+    public ResponseEntity<List<String>> getAutocompleteSuggestions(@RequestParam("q") String query) {
+        List<String> suggestions = productService.getAutocompleteSuggestions(query);
+        return ResponseEntity.ok(suggestions);
+    }
 }

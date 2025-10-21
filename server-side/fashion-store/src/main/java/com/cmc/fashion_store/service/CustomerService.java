@@ -39,4 +39,6 @@ public interface CustomerService {
      */
     Customer updateCustomer(Long id, UpdateCustomerRequest request);
 
+    // --- THÊM PHƯƠNG THỨC MỚI ---
+    List<String> getAutocompleteSuggestions(String query);
 }

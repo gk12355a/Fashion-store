@@ -39,3 +39,43 @@
 .search-bar button:hover {
   background: #099268;
 }
+/* ----- Thêm CSS cho Autocomplete ----- */
+
+/* Wrapper là cần thiết để định vị danh sách gợi ý */
+.search-bar-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.suggestions-list {
+  position: absolute;
+  top: 100%; /* Nằm ngay dưới thanh tìm kiếm */
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 0 0 8px 8px; /* Bo góc dưới */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 999; /* Nổi lên trên */
+}
+
+.suggestion-item {
+  padding: 12px 18px;
+  font-size: 15px;
+  color: #333;
+  cursor: pointer;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.suggestion-item:last-child {
+  border-bottom: none;
+}
+
+.suggestion-item:hover {
+  background-color: #f9f9f9;
+}

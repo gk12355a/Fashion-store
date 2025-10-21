@@ -1,7 +1,10 @@
 package com.cmc.fashion_store.repository;
 
 import com.cmc.fashion_store.model.Customer;
+import org.springframework.data.domain.Pageable; // <-- THÊM IMPORT
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query; // <-- THÊM IMPORT
+import org.springframework.data.repository.query.Param; // <-- THÊM IMPORT
 import org.springframework.stereotype.Repository;
 import java.util.List;
 
@@ -22,4 +25,8 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
     List<Customer> findByNameContainingIgnoreCaseOrPhoneNumberContainingIgnoreCaseOrEmailContainingIgnoreCase(
             String name, String phoneNumber, String email
     );
+    // --- THÊM PHƯƠNG THỨC MỚI ---
+    @Query("SELECT DISTINCT c.name FROM Customer c WHERE LOWER(c.name) LIKE LOWER(CONCAT('%', :query, '%'))")
+    List<String> findSuggestionsByName(@Param("query") String query, Pageable pageable);
+
 }

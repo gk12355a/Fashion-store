@@ -1,12 +1,14 @@
 package com.cmc.fashion_store.service;
 
-import com.cmc.fashion_store.dto.OrderResponse; // Import DTO mới
-import com.cmc.fashion_store.dto.CreateOrderRequest; // Import DTO
-import com.cmc.fashion_store.dto.UpdateOrderRequest; // Import DTO mới
+import com.cmc.fashion_store.dto.OrderResponse;
+// import com.cmc.fashion_store.dto.CreateOrderRequest; // <-- 1. Xóa import DTO cũ
+import com.cmc.fashion_store.dto.CreateOrderWithDetailsRequest; // <-- 2. Thêm import DTO mới
+import com.cmc.fashion_store.dto.UpdateOrderRequest;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable; // Import Pageable
+import org.springframework.data.domain.Pageable;
 import com.cmc.fashion_store.model.Order;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface OrderService {
@@ -15,18 +17,27 @@ public interface OrderService {
      * @param pageable đối tượng chứa thông tin phân trang (số trang, kích thước trang).
      * @return một trang (Page) chứa danh sách Order và thông tin phân trang.
      */
-    Page<OrderResponse> getAllOrders(Pageable pageable);
+    Page<OrderResponse> getAllOrders(
+            Pageable pageable,
+            Long customerId,
+            String status,
+            LocalDate orderDate // <-- Dùng LocalDate cho đơn giản
+    );
+
     /**
-     * Tạo một đơn hàng mới.
-     * @param request thông tin đơn hàng mới.
+     * Tạo một đơn hàng mới CÙNG VỚI các chi tiết của nó.
+     * @param request thông tin đơn hàng mới (bao gồm khách hàng, khuyến mãi và danh sách sản phẩm).
      * @return Order đã được tạo.
      */
-    Order createOrder(CreateOrderRequest request);
+    // 3. Thay đổi chữ ký phương thức
+    Order createOrder(CreateOrderWithDetailsRequest request);
+
     /**
      * Xóa một đơn hàng dựa vào ID.
      * @param id ID của đơn hàng cần xóa.
      */
     void deleteOrder(Long id);
+
     /**
      * Tìm kiếm đơn hàng dựa trên các tiêu chí tùy chọn.
      * @param customerId ID của khách hàng (có thể null).
@@ -34,6 +45,7 @@ public interface OrderService {
      * @return Danh sách đơn hàng phù hợp.
      */
     List<OrderResponse> searchOrders(Long customerId, String status);
+
     /**
      * Cập nhật thông tin một đơn hàng.
      * @param id ID của đơn hàng cần cập nhật.

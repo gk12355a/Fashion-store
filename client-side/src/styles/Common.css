@@ -246,3 +246,44 @@ nav ul li a:hover {
     max-width: 450px;
   }
 }
+/* ----- CSS CHO ACTIVE NAV LINK ----- */
+nav ul li a.active-link {
+  color: #dc3545; /* Màu đỏ (hoặc màu bạn thích) */
+  font-weight: 600;
+  position: relative;
+}
+
+/* Thêm gạch chân cho link active */
+nav ul li a.active-link::after {
+  content: '';
+  position: absolute;
+  bottom: -5px; /* Điều chỉnh để nằm dưới chữ */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%; /* Độ rộng gạch chân */
+  height: 2px;
+  background-color: #dc3545;
+}
+
+
+/* ----- CSS CHO STICKY FOOTER ----- */
+
+/* Bạn cũng có thể thêm 3 dòng này vào file index.css 
+  nếu bạn muốn nó áp dụng toàn cục hơn 
+*/
+html, body, #root {
+  height: 100%;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Quan trọng: Đảm bảo app-container cao ít nhất 100% màn hình */
+}
+
+.main-content {
+  flex-grow: 1; /* Quan trọng: Đẩy nội dung chính chiếm đầy không gian, đẩy footer xuống */
+  /* Thêm padding cho nội dung chính */
+  padding: 20px;
+  background-color: #fdfdfd; /* Tùy chọn: Thêm màu nền cho vùng nội dung */
+}

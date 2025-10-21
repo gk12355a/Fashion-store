@@ -1,9 +1,12 @@
 package com.cmc.fashion_store.repository;
 
 import com.cmc.fashion_store.model.Product;
+import org.springframework.data.domain.Pageable; // <-- THÊM IMPORT NÀY
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query; // <-- THÊM IMPORT NÀY
+import org.springframework.data.repository.query.Param; // <-- THÊM IMPORT NÀY
 import org.springframework.stereotype.Repository;
-import java.util.List; 
+import java.util.List;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
     // Spring Data JPA sẽ tự động cung cấp cho chúng ta hàm `findAll()` để lấy tất cả sản phẩm.
@@ -23,4 +26,16 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findByNameContainingIgnoreCaseOrTypeContainingIgnoreCaseOrSizeContainingIgnoreCaseOrColorContainingIgnoreCase(
             String name, String type, String size, String color
     );
+    // --- THÊM PHƯƠNG THỨC MỚI CHO AUTOCOMPLETE ---
+    /**
+     * Tìm kiếm tên sản phẩm (phân biệt chữ thường) để gợi ý.
+     * Chỉ chọn (SELECT) cột 'name' và đảm bảo tên là duy nhất (DISTINCT).
+     * Sử dụng Pageable để giới hạn số lượng gợi ý (ví dụ: 10).
+     *
+     * @param query Từ khóa tìm kiếm (ví dụ: "áo")
+     * @param pageable Đối tượng phân trang (ví dụ: PageRequest.of(0, 10))
+     * @return Danh sách các tên sản phẩm (List<String>)
+     */
+    @Query("SELECT DISTINCT p.name FROM Product p WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :query, '%'))")
+    List<String> findSuggestionsByName(@Param("query") String query, Pageable pageable);
 }

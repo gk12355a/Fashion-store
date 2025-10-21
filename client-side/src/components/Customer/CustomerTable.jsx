@@ -1,11 +1,9 @@
 import React from "react";
 import "../Table.css";
 
+// 1. Xóa props: handleSort, sortField, sortOrder
 export default function CustomerTable({
   customers,
-  handleSort,
-  sortField,
-  sortOrder,
   handleEdit,
   handleDelete,
 }) {
@@ -14,19 +12,20 @@ export default function CustomerTable({
       <thead>
         <tr>
           <th>ID</th>
+          {/* 2. Xóa class và onClick */}
           <th
-            className={`sortable ${sortField === "name" ? sortOrder : ""}`}
-            onClick={() => handleSort("name")}
+            // className={`sortable ${sortField === "name" ? sortOrder : ""}`}
+            // onClick={() => handleSort("name")}
           >
             Tên khách hàng
           </th>
           <th>SĐT</th>
           <th>Email</th>
           <th>Loại thành viên</th>
+          {/* 3. Xóa class và onClick */}
           <th
-            // Sửa tên trường sort cho đúng
-            className={`sortable ${sortField === "rewardPoints" ? sortOrder : ""}`}
-            onClick={() => handleSort("rewardPoints")}
+            // className={`sortable ${sortField === "rewardPoints" ? sortOrder : ""}`}
+            // onClick={() => handleSort("rewardPoints")}
           >
             Điểm thưởng
           </th>
@@ -38,16 +37,15 @@ export default function CustomerTable({
           customers.map((c) => (
             <tr key={c.id}>
               <td>{c.id}</td>
-              <td>{c.name}</td>
-              {/* Sửa tên trường (property) cho đúng */}
-              <td>{c.phoneNumber}</td>
-              <td>{c.email}</td>
-              <td>{c.membershipType}</td>
-              <td>{c.rewardPoints}</td>
-              {/* ------------------------------- */}
+              <td style={{textAlign: "left", paddingLeft: "10px"}}>{c.name}</td>
+              <td>{c.phoneNumber}</td> 
+              <td>{c.email}</td> 
+              <td>{c.membershipType}</td> 
+              <td>{c.rewardPoints}</td> 
               <td>
-                <button className="edit-btn" onClick={() => handleEdit(c)}>✏️</button>
-                <button className="delete-btn" onClick={() => handleDelete(c.id)}>🗑️</button>
+                {/* 4. Sửa class nút cho đồng bộ (dùng className của Product) */}
+                <button className="action edit" onClick={() => handleEdit(c)}>✏️</button>
+                <button className="action delete" onClick={() => handleDelete(c.id)}>🗑️</button>
               </td>
             </tr>
           ))
