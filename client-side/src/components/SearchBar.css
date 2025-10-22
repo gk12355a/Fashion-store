@@ -25,7 +25,7 @@
 }
 
 .search-bar button {
-  background: #0ca678;
+  background: linear-gradient(135deg, #288a4f, #1cb65f);
   color: white;
   border: none;
   padding: 10px 16px;
@@ -37,7 +37,7 @@
 }
 
 .search-bar button:hover {
-  background: #099268;
+  background: linear-gradient(135deg, #1cb65f, #288a4f);
 }
 /* ----- Thêm CSS cho Autocomplete ----- */
 
