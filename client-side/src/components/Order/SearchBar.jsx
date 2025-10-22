@@ -9,7 +9,7 @@ export default function SearchBar({ search, setSearch, onAdd }) {
         <input
           type="text"
           // 2. Sửa placeholder
-          placeholder="Tìm theo Mã KH, Trạng thái, hoặc Ngày (DD/MM/YYYY)..."
+          placeholder="Tìm theo Mã Khách Hàng (ID)..." 
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />

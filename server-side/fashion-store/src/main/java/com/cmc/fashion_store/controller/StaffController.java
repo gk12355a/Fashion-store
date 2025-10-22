@@ -36,8 +36,8 @@ public class StaffController {
         return ResponseEntity.noContent().build();
     }
     @GetMapping("/search")
-    public ResponseEntity<List<Staff>> searchStaff(@RequestParam String keyword) {
-        List<Staff> results = staffService.searchStaff(keyword);
+    public ResponseEntity<List<Staff>> searchStaff(@RequestParam String q) {
+        List<Staff> results = staffService.searchStaff(q);
         return ResponseEntity.ok(results);
     }
     @PutMapping("/{id}")

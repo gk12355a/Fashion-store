@@ -16,7 +16,6 @@ export default function ReusableSearch({
   onSelect,
   displayField = 'name',
   renderSuggestion,
-  paramName = 'q',
   disabled = false,
 }) {
   const [searchTerm, setSearchTerm] = useState('');
@@ -27,27 +26,28 @@ export default function ReusableSearch({
 
   // Effect for fetching suggestions (debounced)
   useEffect(() => {
+    // Nếu đã chọn 1 item (và text không thay đổi) -> không tìm
     if (selectedItem && searchTerm === selectedItem[displayField]) {
       setSuggestions([]);
       return;
     }
+    // Nếu xóa hết chữ -> reset
     if (!searchTerm.trim()) {
       setSuggestions([]);
       setSelectedItem(null);
-      onSelect(null);
+      onSelect(null); // Báo cho component cha là đã clear
       return;
     }
 
     setIsLoading(true);
     const timer = setTimeout(async () => {
       try {
-        // --- 2. SỬA Ở ĐÂY: Dùng paramName thay vì 'q' cứng ---
-        const params = {};
-        params[paramName] = searchTerm; // Ví dụ: { keyword: searchTerm } hoặc { q: searchTerm }
-        // ---------------------------------------------------
-
-        const response = await api.get(searchApiUrl, { params }); // <-- Gửi params đã tạo
-
+        // Gọi API /search (ví dụ: /products/search?q=ao)
+        const response = await api.get(searchApiUrl, {
+          params: { q: searchTerm },
+        });
+        
+        // Chỉ lấy 10 gợi ý đầu tiên
         setSuggestions((response.data || []).slice(0, 10));
         setIsLoading(false);
       } catch (error) {
@@ -55,11 +55,10 @@ export default function ReusableSearch({
         setSuggestions([]);
         setIsLoading(false);
       }
-    }, 300);
+    }, 300); // 300ms debounce
 
     return () => clearTimeout(timer);
-    // 3. Thêm paramName vào dependency array
-  }, [searchTerm, searchApiUrl, selectedItem, displayField, onSelect, paramName]);
+  }, [searchTerm, searchApiUrl, selectedItem, displayField]);
 
   // Xử lý khi bấm chọn 1 gợi ý
   const handleSelect = (item) => {
