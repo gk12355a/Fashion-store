@@ -53,4 +53,12 @@ public interface OrderService {
      * @return Order đã được cập nhật.
      */
     Order updateOrder(Long id, UpdateOrderRequest request);
+    /**
+     * Dịch vụ xuất dữ liệu đơn hàng ra chuỗi CSV.
+     * @param startDate Ngày bắt đầu (LocalDate)
+     * @param endDate Ngày kết thúc (LocalDate)
+     * @return Một chuỗi String chứa nội dung file CSV
+     * @throws Exception Nếu có lỗi khi tạo CSV
+     */
+    String exportOrdersToCsv(LocalDate startDate, LocalDate endDate) throws Exception;
 }

@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springdoc.core.annotations.ParameterObject;
-
-import java.time.LocalDate; // <-- 3. Thêm import
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RestController
@@ -77,5 +79,41 @@ public class OrderController {
     public ResponseEntity<Order> updateOrder(@PathVariable Long id, @Valid @RequestBody UpdateOrderRequest request) {
         Order updatedOrder = orderService.updateOrder(id, request);
         return ResponseEntity.ok(updatedOrder);
+    }
+    /**
+     * Endpoint xuất báo cáo đơn hàng ra file CSV.
+     * Yêu cầu startDate và endDate theo định dạng YYYY-MM-DD.
+     */
+    @GetMapping("/export")
+    public ResponseEntity<String> exportOrdersAsCsv(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
+    ) {
+        try {
+            // 1. Gọi Service để lấy chuỗi CSV
+            String csvData = orderService.exportOrdersToCsv(startDate, endDate);
+            
+            // 2. Tạo tên file động
+            String filename = String.format("BaoCao_DonHang_tu_%s_den_%s.csv", 
+                startDate.format(DateTimeFormatter.ISO_DATE), 
+                endDate.format(DateTimeFormatter.ISO_DATE));
+            
+            // 3. Thiết lập HTTP Headers cho việc tải file
+            HttpHeaders headers = new HttpHeaders();
+            // Header báo trình duyệt tải file về với tên đã định
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"");
+            // Header báo kiểu nội dung là CSV và mã hóa UTF-8
+            headers.setContentType(MediaType.parseMediaType("text/csv; charset=UTF-8"));
+
+            // 4. Trả về Response với dữ liệu CSV, Headers và Status OK
+            return new ResponseEntity<>(csvData, headers, HttpStatus.OK);
+            
+        } catch (Exception e) {
+            // Trả về lỗi nếu có vấn đề
+            return new ResponseEntity<>(
+                "Lỗi khi xuất CSV: " + e.getMessage(), 
+                HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
     }
 }
