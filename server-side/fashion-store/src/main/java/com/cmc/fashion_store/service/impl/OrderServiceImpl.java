@@ -4,10 +4,6 @@ import com.cmc.fashion_store.dto.*;
 import com.cmc.fashion_store.model.*;
 import com.cmc.fashion_store.repository.*;
 import com.cmc.fashion_store.service.OrderService;
-import com.opencsv.ICSVWriter;
-import com.opencsv.bean.StatefulBeanToCsv;
-import com.opencsv.bean.StatefulBeanToCsvBuilder;
-
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Collections;
@@ -16,7 +12,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -52,7 +47,8 @@ public class OrderServiceImpl implements OrderService {
             Pageable pageable,
             Long customerId,
             String status,
-            LocalDate orderDate) {
+            LocalDate orderDate) 
+    {
         // Xử lý tìm kiếm theo Ngày (nếu có)
         LocalDateTime startOfDay = null;
         LocalDateTime endOfDay = null;
@@ -90,81 +86,14 @@ public class OrderServiceImpl implements OrderService {
 
         return orderPage.map(this::convertOrderToDto);
     }
-
-    // --- XUẤT BÁO CÁO (CSV) - ĐÃ CẬP NHẬT ---
-    @Override
-    @Transactional(readOnly = true)
-    public String exportOrdersToCsv(LocalDate startDate, LocalDate endDate) throws Exception {
-        if (startDate == null || endDate == null) {
-            throw new IllegalArgumentException("Vui lòng cung cấp ngày bắt đầu và ngày kết thúc.");
-        }
-        LocalDateTime startDateTime = startDate.atStartOfDay();
-        LocalDateTime endDateTime = endDate.atTime(LocalTime.MAX);
-
-        List<Order> orders = orderRepository.findByOrderDateBetween(startDateTime, endDateTime);
-        List<OrderExportResponse> exportDtos = orders.stream()
-                .map(this::convertOrderToExportDto)
-                .collect(Collectors.toList());
-
-        try (StringWriter writer = new StringWriter()) {
-
-            // 1. Thêm BOM (\uFEFF) cho UTF-8
-            writer.write("\uFEFF");
-
-            // --- 2. GHI HEADER TIẾNG VIỆT THỦ CÔNG ---
-            // Đảm bảo thứ tự khớp với 'position' trong DTO
-            writer.append("Mã Đơn Hàng").append(',')
-                    .append("Ngày Đặt").append(',')
-                    .append("Trạng Thái").append(',')
-                    .append("Tổng Tiền (VND)").append(',')
-                    .append("Mã Khách Hàng").append(',')
-                    .append("Mã Khuyến Mãi")
-                    .append('\n'); // Xuống dòng sau header
-            // ------------------------------------------
-
-            // 3. Xây dựng CSV Writer
-            StatefulBeanToCsv<OrderExportResponse> beanToCsv = new StatefulBeanToCsvBuilder<OrderExportResponse>(writer)
-                    // Quan trọng: Sử dụng NO_QUOTE_CHARACTER hoặc cấu hình quote phù hợp
-                    .withQuotechar(ICSVWriter.NO_QUOTE_CHARACTER)
-                    .withSeparator(',') // Dùng dấu phẩy
-                    // KHÔNG cần withWriteHeader(true) vì chúng ta đã ghi header thủ công
-                    .build();
-
-            // 4. Ghi DTO (dữ liệu)
-            beanToCsv.write(exportDtos);
-
-            return writer.toString();
-        }
-    }
-
-    // --- HELPER MỚI: Convert Entity (Order) -> OrderExportResponse (Giữ nguyên)
-    // ---
-    private OrderExportResponse convertOrderToExportDto(Order order) {
-        OrderExportResponse dto = new OrderExportResponse();
-        dto.setId(order.getId());
-        dto.setOrderDate(order.getOrderDate());
-        dto.setStatus(order.getStatus());
-        dto.setTotalAmount(order.getTotalAmount());
-        if (order.getCustomer() != null) {
-            dto.setCustomerId(order.getCustomer().getId());
-        } else {
-            dto.setCustomerId(null);
-        }
-        if (order.getPromotion() != null) {
-            dto.setPromotionId(order.getPromotion().getId());
-        } else {
-            dto.setPromotionId(null);
-        }
-        return dto;
-    }
+    // ----------------------------------------------------
 
     // --- 4. IMPLEMENT PHƯƠNG THỨC createOrder MỚI (TỪ FILE 4) ---
     @Override
     @Transactional
     public Order createOrder(CreateOrderWithDetailsRequest request) {
         Customer customer = customerRepository.findById(request.getCustomerId())
-                .orElseThrow(
-                        () -> new EntityNotFoundException("Không tìm thấy khách hàng: " + request.getCustomerId()));
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy khách hàng: " + request.getCustomerId()));
 
         Order newOrder = new Order();
         newOrder.setCustomer(customer);
@@ -174,10 +103,9 @@ public class OrderServiceImpl implements OrderService {
 
         if (request.getPromotionId() != null) {
             Promotion promotion = promotionRepository.findById(request.getPromotionId())
-                    .orElseThrow(() -> new EntityNotFoundException(
-                            "Không tìm thấy khuyến mãi: " + request.getPromotionId()));
+                    .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy khuyến mãi: " + request.getPromotionId()));
             if (promotion.getExpiryDate() != null && promotion.getExpiryDate().isBefore(LocalDate.now())) {
-                throw new IllegalArgumentException("Khuyến mãi này đã hết hạn.");
+                 throw new IllegalArgumentException("Khuyến mãi này đã hết hạn.");
             }
             newOrder.setPromotion(promotion);
         }
@@ -192,8 +120,7 @@ public class OrderServiceImpl implements OrderService {
             int requestedQuantity = item.getQuantity();
             int currentStock = product.getStockQuantity();
             if (currentStock < requestedQuantity) {
-                throw new RuntimeException(
-                        "Không đủ hàng cho sản phẩm '" + product.getName() + "'. Chỉ còn " + currentStock);
+                throw new RuntimeException("Không đủ hàng cho sản phẩm '" + product.getName() + "'. Chỉ còn " + currentStock);
             }
 
             product.setStockQuantity(currentStock - requestedQuantity);
@@ -225,7 +152,7 @@ public class OrderServiceImpl implements OrderService {
     // (Giữ lại hàm searchOrders cũ (File 17) để tương thích)
     @Override
     public List<OrderResponse> searchOrders(Long customerId, String status) {
-        List<Order> foundOrders;
+        List<Order> foundOrders; 
         if (customerId != null) {
             foundOrders = orderRepository.findByCustomerId(customerId);
         } else if (status != null && !status.isBlank()) {
@@ -247,7 +174,7 @@ public class OrderServiceImpl implements OrderService {
 
         // API này chỉ dùng để cập nhật trạng thái
         if (request.getStatus() != null) {
-            // Ép kiểu từ Object sang String
+             // Ép kiểu từ Object sang String
             String statusString = String.valueOf(request.getStatus());
             if (!statusString.isBlank()) {
                 existingOrder.setStatus(statusString);
@@ -264,12 +191,12 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy Đơn hàng: " + orderId));
 
         List<OrderDetail> details = orderDetailRepository.findByOrderId(orderId);
-        BigDecimal subtotal = BigDecimal.ZERO;
+        BigDecimal subtotal = BigDecimal.ZERO; 
         for (OrderDetail detail : details) {
             BigDecimal lineTotal = detail.getUnitPrice().multiply(new BigDecimal(detail.getQuantity()));
             subtotal = subtotal.add(lineTotal);
         }
-
+        
         BigDecimal finalTotalAmount = subtotal;
         Promotion promotion = order.getPromotion();
 
@@ -279,7 +206,8 @@ public class OrderServiceImpl implements OrderService {
                     BigDecimal discountPercent = promotion.getDiscountValue().divide(new BigDecimal(100));
                     BigDecimal discountAmount = subtotal.multiply(discountPercent);
                     finalTotalAmount = subtotal.subtract(discountAmount);
-                } else if ("FIXED_AMOUNT".equals(promotion.getType())) {
+                } 
+                else if ("FIXED_AMOUNT".equals(promotion.getType())) {
                     finalTotalAmount = subtotal.subtract(promotion.getDiscountValue());
                 }
                 if (finalTotalAmount.compareTo(BigDecimal.ZERO) < 0) {
@@ -324,5 +252,4 @@ public class OrderServiceImpl implements OrderService {
         }
         return detailDto;
     }
-
 }

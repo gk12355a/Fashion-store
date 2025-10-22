@@ -1,29 +1,23 @@
 package com.cmc.fashion_store.controller;
 
-import com.cmc.fashion_store.dto.CreateOrderWithDetailsRequest;
+import com.cmc.fashion_store.dto.CreateOrderWithDetailsRequest; // <-- 1. Import DTO mới
 import com.cmc.fashion_store.dto.UpdateOrderRequest;
 import com.cmc.fashion_store.dto.OrderResponse;
 import com.cmc.fashion_store.model.Order;
 import com.cmc.fashion_store.service.OrderService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat; 
-
-// --- CÁC IMPORT BỊ THIẾU GÂY LỖI ---
-import org.springframework.http.HttpHeaders;     // <-- 1. Sửa lỗi HttpHeaders(), CONTENT_DISPOSITION
+import org.springframework.format.annotation.DateTimeFormat; // <-- 2. Thêm import
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;       // <-- 2. Thêm import này để dùng cho CONTENT_TYPE
 import org.springframework.http.ResponseEntity;
-// ------------------------------------
-
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springdoc.core.annotations.ParameterObject;
 
-import java.time.LocalDate; 
-import java.time.format.DateTimeFormatter; // <-- 3. Import này sẽ hết bị báo "never used"
+import java.time.LocalDate; // <-- 3. Thêm import
 import java.util.List;
+
 @RestController
 @RequestMapping("${api.prefix}/orders") // -> /api/v1/orders
 public class OrderController {
@@ -51,39 +45,8 @@ public class OrderController {
         Page<OrderResponse> ordersPage = orderService.getAllOrders(pageable, customerId, status, orderDate);
         return ResponseEntity.ok(ordersPage);
     }
-    // --- 4. ENDPOINT XUẤT BÁO CÁO (CSV) ---
-    @GetMapping("/export")
-    public ResponseEntity<String> exportOrdersAsCsv(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
-    ) {
-        try {
-            String csvData = orderService.exportOrdersToCsv(startDate, endDate);
-            
-            // Tạo tên file (Giờ DateTimeFormatter sẽ được sử dụng)
-            String filename = String.format("BaoCao_DonHang_tu_%s_den_%s.csv", 
-                startDate.format(DateTimeFormatter.ISO_DATE), 
-                endDate.format(DateTimeFormatter.ISO_DATE));
-            
-            // Tạo headers (Giờ HttpHeaders() sẽ hoạt động)
-            HttpHeaders headers = new HttpHeaders();
-            
-            // Sửa lỗi CONTENT_DISPOSITION
-            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"");
-            
-            // Sửa lỗi CONTENT_TYPE (dùng MediaType cho an toàn)
-            headers.setContentType(MediaType.parseMediaType("text/csv; charset=UTF-8"));
+    // ------------------------------------------
 
-            // Sửa lỗi "Cannot infer type arguments"
-            return new ResponseEntity<>(csvData, headers, HttpStatus.OK);
-            
-        } catch (Exception e) {
-            return new ResponseEntity<>(
-                "Lỗi khi xuất CSV: " + e.getMessage(), 
-                HttpStatus.INTERNAL_SERVER_ERROR
-            );
-        }
-    }
     // --- 5. THAY ĐỔI ENDPOINT CREATE (TỪ FILE 5) ---
     /**
      * Tạo một đơn hàng mới (bao gồm cả chi tiết đơn hàng).

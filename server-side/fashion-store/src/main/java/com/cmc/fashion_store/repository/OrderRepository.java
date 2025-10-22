@@ -69,9 +69,4 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
      */
     Page<Order> findByCustomerIdAndStatusContainingIgnoreCaseAndOrderDateBetween(
             Long customerId, String status, LocalDateTime start, LocalDateTime end, Pageable pageable);
-    
-   /**
-     * Lấy TẤT CẢ các đơn hàng trong một dải ngày (dùng cho export).
-     */
-    List<Order> findByOrderDateBetween(LocalDateTime start, LocalDateTime end);
 }

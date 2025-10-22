@@ -3,17 +3,19 @@ import "../SearchBar.css"; // Dùng chung CSS
 
 export default function SearchBar({ search, setSearch, onAdd }) {
   return (
+    // 1. Thêm wrapper
     <div className="search-bar-wrapper"> 
       <div className="search-bar">
         <input
           type="text"
-          // --- SỬA PLACEHOLDER ---
-          placeholder="Tìm theo Mã KH hoặc Trạng thái..."
+          // 2. Sửa placeholder
+          placeholder="Tìm theo Mã KH, Trạng thái, hoặc Ngày (DD/MM/YYYY)..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
         <button onClick={onAdd}>+ Thêm đơn hàng</button>
       </div>
+      {/* (Không cần danh sách gợi ý cho trang Order) */}
     </div>
   );
 }

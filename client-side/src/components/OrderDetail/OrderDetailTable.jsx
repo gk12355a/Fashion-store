@@ -1,19 +1,26 @@
 import React from "react";
 import "../Table.css";
 
-// 1. Xóa props sort
-export default function OrderDetailTable({ orderDetails, handleEdit, handleDelete }) {
+export default function OrderDetailTable({ orderDetails, handleSort, sortField, sortOrder, handleEdit, handleDelete }) {
   return (
     <table className="feature-table">
       <thead>
         <tr>
           <th>ID</th>
           <th>Mã đơn</th>
-          {/* 2. Xóa class và onClick */}
-          <th>Mã SP</th>
+          <th
+            className={`sortable ${sortField === "productId" ? sortOrder : ""}`}
+            onClick={() => handleSort("productId")}
+          >
+            Mã SP
+          </th>
           <th>Số lượng</th>
-          {/* 3. Xóa class và onClick */}
-          <th>Đơn giá</th>
+          <th
+            className={`sortable ${sortField === "unitPrice" ? sortOrder : ""}`}
+            onClick={() => handleSort("unitPrice")}
+          >
+            Đơn giá
+          </th>
           <th>Hành động</th>
         </tr>
       </thead>
@@ -27,9 +34,8 @@ export default function OrderDetailTable({ orderDetails, handleEdit, handleDelet
               <td>{d.quantity}</td>
               <td>{d.unitPrice.toLocaleString()} đ</td>
               <td>
-                {/* 4. Sửa class nút cho đồng bộ */}
-                <button className="action edit" onClick={() => handleEdit(d)}>✏️</button>
-                <button className="action delete" onClick={() => handleDelete(d.id)}>🗑️</button>
+                <button className="edit-btn" onClick={() => handleEdit(d)}>✏️</button>
+                <button className="delete-btn" onClick={() => handleDelete(d.id)}>🗑️</button>
               </td>
             </tr>
           ))
