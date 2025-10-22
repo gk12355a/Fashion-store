@@ -75,6 +75,9 @@ export default function OrdersPage() {
 
   const [editFormData, setEditFormData] = useState({ id: null, status: "" });
   const [isSaving, setIsSaving] = useState(false);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [isExporting, setIsExporting] = useState(false);
 
   // --- SỬA HÀM fetchOrders ĐỂ GỌI API MỚI ---
   const fetchOrders = async () => {
@@ -133,10 +136,41 @@ export default function OrdersPage() {
     return () => clearTimeout(timer);
   }, [search]);
 
+  // Fetch useEffect (thêm startDate, endDate)
   useEffect(() => {
     fetchOrders();
-  }, [currentPage, sortField, sortOrder, debouncedSearch]);
+  }, [currentPage, sortField, sortOrder, debouncedSearch, startDate, endDate]);
 
+  // Hàm xử lý thay đổi ngày
+  const handleDateChange = (field, value) => {
+    if (field === 'startDate') setStartDate(value);
+    if (field === 'endDate') setEndDate(value);
+    setCurrentPage(1); // Reset trang
+  };
+  
+  // Hàm xử lý xuất CSV
+  const handleExportClick = async () => {
+    if (!startDate || !endDate) {
+        toast.warn("Vui lòng chọn Ngày bắt đầu và Ngày kết thúc."); return;
+    }
+    setIsExporting(true);
+    try {
+        const response = await api.get("/orders/export", {
+            params: { startDate, endDate }, responseType: 'blob'
+        });
+        // ... (Logic tạo link tải file như trước) ...
+        const contentDisposition = response.headers['content-disposition'];
+        let filename = "bao-cao-don-hang.csv";
+        if (contentDisposition) { /* ... (Lấy filename) ... */ }
+        const url = window.URL.createObjectURL(new Blob([response.data], { type: 'text/csv;charset=utf-8;' }));
+        const link = document.createElement('a');
+        link.href = url; link.setAttribute('download', filename);
+        document.body.appendChild(link); link.click(); link.remove();
+        window.URL.revokeObjectURL(url);
+        toast.success("Xuất báo cáo thành công!");
+    } catch (error) { /* ... (Xử lý lỗi export) ... */ } 
+    finally { setIsExporting(false); }
+  };
   // 1. Lưu đơn hàng MỚI (Smart Modal)
   const handleSaveCreate = async (requestData) => {
     try {
@@ -211,6 +245,11 @@ export default function OrdersPage() {
         currentPage={currentPage}
         totalPages={totalPages}
         setCurrentPage={setCurrentPage}
+        startDate={startDate}
+        endDate={endDate}
+        onDateChange={handleDateChange}
+        onExportClick={handleExportClick}
+        isExporting={isExporting}
       />
 
       <OrderList

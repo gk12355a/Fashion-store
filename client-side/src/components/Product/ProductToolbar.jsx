@@ -60,6 +60,12 @@ export default function ProductToolbar({
         >
           Mới Nhất
         </button>
+        <button
+          className={getButtonClass('id', 'asc')}
+          onClick={() => handleSortButton('id', 'asc')}
+        >
+          Cũ Nhất
+        </button>
 
         {/* Nút "Tên" (A-Z) */}
         <button

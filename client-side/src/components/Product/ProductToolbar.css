@@ -101,3 +101,12 @@
   cursor: not-allowed;
   border-color: #e0e0e0;
 }
+/* --- CSS CHO BỘ LỌC NGÀY --- */
+.date-filter-group { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.date-filter-group label { font-size: 14px; font-weight: 500; color: #333; }
+.date-input { padding: 7px 10px; border: 1px solid #ddd; border-radius: 6px; font-family: inherit; font-size: 14px; background-color: #fff; }
+
+/* --- CSS CHO NÚT EXPORT --- */
+.export-btn { padding: 8px 14px; border: none; border-radius: 6px; background: #0ca678; color: white; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.2s ease, transform 0.2s ease; }
+.export-btn:hover { background: #099268; transform: translateY(-1px); }
+.export-btn:disabled { background: #ccc; cursor: not-allowed; transform: none; }

@@ -1,5 +1,5 @@
-import React from 'react';
-import '../Product/ProductToolbar.css'; // Dùng chung CSS với ProductToolbar
+import React from "react";
+import "../Product/ProductToolbar.css"; // Dùng chung CSS với ProductToolbar
 
 export default function OrderToolbar({
   sortField,
@@ -8,14 +8,18 @@ export default function OrderToolbar({
   setSortOrder,
   currentPage,
   totalPages,
-  setCurrentPage
+  setCurrentPage,
+  startDate,
+  endDate,
+  onDateChange, // Props cho ngày
+  onExportClick,
+  isExporting, // Props cho export
 }) {
-
   // Xử lý nút/dropdown Sắp xếp
   const handleSortChange = (e) => {
     const value = e.target.value; // 'field,order'
     if (value) {
-      const [field, order] = value.split(',');
+      const [field, order] = value.split(",");
       setSortField(field);
       setSortOrder(order);
     }
@@ -23,7 +27,9 @@ export default function OrderToolbar({
 
   // Lấy giá trị hiện tại của select box
   // (Mặc định là "Mới nhất")
-  const currentSortValue = sortField ? `${sortField},${sortOrder}` : 'orderDate,desc';
+  const currentSortValue = sortField
+    ? `${sortField},${sortOrder}`
+    : "orderDate,desc";
 
   // Xử lý chuyển trang
   const handlePrev = () => {
@@ -56,25 +62,40 @@ export default function OrderToolbar({
           <option value="totalAmount,asc">Tổng tiền: Thấp đến Cao</option>
         </select>
       </div>
+      {/* --- Lọc Ngày --- */}
+      <div className="date-filter-group">
+        <label htmlFor="start-date">Từ ngày:</label>
+        <input type="date" id="start-date" className="date-input" value={startDate} onChange={(e) => onDateChange('startDate', e.target.value)} />
+        <label htmlFor="end-date">Đến ngày:</label>
+        <input type="date" id="end-date" className="date-input" value={endDate} onChange={(e) => onDateChange('endDate', e.target.value)} />
+      </div>
+      
+      {/* --- Nút Export --- */}
+      <button className="export-btn" onClick={onExportClick} disabled={isExporting}>
+        {isExporting ? 'Đang xuất...' : 'Xuất Báo Cáo'}
+      </button>
 
       {/* ----- KHU VỰC PHÂN TRANG ----- */}
       <div className="pagination-controls">
-        <span className="page-info">{totalPages > 0 ? currentPage : 0}/{totalPages}</span>
-        <button 
-          onClick={handlePrev} 
+        <span className="page-info">
+          {totalPages > 0 ? currentPage : 0}/{totalPages}
+        </span>
+        <button
+          onClick={handlePrev}
           disabled={currentPage === 1 || totalPages === 0}
           className="page-nav"
         >
           &lt;
         </button>
-        <button 
-          onClick={handleNext} 
+        <button
+          onClick={handleNext}
           disabled={currentPage === totalPages || totalPages === 0}
           className="page-nav"
         >
           &gt;
         </button>
       </div>
+      
     </div>
   );
 }
