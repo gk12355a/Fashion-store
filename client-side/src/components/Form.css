@@ -161,7 +161,7 @@
 }
 
 .cancel-btn:hover {
-  background: linear-gradient(135deg, #c61d42, #b01a3a);
+  background: linear-gradient(135deg, #c61d42, #f18484);
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(241, 132, 132, 0.4);
 }
