@@ -7,23 +7,10 @@ import OrderForm from "../components/Order/OrderForm"; // "Smart Modal"
 import "../styles/FeaturePage.css";
 import { toast } from "react-toastify";
 
-// TẠO MỘT FORM RIÊNG BIỆT ĐỂ SỬA STATUS
-const EditStatusForm = ({
-  show,
-  formData,
-  onChange,
-  onSave,
-  onCancel,
-  isSaving,
-}) => {
+// (Component EditStatusForm giữ nguyên...)
+const EditStatusForm = ({ show, formData, onChange, onSave, onCancel, isSaving }) => {
   if (!show) return null;
-  const orderStatuses = [
-    "Đang chờ xử lý",
-    "Đã xác nhận",
-    "Đang giao",
-    "Hoàn thành",
-    "Đã hủy",
-  ];
+  const orderStatuses = ["Đang chờ xử lý", "Đã xác nhận", "Đang giao", "Hoàn thành", "Đã hủy"];
 
   return (
     <div className="modal-overlay">
@@ -34,24 +21,16 @@ const EditStatusForm = ({
             <label>Trạng thái mới</label>
             <select name="status" value={formData.status} onChange={onChange}>
               <option value="">-- Chọn trạng thái --</option>
-              {orderStatuses.map((status) => (
-                <option key={status} value={status}>
-                  {status}
-                </option>
+              {orderStatuses.map(status => (
+                <option key={status} value={status}>{status}</option>
               ))}
             </select>
           </div>
           <div className="form-buttons">
             <button className="save-btn" onClick={onSave} disabled={isSaving}>
-              {isSaving ? "Đang lưu..." : "Cập nhật"}
+              {isSaving ? 'Đang lưu...' : 'Cập nhật'}
             </button>
-            <button
-              className="cancel-btn"
-              onClick={onCancel}
-              disabled={isSaving}
-            >
-              Hủy
-            </button>
+            <button className="cancel-btn" onClick={onCancel} disabled={isSaving}>Hủy</button>
           </div>
         </div>
       </div>
@@ -72,48 +51,33 @@ export default function OrdersPage() {
 
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-
   const [editFormData, setEditFormData] = useState({ id: null, status: "" });
   const [isSaving, setIsSaving] = useState(false);
+  
+  // --- 1. STATE MỚI CHO DẢI NGÀY & EXPORT (ĐÃ THÊM DÒNG BỊ THIẾU) ---
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [isExporting, setIsExporting] = useState(false); // <-- DÒNG BỊ THIẾU
+  // -----------------------------------------------------------
 
-  // --- SỬA HÀM fetchOrders ĐỂ GỌI API MỚI ---
+  // --- 2. CẬP NHẬT fetchOrders ---
   const fetchOrders = async () => {
     try {
-      // 1. Chuẩn bị các tham số cơ bản
       const params = {
         page: currentPage - 1,
         size: itemsPerPage,
         sort: `${sortField},${sortOrder}`,
       };
-
-      // 2. Phân tích 'debouncedSearch' để thêm tham số tìm kiếm
       if (debouncedSearch) {
-        const dateMatch = debouncedSearch.match(
-          /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/
-        );
-
-        if (dateMatch) {
-          // --- NẾU LÀ NGÀY (DD/MM/YYYY) ---
-          const day = dateMatch[1].padStart(2, "0");
-          const month = dateMatch[2].padStart(2, "0");
-          const year = dateMatch[3];
-          // Chuyển sang YYYY-MM-DD
-          params.orderDate = `${year}-${month}-${day}`;
-        } else {
-          const potentialId = parseInt(debouncedSearch);
-          if (!isNaN(potentialId)) {
-            // --- NẾU LÀ SỐ (Mã KH) ---
-            params.customerId = potentialId;
-          } else {
-            // --- NẾU LÀ CHUỖI (Trạng thái) ---
-            params.status = debouncedSearch;
-          }
-        }
+        params.textSearch = debouncedSearch; 
       }
-
-      // 3. Gọi API (chỉ 1 endpoint duy nhất)
+      if (startDate) {
+        params.startDate = startDate;
+      }
+      if (endDate) {
+        params.endDate = endDate;
+      }
       const response = await api.get("/orders", { params });
-
       setOrders(response.data.content);
       setTotalPages(response.data.totalPages);
     } catch (error) {
@@ -123,7 +87,7 @@ export default function OrdersPage() {
       setTotalPages(0);
     }
   };
-  // --- KẾT THÚC SỬA HÀM ---
+  // ---------------------------------
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -133,14 +97,66 @@ export default function OrdersPage() {
     return () => clearTimeout(timer);
   }, [search]);
 
+  // 3. CẬP NHẬT useEffect CHÍNH
   useEffect(() => {
     fetchOrders();
-  }, [currentPage, sortField, sortOrder, debouncedSearch]);
+  }, [currentPage, sortField, sortOrder, debouncedSearch, startDate, endDate]);
 
-  // 1. Lưu đơn hàng MỚI (Smart Modal)
+  // --- 4. HÀM MỚI: XỬ LÝ KHI THAY ĐỔI NGÀY ---
+  const handleDateChange = (field, value) => {
+    if (field === 'startDate') setStartDate(value);
+    if (field === 'endDate') setEndDate(value);
+    setCurrentPage(1);
+  };
+  
+  // --- 5. HÀM MỚI: XỬ LÝ XUẤT CSV ---
+  const handleExportClick = async () => {
+    if (!startDate || !endDate) {
+        toast.warn("Vui lòng chọn Ngày bắt đầu và Ngày kết thúc để xuất báo cáo.");
+        return;
+    }
+    
+    setIsExporting(true); // Bắt đầu loading
+    try {
+        const response = await api.get("/orders/export", {
+            params: { startDate, endDate },
+            responseType: 'blob'
+        });
+
+        const contentDisposition = response.headers['content-disposition'];
+        let filename = "bao-cao-don-hang.csv";
+        if (contentDisposition) {
+            const filenameMatch = contentDisposition.match(/filename="?(.+)"?/);
+            if (filenameMatch && filenameMatch.length > 1) {
+                filename = filenameMatch[1];
+            }
+        }
+
+        const url = window.URL.createObjectURL(
+            new Blob([response.data], { type: 'text/csv;charset=utf-8;' })
+        );
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', filename);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(url);
+        
+        toast.success("Xuất báo cáo thành công!");
+
+    } catch (error) {
+        console.error("Lỗi khi xuất CSV:", error);
+        toast.error("Lỗi khi xuất báo cáo.");
+    } finally {
+        setIsExporting(false); // Dừng loading
+    }
+  };
+
+  // (Các hàm handleSaveCreate, handleSaveEdit, handleAddNew, handleEdit, handleDelete giữ nguyên...)
   const handleSaveCreate = async (requestData) => {
     try {
-      await api.post("/orders", requestData); // API POST mới
+      await api.post("/orders", requestData);
       fetchOrders();
       setShowCreateModal(false);
       toast.success("Tạo đơn hàng thành công!");
@@ -151,7 +167,6 @@ export default function OrdersPage() {
     }
   };
 
-  // 2. Lưu cập nhật Status (Edit Modal)
   const handleSaveEdit = async () => {
     if (!editFormData.status) {
       toast.error("Vui lòng chọn trạng thái.");
@@ -203,6 +218,7 @@ export default function OrdersPage() {
       <h2>Danh sách đơn hàng</h2>
       <SearchBar search={search} setSearch={setSearch} onAdd={handleAddNew} />
 
+      {/* 6. Truyền props mới xuống Toolbar */}
       <OrderToolbar
         sortField={sortField}
         setSortField={setSortField}
@@ -211,6 +227,12 @@ export default function OrdersPage() {
         currentPage={currentPage}
         totalPages={totalPages}
         setCurrentPage={setCurrentPage}
+        // Props mới
+        startDate={startDate}
+        endDate={endDate}
+        onDateChange={handleDateChange}
+        onExportClick={handleExportClick}
+        isExporting={isExporting}
       />
 
       <OrderList
@@ -218,15 +240,13 @@ export default function OrdersPage() {
         handleEdit={handleEdit}
         handleDelete={handleDelete}
       />
-
-      {/* Modal Tạo Đơn Hàng (Smart Modal) */}
+      
+      {/* (Các Modal giữ nguyên...) */}
       <OrderForm
         show={showCreateModal}
         onSave={handleSaveCreate}
         onCancel={() => setShowCreateModal(false)}
       />
-
-      {/* Modal Sửa Trạng Thái */}
       <EditStatusForm
         show={showEditModal}
         formData={editFormData}

@@ -1,17 +1,18 @@
-import React, { useState, useEffect } from "react"; // Thêm useEffect
-import api from "../api"; // Import api.js
+import React, { useState, useEffect } from "react";
+import api from "../api";
 import SearchBar from "../components/OrderDetail/SearchBar";
 import OrderDetailTable from "../components/OrderDetail/OrderDetailTable";
-import Pagination from "../components/OrderDetail/Pagination";
+// import Pagination from "../components/OrderDetail/Pagination"; // 1. Xóa Pagination cũ
+import OrderDetailToolbar from "../components/OrderDetail/OrderDetailToolbar"; // 2. Import Toolbar mới
 import OrderDetailForm from "../components/OrderDetail/OrderDetailForm";
-// import { initialOrderDetails } from "../components/OrderDetail/orderDetails"; // 1. Xóa data giả
 import "../styles/FeaturePage.css";
+import { toast } from 'react-toastify'; // 3. Import Toastify
 
 export default function OrderDetailsPage() {
-  const [orderDetails, setOrderDetails] = useState([]); // 2. Bắt đầu mảng rỗng
+  const [orderDetails, setOrderDetails] = useState([]);
   const [search, setSearch] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState(search); // State cho debounce
-  const [sortField, setSortField] = useState("id"); // Sort theo ID mặc định
+  const [debouncedSearch, setDebouncedSearch] = useState(search);
+  const [sortField, setSortField] = useState("id");
   const [sortOrder, setSortOrder] = useState("asc");
   const [showModal, setShowModal] = useState(false);
   const [editingDetail, setEditingDetail] = useState(null);
@@ -19,37 +20,33 @@ export default function OrderDetailsPage() {
   const [errors, setErrors] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
-  const [totalPages, setTotalPages] = useState(0); // 3. State cho tổng số trang
+  const [totalPages, setTotalPages] = useState(0);
 
-  // 4. HÀM TẢI DỮ LIỆU (GET)
   const fetchOrderDetails = async () => {
     try {
       let response;
       let params = {};
 
       if (debouncedSearch) {
-        // --- LOGIC GỌI API SEARCH ---
+        // Logic search cũ (vẫn hoạt động)
         const potentialId = parseInt(debouncedSearch);
         if (!isNaN(potentialId)) {
-           params.orderId = potentialId;
-           params.productId = potentialId;
+           // Sửa logic: Chỉ tìm theo 1 trong 2
+           // Giả sử ưu tiên tìm theo Mã Đơn Hàng
+           params.orderId = potentialId; 
+           // params.productId = potentialId; // Bỏ dòng này
         } else {
           setOrderDetails([]);
           setTotalPages(0);
           return;
         }
-
         response = await api.get("/order-details/search", { params });
-
-        // --- BỎ ĐOẠN MAP ---
-        // Giờ API trả về đúng cấu trúc DTO rồi
         setOrderDetails(response.data);
-        // ------------------
         setTotalPages(1);
         setCurrentPage(1);
 
       } else {
-        // --- LOGIC GỌI API LẤY TẤT CẢ (PHÂN TRANG) ---
+        // Logic lấy tất cả (dùng toolbar)
         params = {
           page: currentPage - 1,
           size: itemsPerPage,
@@ -61,11 +58,12 @@ export default function OrderDetailsPage() {
       }
     } catch (error) {
       console.error("Lỗi khi tải chi tiết đơn hàng:", error);
+      toast.error("Không thể tải chi tiết đơn hàng!"); // 4. Thêm Toast
       setOrderDetails([]);
       setTotalPages(0);
     }
   };
-  // 5. DEBOUNCE EFFECT (Giống các trang khác)
+  
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(search);
@@ -74,69 +72,71 @@ export default function OrderDetailsPage() {
     return () => clearTimeout(timer);
   }, [search]);
 
-  // 6. FETCH EFFECT (Giống các trang khác)
   useEffect(() => {
     fetchOrderDetails();
   }, [currentPage, sortField, sortOrder, debouncedSearch]);
 
-  // 7. XÓA LOGIC FILTER/SORT/PAGINATE CŨ (filteredDetails, paginated)
-  // ... (Đã xóa) ...
+  // 5. XÓA hàm handleSort cũ
+  // const handleSort = (field) => { ... };
 
-  const handleSort = (field) => {
-    // Chỉ sort khi không tìm kiếm (vì API search không hỗ trợ sort)
-    if (debouncedSearch) return;
-
-    if (sortField === field) setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-    else { setSortField(field); setSortOrder("asc"); }
-    setCurrentPage(1); // Về trang 1 khi sort
+  // 6. Cập nhật handleChange (vẫn giữ nguyên)
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
-
-  // Validate giữ nguyên vì khớp với form hiện tại
+  // 7. Cập nhật Validate
   const validate = () => {
     const newErrors = {};
     if (!formData.orderId) newErrors.orderId = "Mã đơn không được để trống";
-    if (!formData.productId) newErrors.productId = "Mã SP không được để trống";
+    // Kiểm tra Mã SP (đã được điền tự động)
+    if (!formData.productId) newErrors.productId = "Vui lòng chọn một sản phẩm";
     if (!formData.quantity || formData.quantity <= 0) newErrors.quantity = "Số lượng phải > 0";
-    // Vẫn validate unitPrice vì backend yêu cầu
-    if (formData.unitPrice === "" || Number(formData.unitPrice) < 0) newErrors.unitPrice = "Đơn giá phải ≥ 0";
+    
+    // Khi Thêm mới, không cần validate unitPrice (vì nó tự điền)
+    if (editingDetail && (formData.unitPrice === "" || Number(formData.unitPrice) < 0)) {
+        // (Khi Sửa, chúng ta chỉ cho sửa Số lượng, nên bỏ qua validate giá)
+    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  // 8. HÀM LƯU (POST / PUT)
+  // 8. Cập nhật HÀM LƯU (POST / PUT)
   const handleSave = async () => {
-    if (!validate()) return;
-
-    // Chuẩn bị data gửi đi (khớp với DTO backend)
-    const requestData = {
-      orderId: Number(formData.orderId),
-      productId: Number(formData.productId),
-      quantity: Number(formData.quantity),
-      unitPrice: Number(formData.unitPrice),
-    };
-
-    // Dữ liệu cho PUT (chỉ quantity và unitPrice)
-    const updateData = {
-      quantity: Number(formData.quantity),
-      unitPrice: Number(formData.unitPrice),
-    };
+    if (!validate()) {
+      toast.error("Vui lòng kiểm tra lại thông tin!");
+      return;
+    }
 
     try {
+      let actionText = "";
       if (editingDetail) {
         // --- PUT (Sửa) ---
+        // Backend (OrderDetailServiceImpl) chỉ cho phép sửa Số lượng
+        const updateData = {
+          quantity: Number(formData.quantity),
+        };
         await api.put(`/order-details/${editingDetail.id}`, updateData);
+        actionText = "Cập nhật";
       } else {
         // --- POST (Thêm mới) ---
+        // Backend (OrderDetailServiceImpl) sẽ tự lấy giá nếu unitPrice không được gửi
+        // Nhưng form của chúng ta đã tự động điền giá rồi.
+        const requestData = {
+          orderId: Number(formData.orderId),
+          productId: Number(formData.productId),
+          quantity: Number(formData.quantity),
+          // unitPrice: Number(formData.unitPrice), // Gửi giá đã tự động điền
+        };
         await api.post("/order-details", requestData);
+        actionText = "Thêm mới";
       }
-      fetchOrderDetails(); // Tải lại
+      fetchOrderDetails();
       setShowModal(false);
+      toast.success(`${actionText} chi tiết đơn hàng thành công!`); // Thêm Toast
 
     } catch (error) {
       console.error("Lỗi khi lưu chi tiết đơn hàng:", error);
-      alert(`Lỗi: ${error.response?.data?.message || error.message}`);
+      toast.error(`Lỗi: ${error.response?.data?.message || error.message}`);
     }
   };
 
@@ -147,7 +147,6 @@ export default function OrderDetailsPage() {
     setShowModal(true);
   };
 
-  // Map data từ API (response) sang Form state
   const handleEdit = (d) => {
     setEditingDetail(d);
     setFormData({
@@ -160,15 +159,15 @@ export default function OrderDetailsPage() {
     setShowModal(true);
   };
 
-  // 9. HÀM XÓA (DELETE)
   const handleDelete = async (id) => {
-    if (window.confirm("Bạn có chắc muốn xóa chi tiết đơn này không? Thao tác này sẽ cập nhật lại Tổng tiền Đơn hàng và Hoàn kho Sản phẩm.")) {
+    if (window.confirm("Bạn có chắc muốn xóa chi tiết đơn này?")) {
       try {
         await api.delete(`/order-details/${id}`);
-        fetchOrderDetails(); // Tải lại
+        fetchOrderDetails();
+        toast.success("Xóa chi tiết đơn hàng thành công!"); // Thêm Toast
       } catch (error) {
         console.error("Lỗi khi xóa chi tiết đơn hàng:", error);
-        alert(`Lỗi: ${error.response?.data?.message || error.message}`);
+        toast.error(`Lỗi: ${error.response?.data?.message || error.message}`);
       }
     }
   };
@@ -177,20 +176,28 @@ export default function OrderDetailsPage() {
     <div className="feature-page">
       <h2>Danh sách chi tiết đơn hàng</h2>
       <SearchBar search={search} setSearch={setSearch} onAdd={handleAddNew} />
-      <OrderDetailTable
-        orderDetails={orderDetails} // Dùng data từ state
-        handleSort={handleSort}
+
+      {/* 9. Thêm Toolbar mới */}
+      <OrderDetailToolbar
         sortField={sortField}
+        setSortField={setSortField}
         sortOrder={sortOrder}
+        setSortOrder={setSortOrder}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        setCurrentPage={setCurrentPage}
+      />
+
+      <OrderDetailTable
+        orderDetails={orderDetails}
+        // 10. Xóa props sort cũ
         handleEdit={handleEdit}
         handleDelete={handleDelete}
       />
-      <Pagination
-        totalPages={totalPages}
-        currentPage={currentPage}
-        // Sửa prop name cho khớp
-        onPageChange={setCurrentPage} 
-      />
+      
+      {/* 11. Xóa Pagination cũ */}
+      {/* <Pagination ... /> */}
+      
       <OrderDetailForm
         show={showModal}
         formData={formData}
