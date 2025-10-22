@@ -38,4 +38,10 @@ public interface PaymentService {
      * @return PaymentResponse (DTO) của thanh toán đã được cập nhật.
      */
     PaymentResponse updatePayment(Long id, UpdatePaymentRequest request);
+    /**
+     * Lấy gợi ý cho phương thức thanh toán.
+     * @param query Từ khóa tìm kiếm
+     * @return Danh sách các tên phương thức phù hợp
+     */
+    List<String> getPaymentMethodSuggestions(String query);
 }

@@ -12,7 +12,7 @@ import com.cmc.fashion_store.repository.PaymentRepository;
 import com.cmc.fashion_store.repository.StaffRepository;
 import com.cmc.fashion_store.service.PaymentService;
 import jakarta.persistence.EntityNotFoundException; // Import Exception
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Page; // Import Page
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable; // Import Pageable
 import org.modelmapper.ModelMapper; // <-- THÊM IMPORT NÀY (Nếu bạn dùng ModelMapper)
 @Service
@@ -158,5 +159,13 @@ public class PaymentServiceImpl implements PaymentService {
 
         // 4. Chuyển đổi Entity đã cập nhật sang DTO để trả về
         return convertToDto(updatedPayment);
+    }
+    // --- IMPLEMENT PHƯƠNG THỨC MỚI ---
+    @Override
+    @Transactional(readOnly = true)
+    public List<String> getPaymentMethodSuggestions(String query) {
+        // Lấy tối đa 5 gợi ý
+        Pageable limit = PageRequest.of(0, 5);
+        return paymentRepository.findDistinctPaymentMethods(query, limit);
     }
 }

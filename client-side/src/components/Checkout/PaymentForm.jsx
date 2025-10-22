@@ -1,5 +1,8 @@
 import React from "react";
-import "../Form.css";
+import "../Form.css"; // Dùng CSS chung
+
+// Danh sách gợi ý phương thức thanh toán
+const paymentMethods = ["Tiền mặt", "Chuyển khoản", "Thẻ tín dụng", "Momo", "ZaloPay", "VNPay"];
 
 export default function PaymentForm({
   show,
@@ -8,84 +11,100 @@ export default function PaymentForm({
   onChange,
   onSave,
   onCancel,
-  editing,
+  editing, // True nếu đang sửa, False nếu đang thêm mới
 }) {
   if (!show) return null;
 
-  // Format ngày giờ để hiển thị
+  // Format ngày giờ để hiển thị (chỉ dùng khi editing)
   const formatDateTimeLocal = (dateTimeString) => {
-    if (!dateTimeString) return "";
-    try {
-        // Cắt chuỗi để lấy phần yyyy-MM-ddTHH:mm
-        return dateTimeString.slice(0, 16);
-    } catch (e) {
-        return "";
-    }
+    return dateTimeString ? dateTimeString.slice(0, 16) : "";
   };
-
 
   return (
     <div className="modal-overlay">
       <div className="modal">
-        <h3>{editing ? "Chỉnh sửa phương thức thanh toán" : "Thêm thanh toán mới"}</h3>
+        {/* Sửa h3 -> h2 */}
+        <h2>{editing ? "Chỉnh sửa thanh toán" : "Thêm thanh toán mới"}</h2>
         <div className="form">
-          <label>Mã đơn hàng</label>
-          <input
-            name="orderId" // Sửa name
-            value={formData.orderId}
-            onChange={onChange}
-            placeholder="VD: 1"
-            type="number" // Đổi type
-            disabled={editing} // Không cho sửa khi edit
-          />
-          {errors.orderId && <p className="error-text">{errors.orderId}</p>}
 
-          <label>Phương thức</label>
-          <input
-            name="paymentMethod" // Sửa name
-            value={formData.paymentMethod}
-            onChange={onChange}
-            placeholder="VD: Momo, Tiền mặt..."
-            // Cho phép sửa cả khi add và edit
-          />
-          {errors.paymentMethod && <p className="error-text">{errors.paymentMethod}</p>}
-
-          {/* ----- THÊM Ô NHẬP MÃ NHÂN VIÊN (Chỉ khi tạo mới) ----- */}
+          {/* ----- MÃ ĐƠN HÀNG ----- */}
+          {/* Chỉ hiển thị/nhập khi Thêm mới */}
           {!editing && (
-            <>
-              <label>Mã nhân viên thực hiện</label>
+            <div className="form-group">
+              <label htmlFor="payment-orderId">Mã đơn hàng (*)</label>
               <input
+                id="payment-orderId"
+                name="orderId"
+                value={formData.orderId}
+                onChange={onChange}
+                placeholder="Nhập mã đơn hàng cần thanh toán"
+                type="number"
+                min="1"
+              />
+              {errors.orderId && <p className="error-text">{errors.orderId}</p>}
+            </div>
+          )}
+          {/* Hiển thị Mã đơn khi Sửa (không cho đổi) */}
+          {editing && (
+             <div className="form-group">
+               <label>Mã đơn hàng</label>
+               <input type="text" value={formData.orderId} disabled />
+             </div>
+          )}
+
+
+          {/* ----- PHƯƠNG THỨC THANH TOÁN ----- */}
+          {/* Dùng select box cho tiện */}
+          <div className="form-group">
+            <label htmlFor="payment-method">Phương thức (*)</label>
+            <select
+                id="payment-method"
+                name="paymentMethod"
+                value={formData.paymentMethod}
+                onChange={onChange}
+            >
+                <option value="">-- Chọn phương thức --</option>
+                {paymentMethods.map(method => (
+                    <option key={method} value={method}>{method}</option>
+                ))}
+            </select>
+            {errors.paymentMethod && <p className="error-text">{errors.paymentMethod}</p>}
+          </div>
+
+          {/* ----- MÃ NHÂN VIÊN ----- */}
+          {/* Chỉ hiển thị/nhập khi Thêm mới */}
+          {!editing && (
+            <div className="form-group">
+              <label htmlFor="payment-staffId">Mã nhân viên thực hiện (*)</label>
+              <input
+                id="payment-staffId"
                 name="staffId"
                 value={formData.staffId}
                 onChange={onChange}
-                placeholder="VD: 2"
+                placeholder="Nhập mã nhân viên"
                 type="number"
+                min="1"
               />
               {errors.staffId && <p className="error-text">{errors.staffId}</p>}
-            </>
+            </div>
           )}
 
-          {/* ----- HIỂN THỊ SỐ TIỀN & NGÀY TT (Khi sửa) ----- */}
+          {/* ----- HIỂN THỊ THÔNG TIN KHI SỬA ----- */}
+          {/* Số tiền và Ngày TT là do backend tự động tính/lưu, chỉ hiển thị */}
           {editing && (
             <>
-              <label>Số tiền (Tự động)</label>
-              <input type="text" value={formData.displayAmount?.toLocaleString() + ' đ' || ''} disabled />
-
-              <label>Ngày thanh toán (Tự động)</label>
-              <input type="datetime-local" value={formatDateTimeLocal(formData.displayPaymentDate) || ''} disabled />
+              <div className="form-group">
+                <label>Số tiền</label>
+                <input type="text" value={formData.displayAmount?.toLocaleString('vi-VN') + ' đ' || ''} disabled />
+              </div>
+              <div className="form-group">
+                <label>Ngày thanh toán</label>
+                <input type="datetime-local" value={formatDateTimeLocal(formData.displayPaymentDate) || ''} disabled />
+              </div>
             </>
           )}
 
-          {/* ----- BỎ Ô NHẬP SỐ TIỀN & NGÀY TT ----- */}
-          {/* <label>Số tiền</label>
-          <input type="number" name="amount" value={formData.amount} onChange={onChange} disabled={editing}/>
-          {errors.amount && <p className="error-text">{errors.amount}</p>}
-
-          <label>Ngày thanh toán</label>
-          <input type="date" name="date" value={formData.date} onChange={onChange} disabled={editing}/>
-          {errors.date && <p className="error-text">{errors.date}</p>} */}
-
-
+          {/* ----- NÚT BẤM ----- */}
           <div className="form-buttons">
             <button className="save-btn" onClick={onSave}>Lưu</button>
             <button className="cancel-btn" onClick={onCancel}>Hủy</button>
@@ -94,4 +113,4 @@ export default function PaymentForm({
       </div>
     </div>
   );
-}
+} 
