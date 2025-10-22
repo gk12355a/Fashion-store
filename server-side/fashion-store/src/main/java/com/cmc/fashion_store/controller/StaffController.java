@@ -45,4 +45,10 @@ public class StaffController {
         Staff updatedStaff = staffService.updateStaff(id, request);
         return ResponseEntity.ok(updatedStaff);
     }
+    // --- THÊM ENDPOINT MỚI ---
+    @GetMapping("/autocomplete")
+    public ResponseEntity<List<String>> getStaffSuggestions(@RequestParam("q") String query) {
+        List<String> suggestions = staffService.getStaffSuggestions(query);
+        return ResponseEntity.ok(suggestions);
+    }
 }

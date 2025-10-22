@@ -1,6 +1,10 @@
 package com.cmc.fashion_store.repository;
 import com.cmc.fashion_store.model.Staff;
+
+import org.springdoc.core.converters.models.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import java.util.List; 
 @Repository
@@ -18,5 +22,17 @@ public interface StaffRepository extends JpaRepository<Staff, Long> {
      * @return Danh sách nhân viên phù hợp
      */
     List<Staff> findByNameContainingIgnoreCaseOrPositionContainingIgnoreCase(String name, String position);
+    // --- PHƯƠNG THỨC MỚI CHO AUTOCOMPLETE ---
+    /**
+     * Tìm gợi ý nhân viên theo Tên (name) hoặc ID.
+     * Trả về chuỗi dạng "Tên (ID: X)"
+     * @param query Từ khóa tìm kiếm (có thể là tên hoặc số ID)
+     * @param limit Giới hạn số lượng
+     * @return Danh sách chuỗi gợi ý
+     */
+    @Query("SELECT CONCAT(s.name, ' (ID: ', s.id, ')') FROM Staff s WHERE " +
+           "LOWER(s.name) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+           "CAST(s.id AS string) LIKE CONCAT(:query, '%')") // Tìm ID bắt đầu bằng query
+    List<String> findSuggestionsByNameOrId(@Param("query") String query, org.springframework.data.domain.Pageable limit);
 }
 

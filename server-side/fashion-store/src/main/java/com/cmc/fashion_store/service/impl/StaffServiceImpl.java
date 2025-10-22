@@ -7,8 +7,10 @@ import com.cmc.fashion_store.service.StaffService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page; // Import Page
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable; // Import Pageable
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 @Service
@@ -62,5 +64,12 @@ public class StaffServiceImpl implements StaffService {
     public List<Staff> searchStaff(String query) {
         // Sử dụng phương thức tìm kiếm đã định nghĩa trong repository
         return staffRepository.findByNameContainingIgnoreCaseOrPositionContainingIgnoreCase(query, query);
+    }
+    // --- IMPLEMENT PHƯƠNG THỨC MỚI ---
+    @Override
+    @Transactional(readOnly = true)
+    public List<String> getStaffSuggestions(String query) {
+        Pageable limit = PageRequest.of(0, 5); // Lấy 5 gợi ý
+        return staffRepository.findSuggestionsByNameOrId(query, limit);
     }
 }
