@@ -47,6 +47,7 @@
 
 /* Nút bấm KHI ĐƯỢC CHỌN (Active) */
 .sort-btn.active {
+  background: linear-gradient(135deg, #e96060, #c61d42);
   background-color: #dc3545; /* Màu đỏ như trong ảnh */
   color: #fff;
   border-color: #dc3545;
