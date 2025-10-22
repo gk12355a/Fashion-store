@@ -1,220 +1,162 @@
-import React, { useState, useEffect } from "react"; // Thêm useEffect
-import api from "../api"; // Import api.js
+import React, { useState, useEffect } from "react";
+import api from "../api";
 import SearchBar from "../components/Promotion/SearchBar";
 import PromotionTable from "../components/Promotion/PromotionTable";
-import Pagination from "../components/Promotion/Pagination";
+import PromotionToolbar from "../components/Promotion/PromotionToolbar"; // Import Toolbar mới
 import PromotionForm from "../components/Promotion/PromotionForm";
-// import { initialPromotions } from "../components/Promotion/promotions"; // 1. Xóa data giả
 import "../styles/FeaturePage.css";
+import { toast } from 'react-toastify'; // Import Toastify
 
 export default function PromotionPage() {
-  const [promotions, setPromotions] = useState([]); // 2. Bắt đầu mảng rỗng
-  const [search, setSearch] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState(search); // State cho debounce
-  const [sortField, setSortField] = useState("name"); // Sort theo tên mặc định
+  // --- States ---
+  const [promotions, setPromotions] = useState([]);
+  const [sortField, setSortField] = useState("name"); // Mặc định sort tên A-Z
   const [sortOrder, setSortOrder] = useState("asc");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const itemsPerPage = 10;
+  const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState(search);
+  const [suggestions, setSuggestions] = useState([]); // State cho autocomplete
   const [showModal, setShowModal] = useState(false);
   const [editingPromotion, setEditingPromotion] = useState(null);
-  // 3. Đổi tên state cho gần DTO (discount -> discountValue, expiry -> expiryDate)
-  const [formData, setFormData] = useState({
-    name: "",
-    type: "",
-    discountValue: "",
-    expiryDate: "",
-  });
+  const [formData, setFormData] = useState({ name: "", type: "", discountValue: "", expiryDate: "" });
   const [errors, setErrors] = useState({});
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
-  const [totalPages, setTotalPages] = useState(0); // 4. State cho tổng số trang
 
-  // 5. HÀM TẢI DỮ LIỆU (GET)
-  // 5. HÀM TẢI DỮ LIỆU (GET) - ĐÃ SỬA
+  // --- Fetch Data ---
   const fetchPromotions = async () => {
     try {
-      let response;
-      let params = {};
-      let endpoint = "/promotions"; // Mặc định là endpoint chính
-
-      // --- SỬA LẠI LOGIC GỌI API ---
+      // API /promotions/search trả về Page, nên dùng chung logic với API /promotions
+      const endpoint = debouncedSearch ? "/promotions/search" : "/promotions";
+      const params = {
+        page: currentPage - 1,
+        size: itemsPerPage,
+        sort: `${sortField},${sortOrder}`, // Luôn gửi sort
+      };
       if (debouncedSearch) {
-        // 1. NẾU CÓ TÌM KIẾM:
-        endpoint = "/promotions/search"; // Đổi endpoint
-        params = {
-          keyword: debouncedSearch,
-          page: currentPage - 1, // Vẫn gửi page (API search nhận Pageable)
-          size: itemsPerPage,
-          // Có thể gửi sort nếu API search hỗ trợ
-          // sort: `${sortField},${sortOrder}`,
-        };
-      } else {
-        // 2. NẾU KHÔNG TÌM KIẾM:
-        params = {
-          page: currentPage - 1,
-          size: itemsPerPage,
-          sort: `${sortField},${sortOrder}`,
-        };
+        params.keyword = debouncedSearch; // Thêm keyword nếu có search
       }
 
-      // Gọi API với endpoint và params đã xác định
-      response = await api.get(endpoint, { params });
-
-      // Cả hai endpoint đều trả về cấu trúc Page, xử lý giống nhau
+      const response = await api.get(endpoint, { params });
       setPromotions(response.data.content);
       setTotalPages(response.data.totalPages);
 
-      // Reset về trang 1 nếu kết quả search chỉ có 1 trang (hoặc ít hơn trang hiện tại)
-      if (debouncedSearch && currentPage > response.data.totalPages) {
-        setCurrentPage(1);
-      }
-      // --- KẾT THÚC SỬA ---
     } catch (error) {
       console.error("Lỗi khi tải danh sách khuyến mãi:", error);
-      setPromotions([]);
-      setTotalPages(0);
+      toast.error("Không thể tải danh sách khuyến mãi!");
+      setPromotions([]); setTotalPages(0);
     }
   };
 
-  // 6. DEBOUNCE EFFECT
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearch(search);
-      setCurrentPage(1);
-    }, 500);
+  // --- UseEffect Hooks ---
+  useEffect(() => { // Debounce Search
+    const timer = setTimeout(() => { setDebouncedSearch(search); setCurrentPage(1); }, 500);
     return () => clearTimeout(timer);
   }, [search]);
 
-  // 7. FETCH EFFECT
-  useEffect(() => {
+  useEffect(() => { // Fetch on change
     fetchPromotions();
   }, [currentPage, sortField, sortOrder, debouncedSearch]);
 
-  // 8. XÓA LOGIC FILTER/SORT/PAGINATE CŨ
-  // ... (Đã xóa filteredPromotions, paginated) ...
+  useEffect(() => { // Autocomplete Suggestions
+    const fetchSuggestions = async () => {
+      if (search.trim() !== "") {
+        try {
+          const response = await api.get("/promotions/autocomplete", { params: { q: search } });
+          setSuggestions(response.data || []);
+        } catch (error) { console.error("Lỗi gợi ý KM:", error); setSuggestions([]); }
+      } else { setSuggestions([]); }
+    };
+    const timer = setTimeout(fetchSuggestions, 200);
+    return () => clearTimeout(timer);
+  }, [search]);
 
-  const handleSort = (field) => {
-    // Chỉ sort khi không tìm kiếm (nếu API search không hỗ trợ sort)
-    if (debouncedSearch) return;
-
-    if (sortField === field) setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-    else {
-      setSortField(field);
-      setSortOrder("asc");
-    }
-    setCurrentPage(1);
+  // --- Event Handlers ---
+  const handleSuggestionClick = (suggestion) => {
+    const nameOnly = suggestion.split(" (Loại:")[0];
+    setSearch(nameOnly);
+    setSuggestions([]);
   };
+  const handleSearchBlur = () => { setTimeout(() => setSuggestions([]), 150); };
+  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  const handleChange = (e) =>
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-
-  // 9. SỬA VALIDATE cho khớp tên state (discountValue, expiryDate)
+  // Cập nhật Validate
   const validate = () => {
     const newErrors = {};
     if (!formData.name.trim()) newErrors.name = "Tên KM không được để trống";
-    if (!formData.type.trim()) newErrors.type = "Loại không được để trống";
-    // Sửa tên field
-    if (formData.discountValue === "" || Number(formData.discountValue) < 0)
-      newErrors.discountValue = "Giảm giá phải ≥ 0";
-    if (!formData.expiryDate)
-      newErrors.expiryDate = "Thời hạn không được để trống"; // Sửa tên field
+    if (!formData.type) newErrors.type = "Vui lòng chọn Loại khuyến mãi"; // Lỗi cho select
+
+    const discountVal = Number(formData.discountValue);
+    if (formData.discountValue === "" || isNaN(discountVal)) {
+        newErrors.discountValue = "Giá trị giảm giá không hợp lệ";
+    } else {
+        if (formData.type === "PERCENTAGE") {
+            if (discountVal < 0 || discountVal > 100) {
+                newErrors.discountValue = "Giá trị % phải từ 0 đến 100";
+            }
+        } else if (formData.type === "FIXED_AMOUNT") {
+            if (discountVal <= 0) {
+                newErrors.discountValue = "Số tiền giảm phải lớn hơn 0";
+            }
+        }
+    }
+
+    if (!formData.expiryDate) {
+      newErrors.expiryDate = "Thời hạn không được để trống";
+    } else {
+        // Kiểm tra ngày hợp lệ (phải >= hôm nay)
+        const today = new Date().toISOString().split("T")[0];
+        if (formData.expiryDate < today) {
+             newErrors.expiryDate = "Thời hạn phải là ngày hiện tại hoặc tương lai";
+        }
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  // 10. HÀM LƯU (POST / PUT)
+
   const handleSave = async () => {
-    if (!validate()) return;
-
-    // Map form state sang DTO backend (tên đã khớp)
-    const requestData = {
-      name: formData.name,
-      type: formData.type,
-      discountValue: Number(formData.discountValue),
-      expiryDate: formData.expiryDate, // Giữ dạng YYYY-MM-DD
-    };
-
+    if (!validate()) { toast.error("Kiểm tra lại thông tin!"); return; }
+    const requestData = { name: formData.name, type: formData.type, discountValue: Number(formData.discountValue), expiryDate: formData.expiryDate };
     try {
-      if (editingPromotion) {
-        // --- PUT (Sửa) ---
-        await api.put(`/promotions/${editingPromotion.id}`, requestData);
-      } else {
-        // --- POST (Thêm mới) ---
-        await api.post("/promotions", requestData);
-      }
-      fetchPromotions(); // Tải lại
-      setShowModal(false);
-    } catch (error) {
-      console.error("Lỗi khi lưu khuyến mãi:", error);
-      alert(`Lỗi: ${error.response?.data?.message || error.message}`);
-    }
+      let actionText = "";
+      if (editingPromotion) { await api.put(`/promotions/${editingPromotion.id}`, requestData); actionText = "Cập nhật"; }
+      else { await api.post("/promotions", requestData); actionText = "Thêm mới"; }
+      fetchPromotions(); setShowModal(false); toast.success(`${actionText} khuyến mãi thành công!`);
+    } catch (error) { console.error("Lỗi lưu KM:", error); toast.error(`Lỗi: ${error.response?.data?.message || error.message}`); }
   };
 
   const handleAddNew = () => {
-    setEditingPromotion(null);
-    // Reset form (khớp tên state)
-    setFormData({ name: "", type: "", discountValue: "", expiryDate: "" });
-    setErrors({});
-    setShowModal(true);
+    setEditingPromotion(null); setFormData({ name: "", type: "", discountValue: "", expiryDate: "" }); setErrors({}); setShowModal(true);
   };
-
-  // Map DTO từ API sang Form state
   const handleEdit = (p) => {
-    setEditingPromotion(p);
-    setFormData({
-      name: p.name,
-      type: p.type,
-      discountValue: p.discountValue, // Khớp tên DTO
-      expiryDate: p.expiryDate, // Khớp tên DTO
-    });
-    setErrors({});
-    setShowModal(true);
+    setEditingPromotion(p); setFormData({ name: p.name, type: p.type, discountValue: p.discountValue, expiryDate: p.expiryDate }); setErrors({}); setShowModal(true);
   };
-
-  // 11. HÀM XÓA (DELETE)
   const handleDelete = async (id) => {
     if (window.confirm("Bạn có chắc muốn xóa khuyến mãi này không?")) {
-      try {
-        await api.delete(`/promotions/${id}`);
-        fetchPromotions(); // Tải lại
-      } catch (error) {
-        console.error("Lỗi khi xóa khuyến mãi:", error);
-        alert(`Lỗi: ${error.response?.data?.message || error.message}`);
-      }
+      try { await api.delete(`/promotions/${id}`); fetchPromotions(); toast.success("Xóa khuyến mãi thành công!"); }
+      catch (error) { console.error("Lỗi xóa KM:", error); toast.error(`Lỗi: ${error.response?.data?.message || 'Có lỗi xảy ra.'}`); }
     }
   };
+  const handleCancel = () => { setShowModal(false); setEditingPromotion(null); };
 
+  // --- JSX Render ---
   return (
     <div className="feature-page">
       <h2>Danh sách khuyến mãi</h2>
       <SearchBar
-        search={search}
-        setSearch={setSearch}
-        onAddNew={handleAddNew}
-      />{" "}
-      {/* Sửa prop onAdd -> onAddNew */}
-      <PromotionTable
-        promotions={promotions} // Dùng data từ state
-        handleSort={handleSort}
-        sortField={sortField}
-        sortOrder={sortOrder}
-        handleEdit={handleEdit}
-        handleDelete={handleDelete}
+        search={search} setSearch={setSearch} onAddNew={handleAddNew} // Sửa onAdd -> onAddNew
+        suggestions={suggestions} onSuggestionClick={handleSuggestionClick} onBlur={handleSearchBlur} // Thêm props autocomplete
       />
-      <Pagination
-        totalPages={totalPages}
-        currentPage={currentPage}
-        onPageChange={setCurrentPage} // Sửa prop
+      <PromotionToolbar
+        sortField={sortField} setSortField={setSortField} sortOrder={sortOrder} setSortOrder={setSortOrder}
+        currentPage={currentPage} totalPages={totalPages} setCurrentPage={setCurrentPage}
       />
+      <PromotionTable promotions={promotions} handleEdit={handleEdit} handleDelete={handleDelete} /> {/* Xóa props sort */}
       <PromotionForm
-        show={showModal}
-        formData={formData}
-        errors={errors}
-        onChange={handleChange}
-        onSave={handleSave}
-        onCancel={() => {
-          setShowModal(false);
-          setEditingPromotion(null);
-        }}
-        editing={editingPromotion}
+        show={showModal} formData={formData} errors={errors} onChange={handleChange}
+        onSave={handleSave} onCancel={handleCancel} editing={!!editingPromotion}
       />
     </div>
   );

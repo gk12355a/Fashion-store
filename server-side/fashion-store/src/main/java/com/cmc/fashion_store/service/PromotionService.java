@@ -44,4 +44,9 @@ public interface PromotionService {
      */
     Page<PromotionResponse> searchPromotions(String keyword, Pageable pageable);
     List<Promotion> searchActivePromotions(String query);
+    // --- THÊM PHƯƠNG THỨC MỚI ---
+    /**
+     * Lấy gợi ý cho tìm kiếm Khuyến mãi (theo Tên hoặc Loại).
+     */
+    List<String> getPromotionSuggestions(String query);
 }

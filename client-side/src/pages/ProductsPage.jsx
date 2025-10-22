@@ -320,6 +320,7 @@ export default function ProductPage() {
         editing={editingProduct}
         // 8. Truyền tên file xuống
         fileName={file ? file.name : null}
+        
       />
     </div>
   );

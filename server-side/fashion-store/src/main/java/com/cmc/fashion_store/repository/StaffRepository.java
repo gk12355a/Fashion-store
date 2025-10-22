@@ -1,7 +1,7 @@
 package com.cmc.fashion_store.repository;
 import com.cmc.fashion_store.model.Staff;
 
-import org.springdoc.core.converters.models.Pageable;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

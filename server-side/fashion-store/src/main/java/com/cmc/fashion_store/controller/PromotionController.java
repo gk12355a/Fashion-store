@@ -68,4 +68,10 @@ public class PromotionController {
         List<Promotion> promotions = promotionService.searchActivePromotions(q);
         return ResponseEntity.ok(promotions);
     }
+    // --- THÊM ENDPOINT MỚI ---
+    @GetMapping("/autocomplete")
+    public ResponseEntity<List<String>> getPromotionSuggestions(@RequestParam("q") String query) {
+        List<String> suggestions = promotionService.getPromotionSuggestions(query);
+        return ResponseEntity.ok(suggestions);
+    }
 }

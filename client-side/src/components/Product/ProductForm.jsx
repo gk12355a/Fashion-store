@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useState, useEffect } from "react"; // 1. Import thêm useState và useEffect
 import "../Form.css";
 
-// --- DỮ LIỆU MOCK (Nên tải từ API nếu có thể) ---
+// --- DỮ LIỆU MOCK (Giữ nguyên) ---
 const productTypes = [
   // 👕 Áo (Topwear)
   "Áo Sơ Mi",
@@ -53,12 +53,49 @@ export default function ProductForm({
   editing,
   fileName,
 }) {
+  // 2. Thêm state để lưu URL xem trước của ảnh local
+  const [localPreview, setLocalPreview] = useState(null);
+
+  // 3. Tách style ảnh ra để tái sử dụng
+  const imagePreviewStyle = {
+    width: 100,
+    height: 100,
+    objectFit: "cover",
+    borderRadius: 12,
+    display: "block",
+    margin: "5px auto",
+    border: "2px solid #eee",
+  };
+
+  // 4. Effect để dọn dẹp URL khi form đóng hoặc khi formData thay đổi (chuyển sang edit)
+  //    Điều này đảm bảo khi mở form edit, nó sẽ hiển thị ảnh từ server (formData.imageUrl),
+  //    chứ không phải ảnh preview cũ của lần "Thêm mới" trước đó.
+  useEffect(() => {
+    if (!show) {
+      if (localPreview) {
+        URL.revokeObjectURL(localPreview); // Thu hồi URL cũ
+      }
+      setLocalPreview(null); // Reset preview
+    }
+  }, [show]); // Chỉ chạy khi 'show' thay đổi
+
+  // 5. Effect dọn dẹp (cleanup) khi component unmount
+  //    Cũng dùng để dọn dẹp URL cũ *trước khi* tạo URL mới
+  useEffect(() => {
+    // Trả về một hàm cleanup, sẽ được gọi khi component unmount
+    // hoặc trước khi effect chạy lại (do localPreview thay đổi)
+    return () => {
+      if (localPreview) {
+        URL.revokeObjectURL(localPreview);
+      }
+    };
+  }, [localPreview]); // Phụ thuộc vào localPreview
+
   if (!show) return null;
 
-  // Xử lý khi chọn giá định sẵn
+  // Xử lý khi chọn giá định sẵn (Giữ nguyên)
   const handlePredefinedPriceChange = (e) => {
     const newPrice = e.target.value;
-    // Chúng ta "giả mạo" một event object để hàm 'onChange' gốc có thể xử lý
     onChange({
       target: {
         name: "price",
@@ -66,7 +103,27 @@ export default function ProductForm({
       },
     });
   };
-  // --- CHỌN SIZE PHÙ HỢP THEO LOẠI SẢN PHẨM ---
+
+  // 6. Tạo hàm xử lý file nội bộ
+  const handleFileChangeInternal = (e) => {
+    // 6a. Gọi hàm 'onFileChange' gốc từ component cha (rất quan trọng)
+    onFileChange(e);
+
+    // 6b. Lấy file từ event
+    const file = e.target.files[0];
+
+    if (file) {
+      // 6c. Nếu có file, tạo một URL đối tượng mới
+      // (Effect dọn dẹp ở trên sẽ lo việc thu hồi URL cũ)
+      const newPreviewUrl = URL.createObjectURL(file);
+      setLocalPreview(newPreviewUrl);
+    } else {
+      // 6d. Nếu người dùng hủy chọn file
+      setLocalPreview(null);
+    }
+  };
+
+  // --- CHỌN SIZE PHÙ HỢP THEO LOẠI SẢN PHẨM (Giữ nguyên) ---
   const clothingSizes = ["S", "M", "L", "XL", "XXL"];
   const shoeSizes = [
     "36",
@@ -82,9 +139,7 @@ export default function ProductForm({
   ];
   const oneSize = ["One Size"];
 
-  // Tự động chọn loại size dựa vào type
-  let availableSizes = clothingSizes; // mặc định là size chữ
-
+  let availableSizes = clothingSizes;
   if (formData.type === "Giày Dép") {
     availableSizes = shoeSizes;
   } else if (
@@ -100,7 +155,7 @@ export default function ProductForm({
     availableSizes = oneSize;
   }
 
-  // Xác định giá trị cho select box giá (để đồng bộ với ô input)
+  // Xác định giá trị cho select box giá (Giữ nguyên)
   const priceSelectValue = predefinedPrices.includes(Number(formData.price))
     ? formData.price
     : "";
@@ -111,31 +166,40 @@ export default function ProductForm({
         <h2>{editing ? "Chỉnh sửa sản phẩm" : "Thêm sản phẩm mới"}</h2>
 
         <div className="form">
-          {/* --- KHU VỰC UPLOAD FILE (Giữ nguyên) --- */}
+          {/* --- KHU VỰC UPLOAD FILE (ĐÃ CẬP NHẬT LOGIC HIỂN THỊ) --- */}
           <div className="form-group">
             <label>Ảnh sản phẩm</label>
-            {editing && formData.imageUrl && (
-              <div style={{ marginBottom: 10, textAlign: "center" }}>
+
+            {/* 7. Cập nhật logic hiển thị ảnh */}
+            <div style={{ marginBottom: 10, textAlign: "center" }}>
+              {/* Ưu tiên 1: Hiển thị ảnh preview MỚI CHỌN (localPreview).
+                Điều này áp dụng cho cả "Thêm mới" và "Chỉnh sửa" khi chọn file mới.
+              */}
+              {localPreview && (
+                <img
+                  src={localPreview}
+                  alt="Ảnh xem trước"
+                  style={imagePreviewStyle}
+                />
+              )}
+
+              {/* Ưu tiên 2: Nếu KHÔNG có ảnh mới, VÀ đang EDITING, 
+                thì hiển thị ảnh CŨ từ server (formData.imageUrl).
+              */}
+              {!localPreview && editing && formData.imageUrl && (
                 <img
                   src={formData.imageUrl}
                   alt="Ảnh hiện tại"
-                  style={{
-                    width: 100,
-                    height: 100,
-                    objectFit: "cover",
-                    borderRadius: 12,
-                    display: "block",
-                    margin: "5px auto",
-                    border: "2px solid #eee",
-                  }}
+                  style={imagePreviewStyle}
                 />
-              </div>
-            )}
+              )}
+            </div>
+
             <input
               type="file"
               name="file"
               id="file-upload-input"
-              onChange={onFileChange}
+              onChange={handleFileChangeInternal} // 8. Sử dụng hàm xử lý nội bộ
               accept="image/*"
               style={{ display: "none" }}
             />
@@ -143,6 +207,7 @@ export default function ProductForm({
               <label htmlFor="file-upload-input" className="file-upload-btn">
                 {editing ? "Chọn ảnh khác" : "Chọn ảnh sản phẩm"}
               </label>
+              {/* Vẫn hiển thị tên file như cũ */}
               {fileName && (
                 <span className="file-name-display">{fileName}</span>
               )}
@@ -162,7 +227,7 @@ export default function ProductForm({
             {errors.name && <p className="error-text">{errors.name}</p>}
           </div>
 
-          {/* --- LOẠI (THAY BẰNG SELECT) --- */}
+          {/* --- LOẠI (Giữ nguyên) --- */}
           <div className="form-group">
             <label>Loại</label>
             <select name="type" value={formData.type} onChange={onChange}>
@@ -176,7 +241,7 @@ export default function ProductForm({
             {errors.type && <p className="error-text">{errors.type}</p>}
           </div>
 
-          {/* --- SIZE (THAY BẰNG SELECT) --- */}
+          {/* --- SIZE (Giữ nguyên) --- */}
           <div className="form-group">
             <label>Size</label>
             <select name="size" value={formData.size} onChange={onChange}>
@@ -202,7 +267,7 @@ export default function ProductForm({
             {errors.color && <p className="error-text">{errors.color}</p>}
           </div>
 
-          {/* --- GIÁ (HYBRID INPUT) --- */}
+          {/* --- GIÁ (Giữ nguyên) --- */}
           <div className="form-group">
             <label>Giá</label>
             <div className="hybrid-input-group">

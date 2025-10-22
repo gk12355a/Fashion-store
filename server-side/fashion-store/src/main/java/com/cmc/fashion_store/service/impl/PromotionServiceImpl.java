@@ -110,4 +110,11 @@ public class PromotionServiceImpl implements PromotionService {
         return promotionRepository.searchActivePromotions(query, currentDate, limit);
     }
 
+    // --- IMPLEMENT PHƯƠNG THỨC MỚI ---
+    @Override
+    @Transactional(readOnly = true)
+    public List<String> getPromotionSuggestions(String query) {
+        Pageable limit = PageRequest.of(0, 5); // Lấy 5 gợi ý
+        return promotionRepository.findSuggestionByNameOrType(query, limit);
+    }
 }

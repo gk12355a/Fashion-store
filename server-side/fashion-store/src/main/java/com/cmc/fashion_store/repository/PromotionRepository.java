@@ -39,4 +39,13 @@ public interface PromotionRepository extends JpaRepository<Promotion, Long> {
             @Param("currentDate") LocalDate currentDate,
             Pageable pageable
     );
+    // --- PHƯƠNG THỨC MỚI CHO AUTOCOMPLETE ---
+    /**
+     * Tìm gợi ý Khuyến mãi theo Tên hoặc Loại.
+     * Trả về chuỗi dạng "Tên (Loại: X)"
+     */
+    @Query("SELECT CONCAT(p.name, ' (Loại: ', p.type, ')') FROM Promotion p WHERE " +
+           "LOWER(p.name) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+           "LOWER(p.type) LIKE LOWER(CONCAT('%', :query, '%'))")
+    List<String> findSuggestionByNameOrType(@Param("query") String query, Pageable pageable);
 }
