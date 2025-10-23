@@ -42,4 +42,11 @@ public interface ProductService {
      * @return Product đã được cập nhật.
      */
     Product updateProduct(Long id, UpdateProductRequest request, MultipartFile file);
+    // --- THÊM PHƯƠNG THỨC MỚI ---
+    /**
+     * Lấy danh sách gợi ý tên sản phẩm cho autocomplete.
+     * @param query Từ khóa tìm kiếm.
+     * @return Danh sách (List<String>) các tên sản phẩm phù hợp.
+     */
+    List<String> getAutocompleteSuggestions(String query);
 }

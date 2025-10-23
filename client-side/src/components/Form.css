@@ -261,3 +261,93 @@
     font-size: 14px;
   }
 }
+
+/* Wrapper cho nút và tên file */
+.file-upload-group {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap; /* Cho phép xuống dòng nếu không đủ chỗ */
+}
+
+/* Nút upload (thẻ label) */
+.file-upload-btn {
+  padding: 12px 25px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: "Poppins", sans-serif;
+  transition: all 0.3s ease;
+  background: linear-gradient(135deg, #007bff, #0056b3); /* Màu xanh nước biển */
+  color: white;
+  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+  display: inline-block; /* Quan trọng để label hoạt động như nút */
+  text-align: center;
+}
+
+.file-upload-btn:hover {
+  background: linear-gradient(135deg, #0056b3, #004085);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
+}
+
+.file-upload-btn:active {
+  transform: translateY(0);
+}
+
+/* Hiển thị tên file đã chọn */
+.file-name-display {
+  font-size: 14px;
+  color: #555;
+  font-family: "Poppins", sans-serif;
+  font-style: italic;
+  background: #f4f4f4;
+  padding: 8px 12px;
+  border-radius: 8px;
+  /* Đảm bảo không quá dài */
+  max-width: 250px; 
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* ----- Thêm CSS cho Hybrid Price Input ----- */
+
+.hybrid-input-group {
+  display: flex;
+  gap: 10px;
+}
+
+.hybrid-input-group .price-select {
+  flex: 1; /* Cho select box chiếm 1 phần */
+  /* Sử dụng lại style của input/select thông thường */
+  padding: 12px 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  font-size: 15px;
+  font-family: "Poppins", sans-serif;
+  transition: all 0.3s ease;
+  background: #fafafa;
+}
+
+.hybrid-input-group .price-input {
+  flex: 2; /* Cho input chiếm 2 phần, rộng hơn */
+  /* Sử dụng lại style của input/select thông thường */
+  padding: 12px 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  font-size: 15px;
+  font-family: "Poppins", sans-serif;
+  transition: all 0.3s ease;
+  background: #fafafa;
+}
+
+.hybrid-input-group .price-select:focus,
+.hybrid-input-group .price-input:focus {
+  outline: none;
+  border-color: #9ceae1;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(156, 234, 225, 0.1);
+  transform: translateY(-1px);
+}

@@ -1,0 +1,102 @@
+/* Wrapper chung, quan trọng để định vị */
+.reusable-search-wrapper {
+  position: relative;
+  width: 100%;
+  font-family: "Poppins", sans-serif;
+}
+
+/* Ô input chính */
+.reusable-search-input {
+  padding: 12px 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  font-size: 15px;
+  font-family: "Poppins", sans-serif;
+  transition: all 0.3s ease;
+  background: #fafafa;
+  width: 100%; /* Đảm bảo input chiếm đầy wrapper */
+  box-sizing: border-box; /* Tính cả padding và border vào width */
+}
+
+.reusable-search-input:focus {
+  outline: none;
+  border-color: #9ceae1;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(156, 234, 225, 0.1);
+  transform: translateY(-1px);
+}
+
+/* Style khi đã chọn (màu xanh lá) */
+.reusable-search-input.selected {
+  border-color: #1cb65f;
+  background-color: #f0fff8;
+  color: #17a355;
+  font-weight: 600;
+}
+
+/* Tắt input khi disabled */
+.reusable-search-input:disabled {
+  background-color: #f5f5f5;
+  color: #999;
+  cursor: not-allowed;
+  border-color: #e0e0e0;
+}
+
+/* Danh sách gợi ý */
+.reusable-suggestions-list {
+  position: absolute;
+  top: 100%; /* Nằm ngay dưới input */
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.08);
+  list-style-type: none;
+  margin: -2px 0 0 0; /* Hơi chồng lên input một chút cho đẹp */
+  padding: 5px 0;
+  max-height: 250px;
+  overflow-y: auto;
+  z-index: 1050; /* Cao hơn modal (thường là 1000) */
+}
+
+/* Từng mục gợi ý */
+.reusable-suggestion-item {
+  padding: 10px 15px;
+  font-size: 14px;
+  color: #333;
+  cursor: pointer;
+  border-bottom: 1px solid #f0f0f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.reusable-suggestion-item:last-child {
+  border-bottom: none;
+}
+
+.reusable-suggestion-item:hover {
+  background-color: #f9f9f9;
+}
+
+/* Icon xoay khi đang loading */
+.spinner {
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(0, 0, 0, 0.1);
+  border-top-color: #0ca678; /* Màu xanh lá */
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  z-index: 1051;
+}
+
+@keyframes spin {
+  0% { transform: translateY(-50%) rotate(0deg); }
+  100% { transform: translateY(-50%) rotate(360deg); }
+}

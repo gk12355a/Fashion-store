@@ -2,6 +2,7 @@ package com.cmc.fashion_store.controller;
 
 import com.cmc.fashion_store.dto.PromotionResponse;
 import com.cmc.fashion_store.dto.UpdatePromotionRequest;
+import com.cmc.fashion_store.model.Promotion;
 import com.cmc.fashion_store.service.PromotionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,6 +20,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+
+import java.util.List;
+
 import org.springdoc.core.annotations.ParameterObject; // <-- THÊM IMPORT NÀY
 @RestController
 @RequestMapping("${api.prefix}/promotions") // -> /api/v1/promotions
@@ -58,5 +62,16 @@ public class PromotionController {
             @ParameterObject Pageable pageable) {
         Page<PromotionResponse> promotions = promotionService.searchPromotions(keyword, pageable);
         return ResponseEntity.ok(promotions);
+    }
+    @GetMapping("/search-active")
+    public ResponseEntity<List<Promotion>> searchActivePromotions(@RequestParam("q") String q) {
+        List<Promotion> promotions = promotionService.searchActivePromotions(q);
+        return ResponseEntity.ok(promotions);
+    }
+    // --- THÊM ENDPOINT MỚI ---
+    @GetMapping("/autocomplete")
+    public ResponseEntity<List<String>> getPromotionSuggestions(@RequestParam("q") String query) {
+        List<String> suggestions = promotionService.getPromotionSuggestions(query);
+        return ResponseEntity.ok(suggestions);
     }
 }

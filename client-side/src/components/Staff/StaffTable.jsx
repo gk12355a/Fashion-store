@@ -1,32 +1,20 @@
 import React from "react";
 import "../Table.css";
 
-export default function StaffTable({ staffs, handleSort, sortField, sortOrder, handleEdit, handleDelete }) {
+// 1. Xóa props sort
+export default function StaffTable({ staffs, handleEdit, handleDelete }) {
   return (
     <table className="feature-table">
       <thead>
         <tr>
           <th>ID</th>
-          <th
-            className={`sortable ${sortField === "name" ? sortOrder : ""}`}
-            onClick={() => handleSort("name")}
-          >
-            Tên
-          </th>
+          {/* 2. Xóa class/onClick */}
+          <th>Tên</th>
           <th>Chức vụ</th>
-          <th
-            className={`sortable ${sortField === "salary" ? sortOrder : ""}`}
-            onClick={() => handleSort("salary")}
-          >
-            Lương (VNĐ)
-          </th>
-          {/* Sửa sort field */}
-          <th
-             className={`sortable ${sortField === "workShift" ? sortOrder : ""}`}
-             onClick={() => handleSort("workShift")}
-          >
-            Ca làm việc
-          </th>
+          {/* 3. Xóa class/onClick */}
+          <th>Lương (VNĐ)</th>
+          {/* 4. Xóa class/onClick */}
+          <th>Ca làm việc</th>
           <th>Hành động</th>
         </tr>
       </thead>
@@ -35,13 +23,12 @@ export default function StaffTable({ staffs, handleSort, sortField, sortOrder, h
           staffs.map((s) => (
             <tr key={s.id}>
               <td>{s.id}</td>
-              <td>{s.name}</td>
+              <td style={{ textAlign: "left", paddingLeft: "10px" }}>{s.name}</td>
               <td>{s.position}</td>
-              <td>{s.salary.toLocaleString()}</td>
-              {/* Sửa hiển thị */}
+              <td>{s.salary.toLocaleString('vi-VN')}</td>
               <td>{s.workShift}</td>
-              {/* ------------ */}
               <td>
+                {/* 5. Đồng bộ class nút */}
                 <button className="edit-btn" onClick={() => handleEdit(s)}>✏️</button>
                 <button className="delete-btn" onClick={() => handleDelete(s.id)}>🗑️</button>
               </td>

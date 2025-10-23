@@ -36,13 +36,19 @@ public class StaffController {
         return ResponseEntity.noContent().build();
     }
     @GetMapping("/search")
-    public ResponseEntity<List<Staff>> searchStaff(@RequestParam String keyword) {
-        List<Staff> results = staffService.searchStaff(keyword);
+    public ResponseEntity<List<Staff>> searchStaff(@RequestParam String q) {
+        List<Staff> results = staffService.searchStaff(q);
         return ResponseEntity.ok(results);
     }
     @PutMapping("/{id}")
     public ResponseEntity<Staff> updateStaff(@PathVariable Long id, @Valid @RequestBody UpdateStaffRequest request) {
         Staff updatedStaff = staffService.updateStaff(id, request);
         return ResponseEntity.ok(updatedStaff);
+    }
+    // --- THÊM ENDPOINT MỚI ---
+    @GetMapping("/autocomplete")
+    public ResponseEntity<List<String>> getStaffSuggestions(@RequestParam("q") String query) {
+        List<String> suggestions = staffService.getStaffSuggestions(query);
+        return ResponseEntity.ok(suggestions);
     }
 }

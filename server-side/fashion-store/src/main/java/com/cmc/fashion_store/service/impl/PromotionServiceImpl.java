@@ -5,8 +5,13 @@ import com.cmc.fashion_store.dto.UpdatePromotionRequest;
 import com.cmc.fashion_store.model.Promotion;
 import com.cmc.fashion_store.repository.PromotionRepository;
 import com.cmc.fashion_store.service.PromotionService;
+
+import java.time.LocalDate;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import com.cmc.fashion_store.dto.CreatePromotionRequest;
@@ -93,5 +98,23 @@ public class PromotionServiceImpl implements PromotionService {
         // Gọi phương thức repository mới, truyền keyword cho cả 2 tham số name và type
         Page<Promotion> promotionPage = promotionRepository.findByNameContainingIgnoreCaseOrTypeContainingIgnoreCase(keyword, keyword, pageable);
         return promotionPage.map(this::convertToDto);
+    }
+    @Override
+    @Transactional(readOnly = true)
+    public List<Promotion> searchActivePromotions(String query) {
+        // Giới hạn 10 kết quả (cho autocomplete)
+        Pageable limit = PageRequest.of(0, 10); 
+        LocalDate currentDate = LocalDate.now();
+        
+        // Gọi hàm repository (từ File 12)
+        return promotionRepository.searchActivePromotions(query, currentDate, limit);
+    }
+
+    // --- IMPLEMENT PHƯƠNG THỨC MỚI ---
+    @Override
+    @Transactional(readOnly = true)
+    public List<String> getPromotionSuggestions(String query) {
+        Pageable limit = PageRequest.of(0, 5); // Lấy 5 gợi ý
+        return promotionRepository.findSuggestionByNameOrType(query, limit);
     }
 }

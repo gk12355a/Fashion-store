@@ -1,5 +1,8 @@
 import React from "react";
-import "../Form.css";
+import "../Form.css"; // Dùng CSS chung
+import ReusableSearch from "../Common/ReusableSearch"; // Import ReusableSearch
+
+const paymentMethods = ["Tiền mặt", "Chuyển khoản", "Thẻ tín dụng", "Momo", "ZaloPay", "VNPay"];
 
 export default function PaymentForm({
   show,
@@ -12,80 +15,125 @@ export default function PaymentForm({
 }) {
   if (!show) return null;
 
-  // Format ngày giờ để hiển thị
+  // Format ngày giờ để hiển thị (chỉ dùng khi editing)
   const formatDateTimeLocal = (dateTimeString) => {
-    if (!dateTimeString) return "";
-    try {
-        // Cắt chuỗi để lấy phần yyyy-MM-ddTHH:mm
-        return dateTimeString.slice(0, 16);
-    } catch (e) {
-        return "";
-    }
+    return dateTimeString ? String(dateTimeString).slice(0, 16) : "";
   };
 
+  // --- Hàm xử lý khi chọn Nhân viên ---
+  const handleStaffSelect = (staff) => {
+    onChange({
+      target: {
+        name: 'staffId',
+        value: staff ? staff.id : '' // Vẫn lấy ID như cũ
+      }
+    });
+  };
+  // ------------------------------------------
+
+  // --- HÀM MỚI: Tùy chỉnh cách hiển thị gợi ý Nhân viên ---
+  const renderStaffSuggestion = (staff) => {
+    // Trả về JSX hiển thị "Tên (ID: X)"
+    return (
+      <>
+        {staff.name} <span style={{ color: '#888', marginLeft: '5px' }}>(ID: {staff.id})</span>
+      </>
+    );
+  };
+  // --------------------------------------------------------
 
   return (
     <div className="modal-overlay">
       <div className="modal">
-        <h3>{editing ? "Chỉnh sửa phương thức thanh toán" : "Thêm thanh toán mới"}</h3>
+        <h2>{editing ? "Chỉnh sửa thanh toán" : "Thêm thanh toán mới"}</h2>
         <div className="form">
-          <label>Mã đơn hàng</label>
-          <input
-            name="orderId" // Sửa name
-            value={formData.orderId}
-            onChange={onChange}
-            placeholder="VD: 1"
-            type="number" // Đổi type
-            disabled={editing} // Không cho sửa khi edit
-          />
-          {errors.orderId && <p className="error-text">{errors.orderId}</p>}
 
-          <label>Phương thức</label>
-          <input
-            name="paymentMethod" // Sửa name
-            value={formData.paymentMethod}
-            onChange={onChange}
-            placeholder="VD: Momo, Tiền mặt..."
-            // Cho phép sửa cả khi add và edit
-          />
-          {errors.paymentMethod && <p className="error-text">{errors.paymentMethod}</p>}
-
-          {/* ----- THÊM Ô NHẬP MÃ NHÂN VIÊN (Chỉ khi tạo mới) ----- */}
+          {/* ----- MÃ ĐƠN HÀNG ----- */}
           {!editing && (
-            <>
-              <label>Mã nhân viên thực hiện</label>
+            <div className="form-group">
+              <label htmlFor="payment-orderId">Mã đơn hàng (*)</label>
               <input
-                name="staffId"
-                value={formData.staffId}
+                id="payment-orderId"
+                name="orderId"
+                value={formData.orderId}
                 onChange={onChange}
-                placeholder="VD: 2"
+                placeholder="Nhập mã đơn hàng cần thanh toán"
                 type="number"
+                min="1"
               />
-              {errors.staffId && <p className="error-text">{errors.staffId}</p>}
-            </>
+              {errors.orderId && <p className="error-text">{errors.orderId}</p>}
+            </div>
+          )}
+          {editing && (
+             <div className="form-group">
+               <label>Mã đơn hàng</label>
+               <input type="text" value={String(formData.orderId || '')} disabled />
+             </div>
           )}
 
-          {/* ----- HIỂN THỊ SỐ TIỀN & NGÀY TT (Khi sửa) ----- */}
+          {/* ----- PHƯƠNG THỨC THANH TOÁN ----- */}
+          <div className="form-group">
+            <label htmlFor="payment-method">Phương thức (*)</label>
+            <select
+                id="payment-method"
+                name="paymentMethod"
+                value={formData.paymentMethod}
+                onChange={onChange}
+            >
+                <option value="">-- Chọn phương thức --</option>
+                {paymentMethods.map(method => (
+                    <option key={method} value={method}>{method}</option>
+                ))}
+            </select>
+            {errors.paymentMethod && <p className="error-text">{errors.paymentMethod}</p>}
+          </div>
+
+          {/* ----- CHỌN NHÂN VIÊN (Autocomplete - Đã cập nhật) ----- */}
+          {!editing && (
+            <div className="form-group">
+              <label>Nhân viên thực hiện (*)</label>
+              <ReusableSearch
+                searchApiUrl="/staffs/search" // Vẫn dùng API search
+                placeholder="Tìm nhân viên theo tên..."
+                onSelect={handleStaffSelect}
+                displayField="name" // Vẫn hiển thị tên trong input sau khi chọn
+                paramName="keyword" // Giữ nguyên paramName="keyword"
+                // --- THÊM PROP NÀY ---
+                renderSuggestion={renderStaffSuggestion} // Truyền hàm tùy chỉnh hiển thị
+                // ---------------------
+              />
+              {formData.staffId && (
+                <p style={{ fontSize: '13px', color: '#555', marginTop: '5px' }}>
+                  Mã NV đã chọn: {formData.staffId}
+                </p>
+              )}
+              {errors.staffId && <p className="error-text">{errors.staffId}</p>}
+            </div>
+          )}
+
+          {/* ----- HIỂN THỊ THÔNG TIN KHI SỬA ----- */}
           {editing && (
             <>
-              <label>Số tiền (Tự động)</label>
-              <input type="text" value={formData.displayAmount?.toLocaleString() + ' đ' || ''} disabled />
-
-              <label>Ngày thanh toán (Tự động)</label>
-              <input type="datetime-local" value={formatDateTimeLocal(formData.displayPaymentDate) || ''} disabled />
+              <div className="form-group">
+                <label>Số tiền</label>
+                <input
+                  type="text"
+                  value={formData.displayAmount != null ? `${Number(formData.displayAmount).toLocaleString('vi-VN')} đ` : ''}
+                  disabled
+                />
+              </div>
+              <div className="form-group">
+                <label>Ngày thanh toán</label>
+                <input
+                  type="datetime-local"
+                  value={formatDateTimeLocal(formData.displayPaymentDate)}
+                  disabled
+                />
+              </div>
             </>
           )}
 
-          {/* ----- BỎ Ô NHẬP SỐ TIỀN & NGÀY TT ----- */}
-          {/* <label>Số tiền</label>
-          <input type="number" name="amount" value={formData.amount} onChange={onChange} disabled={editing}/>
-          {errors.amount && <p className="error-text">{errors.amount}</p>}
-
-          <label>Ngày thanh toán</label>
-          <input type="date" name="date" value={formData.date} onChange={onChange} disabled={editing}/>
-          {errors.date && <p className="error-text">{errors.date}</p>} */}
-
-
+          {/* ----- NÚT BẤM ----- */}
           <div className="form-buttons">
             <button className="save-btn" onClick={onSave}>Lưu</button>
             <button className="cancel-btn" onClick={onCancel}>Hủy</button>

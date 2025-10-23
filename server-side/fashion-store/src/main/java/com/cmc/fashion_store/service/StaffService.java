@@ -36,4 +36,11 @@ public interface StaffService {
      * @return Danh sách nhân viên phù hợp.
      */
     List<Staff> searchStaff(String query);
+    // --- THÊM PHƯƠNG THỨC MỚI ---
+    /**
+     * Lấy gợi ý cho tìm kiếm nhân viên (theo Tên hoặc ID).
+     * @param query Từ khóa tìm kiếm
+     * @return Danh sách chuỗi gợi ý
+     */
+    List<String> getStaffSuggestions(String query);
 }

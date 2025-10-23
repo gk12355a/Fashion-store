@@ -55,4 +55,10 @@ public class CustomerController {
         Customer updatedCustomer = customerService.updateCustomer(id, request);
         return ResponseEntity.ok(updatedCustomer); // Trả về khách hàng đã cập nhật và status 200 OK
     }
+    // --- THÊM ENDPOINT MỚI ---
+    @GetMapping("/autocomplete")
+    public ResponseEntity<List<String>> getAutocompleteSuggestions(@RequestParam("q") String query) {
+        List<String> suggestions = customerService.getAutocompleteSuggestions(query);
+        return ResponseEntity.ok(suggestions);
+    }
 }

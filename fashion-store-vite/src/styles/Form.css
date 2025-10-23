@@ -1,0 +1,136 @@
+/* ----- CSS CHO KHU VỰC "THÊM SẢN PHẨM" (TRONG ORDERFORM) ----- */
+
+.add-product-section {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start; /* Căn lề trên cùng */
+}
+
+/* Ô nhập số lượng */
+.quantity-input {
+  /* Mượn style của input trong form-group */
+  padding: 12px 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  font-size: 15px;
+  font-family: "Poppins", sans-serif;
+  transition: all 0.3s ease;
+  background: #fafafa;
+  width: 80px; /* Độ rộng cố định */
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.quantity-input:focus {
+  outline: none;
+  border-color: #9ceae1;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(156, 234, 225, 0.1);
+  transform: translateY(-1px);
+}
+
+/* Nút "Thêm" vào giỏ */
+.add-cart-btn {
+  /* Mượn style của save-btn nhưng màu khác */
+  padding: 12px 20px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: "Poppins", sans-serif;
+  transition: all 0.3s ease;
+  background: linear-gradient(135deg, #007bff, #0056b3); /* Màu xanh dương */
+  color: white;
+  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+  height: 50px; /* Bằng chiều cao input */
+}
+
+.add-cart-btn:hover {
+  background: linear-gradient(135deg, #0056b3, #004085);
+  transform: translateY(-2px);
+}
+
+
+/* ----- CSS CHO KHU VỰC "TỔNG KẾT" (TRONG ORDERFORM) ----- */
+.order-summary {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 2px dashed #e0e0e0;
+  font-family: "Poppins", sans-serif;
+}
+
+.order-summary div {
+  display: flex;
+  justify-content: space-between;
+  font-size: 16px;
+  color: #555;
+  margin-bottom: 10px;
+}
+
+.order-summary .summary-discount {
+  color: #dc3545; /* Màu đỏ */
+}
+
+.order-summary .summary-total {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1cb65f; /* Màu xanh lá đậm */
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #e0e0e0;
+}
+/* ----- CSS CHO LABEL PHỤ (TRONG ORDERFORM) ----- */
+
+/* Label phụ (Sản phẩm, Số lượng) */
+.form-sub-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: #555;
+  margin-bottom: 6px;
+  padding-left: 2px;
+}
+
+/* Wrapper cho ô số lượng (để giữ đúng layout) */
+.quantity-wrapper {
+  /* Lấy độ rộng 80px từ class .quantity-input (đã có ở File 11) */
+  width: 80px; 
+}
+
+/* Nút "Thêm" vào giỏ (Màu xanh lá) */
+.add-cart-btn {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: "Poppins", sans-serif;
+  transition: all 0.3s ease;
+  
+  /* 1. Lấy màu của save-btn */
+  background: linear-gradient(135deg, #288a4f, #1cb65f); 
+  color: white;
+  box-shadow: 0 4px 15px rgba(40, 138, 79, 0.3);
+
+  height: 50px; /* Bằng chiều cao input */
+  
+  /* 2. Căn icon và text vào giữa */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px; /* Khoảng cách giữa icon và text */
+}
+
+.add-cart-btn:hover {
+  /* 3. Lấy màu hover của save-btn */
+  background: linear-gradient(135deg, #1cb65f, #17a355);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(40, 138, 79, 0.4);
+}
+
+.add-cart-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 15px rgba(40, 138, 79, 0.3);
+}

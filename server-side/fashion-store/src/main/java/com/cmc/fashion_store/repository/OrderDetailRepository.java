@@ -20,4 +20,5 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, Long> 
      * @return Danh sách chi tiết đơn hàng.
      */
     List<OrderDetail> findByProductId(Long productId);
+    List<OrderDetail> findByOrderIdIn(List<Long> orderIds);
 }

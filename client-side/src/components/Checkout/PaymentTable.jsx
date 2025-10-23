@@ -1,19 +1,17 @@
 import React from "react";
-import "../Table.css";
+import "../Table.css"; // Dùng CSS chung
 
-// Hàm format ngày giờ (ví dụ)
+// Hàm format ngày giờ
 const formatDateTime = (dateTimeString) => {
   if (!dateTimeString) return "";
   try {
     const date = new Date(dateTimeString);
-    // Lấy ngày/tháng/năm giờ:phút
     return date.toLocaleString('vi-VN', { dateStyle: 'short', timeStyle: 'short' });
-  } catch (e) {
-    return dateTimeString;
-  }
+  } catch (e) { return dateTimeString; }
 }
 
-export default function PaymentTable({ payments, handleSort, sortField, sortOrder, handleEdit, handleDelete }) {
+// 1. Xóa props sort
+export default function PaymentTable({ payments, handleEdit, handleDelete }) {
   return (
     <table className="feature-table">
       <thead>
@@ -21,21 +19,11 @@ export default function PaymentTable({ payments, handleSort, sortField, sortOrde
           <th>ID</th>
           <th>Mã đơn</th>
           <th>Phương thức</th>
-          <th
-            // Sửa sort field
-            className={`sortable ${sortField === "amount" ? sortOrder : ""}`}
-            onClick={() => handleSort("amount")}
-          >
-            Số tiền (VNĐ)
-          </th>
-          <th
-            // Sửa sort field
-            className={`sortable ${sortField === "paymentDate" ? sortOrder : ""}`}
-            onClick={() => handleSort("paymentDate")}
-          >
-            Ngày TT
-          </th>
-          <th>Nhân viên TT</th> {/* Thêm cột Nhân viên */}
+          {/* 2. Xóa class/onClick */}
+          <th>Số tiền (VNĐ)</th>
+          {/* 3. Xóa class/onClick */}
+          <th>Ngày TT</th>
+          <th>Nhân viên TT</th>
           <th>Hành động</th>
         </tr>
       </thead>
@@ -44,24 +32,20 @@ export default function PaymentTable({ payments, handleSort, sortField, sortOrde
           payments.map((p) => (
             <tr key={p.id}>
               <td>{p.id}</td>
-              {/* Sửa hiển thị */}
               <td>{p.orderId}</td>
               <td>{p.paymentMethod}</td>
-              <td>{p.amount.toLocaleString()}</td>
+              <td>{p.amount.toLocaleString('vi-VN')}</td>
               <td>{formatDateTime(p.paymentDate)}</td>
-              {/* Hiển thị tên nhân viên (nếu API trả về) */}
-              <td>{p.staff?.name || 'N/A'}</td>
-              {/* ------------ */}
+              <td>{p.staff?.name || 'N/A'}</td> {/* Hiển thị tên NV */}
               <td>
+                {/* 4. Đồng bộ class nút */}
                 <button className="edit-btn" onClick={() => handleEdit(p)}>✏️</button>
                 <button className="delete-btn" onClick={() => handleDelete(p.id)}>🗑️</button>
               </td>
             </tr>
           ))
         ) : (
-          <tr>
-            <td colSpan="7">Không tìm thấy thanh toán</td> {/* Tăng colSpan */}
-          </tr>
+          <tr><td colSpan="7">Không tìm thấy thanh toán</td></tr>
         )}
       </tbody>
     </table>

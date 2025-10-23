@@ -10,7 +10,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/api/v1/**") // Chỉ cho phép API của bạn
-                .allowedOrigins("http://localhost:3000") // URL của React
+                .allowedOrigins("http://localhost:3000", "http://localhost:5173") // URL của React
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true);

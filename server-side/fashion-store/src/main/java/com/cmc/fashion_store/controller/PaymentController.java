@@ -55,4 +55,10 @@ public class PaymentController {
         PaymentResponse updatedPaymentDto = paymentService.updatePayment(id, request);
         return ResponseEntity.ok(updatedPaymentDto);
     }
+    // --- THÊM ENDPOINT MỚI CHO AUTOCOMPLETE ---
+    @GetMapping("/methods/autocomplete")
+    public ResponseEntity<List<String>> getPaymentMethodSuggestions(@RequestParam("q") String query) {
+        List<String> suggestions = paymentService.getPaymentMethodSuggestions(query);
+        return ResponseEntity.ok(suggestions);
+    }
 }

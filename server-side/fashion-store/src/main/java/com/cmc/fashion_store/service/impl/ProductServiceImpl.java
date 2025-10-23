@@ -9,6 +9,7 @@ import com.cmc.fashion_store.service.ProductService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page; // Import Page
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable; // Import Pageable
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -88,6 +89,14 @@ public class ProductServiceImpl implements ProductService {
 
         // 4. Lưu lại sản phẩm đã được cập nhật vào DB
         return productRepository.save(existingProduct);
+    }
+
+    // --- IMPLEMENT PHƯƠNG THỨC MỚI ---
+    @Override
+    public List<String> getAutocompleteSuggestions(String query) {
+        // Tạo Pageable để giới hạn 10 kết quả (trang 0, 10 item)
+        Pageable limit = PageRequest.of(0, 10);
+        return productRepository.findSuggestionsByName(query, limit);
     }
 
 

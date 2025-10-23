@@ -1,39 +1,44 @@
-import React, { useState, useEffect } from "react"; // Thêm useEffect
-import api from "../api"; // Import api.js
-import SearchBar from "../components/Checkout/SearchBar"; // Đổi tên component SearchBar nếu cần
+import React, { useState, useEffect } from "react";
+import api from "../api";
+import SearchBar from "../components/Checkout/SearchBar";
 import PaymentTable from "../components/Checkout/PaymentTable";
-import Pagination from "../components/Checkout/Pagination";
-// import { initialPayments } from '../components/Checkout/payments'; // 1. Xóa data giả
+import PaymentToolbar from "../components/Checkout/PaymentToolbar"; // Import Toolbar mới
 import PaymentForm from "../components/Checkout/PaymentForm";
 import "../styles/FeaturePage.css";
+import { toast } from 'react-toastify'; // Import Toastify
 
 export default function CheckoutPage() {
-  const [payments, setPayments] = useState([]); // 2. Bắt đầu mảng rỗng
-  const [search, setSearch] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState(search); // State cho debounce
+  // --- State cho dữ liệu bảng và phân trang/sắp xếp ---
+  const [payments, setPayments] = useState([]);
   const [sortField, setSortField] = useState("paymentDate"); // Sort theo ngày TT mặc định
   const [sortOrder, setSortOrder] = useState("desc"); // Mới nhất lên trước
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const itemsPerPage = 10;
+
+  // --- State cho tìm kiếm ---
+  const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState(search);
+  const [suggestions, setSuggestions] = useState([]);
+
+  // --- State cho Modal ---
   const [showModal, setShowModal] = useState(false);
-  const [editingPayment, setEditingPayment] = useState(null);
-  // 3. Sửa formData cho khớp CreatePaymentRequest + UpdatePaymentRequest
+  const [editingPayment, setEditingPayment] = useState(null); // Lưu object đang sửa
+  // State cho dữ liệu Form (khớp với logic Form mới)
   const [formData, setFormData] = useState({
-    orderId: "", // ID số của đơn hàng
-    paymentMethod: "", // Phương thức (text)
-    staffId: "", // ID số của nhân viên (chỉ khi tạo mới)
-    // Các trường amount, paymentDate chỉ dùng để hiển thị khi sửa
-    displayAmount: "",
-    displayPaymentDate: "",
+    orderId: "",        // Chỉ dùng khi Thêm mới
+    paymentMethod: "",  // Dùng cho cả Thêm mới và Sửa
+    staffId: "",        // Chỉ dùng khi Thêm mới
+    displayAmount: "",      // Chỉ để hiển thị khi Sửa
+    displayPaymentDate: "", // Chỉ để hiển thị khi Sửa
   });
   const [errors, setErrors] = useState({});
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
-  const [totalPages, setTotalPages] = useState(0); // 4. State cho tổng số trang
 
-  // 5. HÀM TẢI DỮ LIỆU (GET)
+  // --- Hàm Fetch Dữ liệu ---
   const fetchPayments = async () => {
     try {
       let response;
-      let params = {};
+      let params = {}; // Tham số gửi lên API
 
       if (debouncedSearch) {
         // --- LOGIC GỌI API SEARCH ---
@@ -41,12 +46,10 @@ export default function CheckoutPage() {
         if (!isNaN(potentialId)) {
           params.orderId = potentialId; // Gửi orderId nếu là số
         } else {
-          // --- SỬA TÊN THAM SỐ Ở ĐÂY ---
-          params.paymentMethod = debouncedSearch; // 'method' -> 'paymentMethod'
-          // --------------------------
+          params.paymentMethod = debouncedSearch; // Gửi paymentMethod nếu là chữ
         }
         response = await api.get("/payments/search", { params }); // Gọi endpoint /search
-        setPayments(response.data);
+        setPayments(response.data); // API search trả về List
         setTotalPages(1);
         setCurrentPage(1);
       } else {
@@ -62,11 +65,48 @@ export default function CheckoutPage() {
       }
     } catch (error) {
       console.error("Lỗi khi tải danh sách thanh toán:", error);
+      toast.error("Không thể tải danh sách thanh toán!"); // Thêm Toast
       setPayments([]);
       setTotalPages(0);
     }
   };
-  // 6. DEBOUNCE EFFECT
+  // --- 2. useEffect MỚI CHO AUTOCOMPLETE ---
+  useEffect(() => {
+    const fetchSuggestions = async () => {
+      // Chỉ tìm gợi ý nếu không phải là số (là payment method)
+      if (search.trim() !== "" && isNaN(Number(search))) {
+        try {
+          const response = await api.get("/payments/methods/autocomplete", {
+            params: { q: search },
+          });
+          setSuggestions(response.data || []);
+        } catch (error) {
+          console.error("Lỗi khi tải gợi ý phương thức TT:", error);
+          setSuggestions([]);
+        }
+      } else {
+        setSuggestions([]); // Xóa gợi ý nếu là số hoặc rỗng
+      }
+    };
+    // Debounce nhẹ
+    const suggestionTimer = setTimeout(fetchSuggestions, 200);
+    return () => clearTimeout(suggestionTimer);
+  }, [search]); // Chạy khi search thay đổi
+  // ------------------------------------
+
+  // --- 3. HÀM XỬ LÝ GỢI Ý ---
+  const handleSuggestionClick = (suggestion) => {
+    setSearch(suggestion); // Điền gợi ý vào ô search
+    setSuggestions([]);    // Ẩn danh sách
+  };
+
+  const handleSearchBlur = () => {
+    // Delay để click kịp chạy
+    setTimeout(() => setSuggestions([]), 150);
+  };
+  // ---------------------------
+
+  // --- UseEffect Hooks ---
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(search);
@@ -75,68 +115,46 @@ export default function CheckoutPage() {
     return () => clearTimeout(timer);
   }, [search]);
 
-  // 7. FETCH EFFECT
   useEffect(() => {
     fetchPayments();
-  }, [currentPage, sortField, sortOrder, debouncedSearch]);
+  }, [currentPage, sortField, sortOrder, debouncedSearch]); // Chạy lại khi các giá trị này thay đổi
 
-  // 8. XÓA LOGIC FILTER/SORT/PAGINATE CŨ
-  // ... (Đã xóa filteredPayments, paginated) ...
-
-  const handleSort = (field) => {
-    // Chỉ sort khi không tìm kiếm (nếu API search không hỗ trợ)
-    if (debouncedSearch) return;
-
-    if (sortField === field) setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-    else {
-      setSortField(field);
-      setSortOrder("asc");
-    }
-    setCurrentPage(1);
-  };
-
+  // --- Các Hàm Xử Lý Sự Kiện ---
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  // 9. SỬA VALIDATE cho logic backend mới
   const validate = () => {
     const newErrors = {};
-    // Chỉ cần validate các trường gửi đi
-    if (!editingPayment) {
-      // Chỉ kiểm tra khi thêm mới
-      if (
-        !formData.orderId ||
-        isNaN(Number(formData.orderId)) ||
-        Number(formData.orderId) <= 0
-      )
-        newErrors.orderId = "Mã đơn hàng hợp lệ là bắt buộc";
-      if (
-        !formData.staffId ||
-        isNaN(Number(formData.staffId)) ||
-        Number(formData.staffId) <= 0
-      )
-        newErrors.staffId = "Mã nhân viên hợp lệ là bắt buộc";
+    // Chỉ validate trường cần gửi đi
+    if (!editingPayment) { // Chỉ khi thêm mới
+      if (!formData.orderId || Number(formData.orderId) <= 0)
+        newErrors.orderId = "Mã đơn hàng hợp lệ là bắt buộc.";
+      if (!formData.staffId || Number(formData.staffId) <= 0)
+        newErrors.staffId = "Mã nhân viên hợp lệ là bắt buộc.";
     }
-    // Luôn kiểm tra phương thức
-    if (!formData.paymentMethod?.trim())
-      newErrors.paymentMethod = "Phương thức không được để trống";
+    // Luôn validate phương thức
+    if (!formData.paymentMethod) // Select box chỉ cần check rỗng
+      newErrors.paymentMethod = "Vui lòng chọn phương thức thanh toán.";
 
-    // Bỏ validate amount, date, orderCode
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  // 10. HÀM LƯU (POST / PUT)
   const handleSave = async () => {
-    if (!validate()) return;
+    if (!validate()) {
+      toast.error("Vui lòng kiểm tra lại thông tin!");
+      return;
+    }
 
     try {
+      let actionText = "";
       if (editingPayment) {
         // --- PUT (Sửa) ---
-        // Chỉ gửi paymentMethod theo logic backend
+        // Chỉ gửi paymentMethod
         await api.put(`/payments/${editingPayment.id}`, {
           paymentMethod: formData.paymentMethod,
         });
+        actionText = "Cập nhật";
       } else {
         // --- POST (Thêm mới) ---
         // Gửi orderId, paymentMethod, staffId
@@ -145,84 +163,104 @@ export default function CheckoutPage() {
           paymentMethod: formData.paymentMethod,
           staffId: Number(formData.staffId),
         });
+        actionText = "Thêm mới";
       }
-      fetchPayments(); // Tải lại
-      setShowModal(false);
+      fetchPayments(); // Tải lại danh sách
+      setShowModal(false); // Đóng modal
+      toast.success(`${actionText} thanh toán thành công!`); // Thêm Toast
+
     } catch (error) {
       console.error("Lỗi khi lưu thanh toán:", error);
-      alert(`Lỗi: ${error.response?.data?.message || error.message}`); // Hiển thị lỗi rõ hơn
+      toast.error(`Lỗi: ${error.response?.data?.message || error.message}`); // Thêm Toast
     }
   };
 
   const handleAddNew = () => {
     setEditingPayment(null);
-    // Reset form cho các trường cần nhập
+    // Reset form
     setFormData({
-      orderId: "",
-      paymentMethod: "",
-      staffId: "",
-      displayAmount: "",
-      displayPaymentDate: "",
+      orderId: "", paymentMethod: "", staffId: "",
+      displayAmount: "", displayPaymentDate: "",
     });
     setErrors({});
     setShowModal(true);
   };
 
-  // Map data từ API (response) sang Form state (để hiển thị)
-  const handleEdit = (p) => {
-    setEditingPayment(p);
+  // Mở modal Sửa và điền dữ liệu
+  const handleEdit = (payment) => {
+    setEditingPayment(payment);
+    // Điền dữ liệu vào form state
     setFormData({
-      orderId: p.orderId, // Để hiển thị (disabled)
-      paymentMethod: p.paymentMethod, // Cho phép sửa
-      staffId: p.staff?.id || "", // Để hiển thị (disabled) - Giả sử API trả về staff object
-      displayAmount: p.amount, // Để hiển thị (disabled)
-      displayPaymentDate: p.paymentDate, // Để hiển thị (disabled)
+      orderId: payment.orderId,          // Để hiển thị
+      paymentMethod: payment.paymentMethod, // Để sửa
+      staffId: payment.staff?.id || "",   // Để hiển thị (nếu có)
+      displayAmount: payment.amount,        // Để hiển thị
+      displayPaymentDate: payment.paymentDate, // Để hiển thị
     });
     setErrors({});
     setShowModal(true);
   };
 
-  // 11. HÀM XÓA (DELETE)
   const handleDelete = async (id) => {
     if (window.confirm("Bạn có chắc muốn xóa thanh toán này không?")) {
       try {
         await api.delete(`/payments/${id}`);
         fetchPayments(); // Tải lại
+        toast.success("Xóa thanh toán thành công!"); // Thêm Toast
       } catch (error) {
         console.error("Lỗi khi xóa thanh toán:", error);
-        alert(`Lỗi: ${error.response?.data?.message || error.message}`);
+        toast.error(`Lỗi: ${error.response?.data?.message || error.message}`); // Thêm Toast
       }
     }
   };
 
+  const handleCancel = () => {
+    setShowModal(false);
+    setEditingPayment(null);
+  };
+
+  // --- JSX Render ---
   return (
     <div className="feature-page">
       <h2>Danh sách thanh toán</h2>
-      <SearchBar search={search} setSearch={setSearch} onAdd={handleAddNew} />
-      <PaymentTable
-        payments={payments} // Dùng data từ state
-        handleSort={handleSort}
+
+      {/* Thanh tìm kiếm */}
+      <SearchBar
+        search={search}
+        setSearch={setSearch}
+        onAdd={handleAddNew}
+        suggestions={suggestions}
+        onSuggestionClick={handleSuggestionClick}
+        onBlur={handleSearchBlur}
+      />
+
+      {/* Thanh công cụ (Sắp xếp, Phân trang) */}
+      <PaymentToolbar
         sortField={sortField}
+        setSortField={setSortField}
         sortOrder={sortOrder}
+        setSortOrder={setSortOrder}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        setCurrentPage={setCurrentPage}
+      />
+
+      {/* Bảng danh sách */}
+      <PaymentTable
+        payments={payments}
         handleEdit={handleEdit}
         handleDelete={handleDelete}
       />
-      <Pagination
-        totalPages={totalPages}
-        currentPage={currentPage}
-        onPageChange={setCurrentPage} // Sửa prop
-      />
+
+      {/* Modal Form (Thêm/Sửa) */}
       <PaymentForm
         show={showModal}
         formData={formData}
         errors={errors}
         onChange={handleChange}
         onSave={handleSave}
-        onCancel={() => {
-          setShowModal(false);
-          setEditingPayment(null);
-        }}
-        editing={editingPayment}
+        onCancel={handleCancel}
+        editing={!!editingPayment}
       />
     </div>
   );

@@ -1,0 +1,176 @@
+package com.cmc.fashion_store.service.impl;
+
+import com.cmc.fashion_store.dto.CategoryCountDto;
+import com.cmc.fashion_store.dto.DashboardSummaryResponse;
+import com.cmc.fashion_store.dto.MonthlyRevenueQueryResult;
+import com.cmc.fashion_store.dto.MonthlyRevenueResponse;
+import com.cmc.fashion_store.dto.SummaryStatDto;
+import com.cmc.fashion_store.repository.CustomerRepository;
+import com.cmc.fashion_store.repository.PaymentRepository;
+import com.cmc.fashion_store.repository.ProductRepository;
+import com.cmc.fashion_store.service.StatisticsService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.YearMonth;
+import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.Map; // <- Import Map
+import java.util.stream.IntStream; // <-- Import IntStream
+
+@Service
+@RequiredArgsConstructor // Use constructor injection
+@Transactional(readOnly = true) // Most methods here are read-only
+public class StatisticsServiceImpl implements StatisticsService {
+
+    private final ProductRepository productRepository;
+    private final PaymentRepository paymentRepository;
+    private final CustomerRepository customerRepository;
+
+    @Override
+    public DashboardSummaryResponse getDashboardSummary() {
+        LocalDate today = LocalDate.now();
+        YearMonth currentMonth = YearMonth.from(today);
+        YearMonth previousMonth = currentMonth.minusMonths(1);
+
+        // Define date ranges for queries
+        LocalDateTime currentMonthStart = currentMonth.atDay(1).atStartOfDay(); // Start of current month
+        LocalDateTime currentMonthEnd = currentMonth.atEndOfMonth().plusDays(1).atStartOfDay(); // Start of next month
+                                                                                                // (exclusive)
+
+        LocalDateTime prevMonthStart = previousMonth.atDay(1).atStartOfDay(); // Start of previous month
+        LocalDateTime prevMonthEnd = previousMonth.atEndOfMonth().plusDays(1).atStartOfDay(); // Start of current month
+                                                                                              // (exclusive)
+
+        // LocalDate versions for customer registration
+        LocalDate currentMonthStartLd = currentMonth.atDay(1);
+        LocalDate currentMonthEndLd = currentMonth.atEndOfMonth().plusDays(1);
+        LocalDate prevMonthStartLd = previousMonth.atDay(1);
+        LocalDate prevMonthEndLd = previousMonth.atEndOfMonth().plusDays(1);
+
+        // 1. Calculate Product Stats
+        long totalProductsCount = productRepository.count();
+        // We'll skip product change percentage for simplicity as discussed
+        SummaryStatDto productStats = new SummaryStatDto(totalProductsCount, null);
+
+        // 2. Calculate Revenue Stats
+        BigDecimal currentRevenue = paymentRepository.findTotalRevenueBetweenDates(currentMonthStart, currentMonthEnd);
+        currentRevenue = (currentRevenue == null) ? BigDecimal.ZERO : currentRevenue; // Handle null result
+
+        BigDecimal previousRevenue = paymentRepository.findTotalRevenueBetweenDates(prevMonthStart, prevMonthEnd);
+        previousRevenue = (previousRevenue == null) ? BigDecimal.ZERO : previousRevenue;
+
+        Double revenueChange = calculatePercentageChange(currentRevenue, previousRevenue);
+        SummaryStatDto revenueStats = new SummaryStatDto(currentRevenue, revenueChange);
+
+        // 3. Calculate Customer Stats
+        long totalCustomersCount = customerRepository.count();
+        Long newCustomersThisMonth = customerRepository.countNewCustomersBetweenDates(currentMonthStartLd,
+                currentMonthEndLd);
+        newCustomersThisMonth = (newCustomersThisMonth == null) ? 0L : newCustomersThisMonth;
+
+        Long newCustomersLastMonth = customerRepository.countNewCustomersBetweenDates(prevMonthStartLd, prevMonthEndLd);
+        newCustomersLastMonth = (newCustomersLastMonth == null) ? 0L : newCustomersLastMonth;
+
+        Double customerChange = calculatePercentageChange(BigDecimal.valueOf(newCustomersThisMonth),
+                BigDecimal.valueOf(newCustomersLastMonth));
+        SummaryStatDto customerStats = new SummaryStatDto(totalCustomersCount, customerChange);
+
+        // 4. Assemble Response
+        return new DashboardSummaryResponse(productStats, revenueStats, customerStats);
+    }
+
+    /**
+     * Helper method to calculate percentage change.
+     * 
+     * @param current  Current value.
+     * @param previous Previous value.
+     * @return Percentage change, or null if previous is zero or null.
+     */
+    private Double calculatePercentageChange(BigDecimal current, BigDecimal previous) {
+        if (previous == null || previous.compareTo(BigDecimal.ZERO) == 0) {
+            // Cannot calculate change if previous value was zero or null
+            // Return null or maybe a large number like 100.0 if current > 0? Let's use
+            // null.
+            return null;
+        }
+        if (current == null) {
+            current = BigDecimal.ZERO; // Assume current is zero if null
+        }
+
+        BigDecimal change = current.subtract(previous);
+        BigDecimal percentageChange = change.divide(previous, 4, RoundingMode.HALF_UP) // 4 decimal places
+                .multiply(new BigDecimal(100));
+        return percentageChange.doubleValue();
+    }
+
+    // --- ADD THIS METHOD IMPLEMENTATION ---
+    @Override
+    public MonthlyRevenueResponse getMonthlyRevenue(int year) {
+        // 1. Call the repository method
+        List<MonthlyRevenueQueryResult> results = paymentRepository.findMonthlyRevenueByYear(year);
+
+        // 2. Process results into a Map for easy lookup: {1: revenueJan, 2: revenueFeb,
+        // ...}
+        Map<Integer, BigDecimal> revenueMap = results.stream()
+                .collect(Collectors.toMap(
+                        MonthlyRevenueQueryResult::getMonth,
+                        MonthlyRevenueQueryResult::getRevenue));
+
+        // 3. Create the final list of 12 months, filling missing months with ZERO
+        List<BigDecimal> monthlyRevenueList = IntStream.rangeClosed(1, 12) // Generates numbers 1 to 12
+                .mapToObj(month -> revenueMap.getOrDefault(month, BigDecimal.ZERO)) // Get revenue or ZERO
+                .collect(Collectors.toList());
+
+        // 4. Return the response DTO
+        return new MonthlyRevenueResponse(year, monthlyRevenueList);
+    }
+
+    // ------------------------------------
+    // --- ADD THIS METHOD IMPLEMENTATION ---
+    @Override
+    public List<CategoryCountDto> getProductCountByCategory() {
+        // Directly call the repository method
+        return productRepository.findProductCountByCategory();
+    }
+
+    // ------------------------------
+    // --- ADD THIS METHOD IMPLEMENTATION ---
+    @Override
+    public List<Long> getWeeklyNewCustomers(int numberOfWeeks) {
+        // 1. Calculate the start date (go back numberOfWeeks - 1 weeks from the start
+        // of the current week)
+        LocalDate today = LocalDate.now();
+        // Find the Monday of the current week
+        LocalDate startOfCurrentWeek = today.with(TemporalAdjusters.previousOrSame(java.time.DayOfWeek.MONDAY));
+        // Calculate the start date for the query
+        LocalDate startDate = startOfCurrentWeek.minusWeeks(numberOfWeeks - 1);
+
+        // 2. Call the repository method
+        List<Long> weeklyCounts = customerRepository.findNewCustomerCountsPerWeek(startDate);
+
+        // 3. (Optional but recommended) Pad the list with zeros if fewer weeks than
+        // requested are returned
+        // This ensures the frontend always gets a list of the expected size.
+        List<Long> paddedCounts = new ArrayList<>(Collections.nCopies(numberOfWeeks, 0L)); // List of zeros
+        int returnedSize = weeklyCounts.size();
+        for (int i = 0; i < returnedSize && i < numberOfWeeks; i++) {
+            // Fill from the end of the padded list backwards
+            paddedCounts.set(numberOfWeeks - returnedSize + i, weeklyCounts.get(i));
+        }
+
+        // Return the potentially padded list
+        return paddedCounts;
+        // If padding is not needed, simply return:
+        // return weeklyCounts;
+    }
+    // --------------------------------
+}
