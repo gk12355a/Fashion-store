@@ -17,7 +17,7 @@ import {
   Filler, // Thêm Filler cho biểu đồ line area
 } from "chart.js";
 import useCountUpAnimation from "../hooks/useCountUpAnimation"; // Import custom hook
-import { toast } from 'react-toastify'; // <-- THÊM DÒNG NÀY
+import { toast } from "react-toastify"; // <-- THÊM DÒNG NÀY
 // Đăng ký các thành phần cần thiết cho Chart.js
 ChartJS.register(
   CategoryScale,
@@ -398,28 +398,32 @@ export default function HomePage() {
 
       {/* --- Charts Section --- */}
       <div className="flex flex-wrap gap-6">
-  {/* Doanh Thu Theo Tháng */}
-  <div className="flex-1 min-w-[300px] bg-white rounded-lg shadow-md p-6">
-    <h3 className="text-lg font-semibold text-gray-900 mb-4">
-      Doanh Thu Theo Tháng ({monthlyRevenueData?.year || new Date().getFullYear()})
-    </h3>
-    {monthlyRevenueData && (
-      <Line data={revenueChartData} options={revenueChartOptions} />
-    )}
-  </div>
+        {/* Doanh Thu Theo Tháng */}
+        <div className="flex-1 min-w-[300px] bg-white rounded-lg shadow-md p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            Doanh Thu Theo Tháng (
+            {monthlyRevenueData?.year || new Date().getFullYear()})
+          </h3>
+          {monthlyRevenueData && (
+            <Line data={revenueChartData} options={revenueChartOptions} />
+          )}
+        </div>
 
-  {/* Danh Mục Sản Phẩm */}
-  <div className="flex-1 min-w-[300px] bg-white rounded-lg shadow-md p-6 flex flex-col items-center">
-    <h3 className="text-lg font-semibold text-gray-900 mb-4">
-      Danh Mục Sản Phẩm
-    </h3>
-    <div className="w-full max-w-[400px]">
-      {categoryData && (
-        <Doughnut data={categoryChartData} options={categoryChartOptions} />
-      )}
-    </div>
-  </div>
-</div>
+        {/* Danh Mục Sản Phẩm */}
+        <div className="flex-1 min-w-[300px] bg-white rounded-lg shadow-md p-6 flex flex-col items-center">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            Danh Mục Sản Phẩm
+          </h3>
+          <div className="w-full max-w-[400px]">
+            {categoryData && (
+              <Doughnut
+                data={categoryChartData}
+                options={categoryChartOptions}
+              />
+            )}
+          </div>
+        </div>
+      </div>
 
       {/* Khách Hàng Mới Theo Tuần */}
       <div className="bg-white rounded-lg shadow-md p-6 mb-8 h-[350px]">
@@ -435,10 +439,17 @@ export default function HomePage() {
       </div>
       {/* --- 4. ADD EXPORT SECTION --- */}
       <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Xuất Báo Cáo Đơn Hàng (CSV)</h3>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          Xuất Báo Cáo Đơn Hàng (CSV)
+        </h3>
         <div className="flex flex-col sm:flex-row sm:items-end gap-4">
           <div className="flex-1">
-            <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 mb-1">Từ ngày:</label>
+            <label
+              htmlFor="startDate"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Từ ngày:
+            </label>
             <input
               type="date"
               id="startDate"
@@ -449,7 +460,12 @@ export default function HomePage() {
             />
           </div>
           <div className="flex-1">
-            <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 mb-1">Đến ngày:</label>
+            <label
+              htmlFor="endDate"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Đến ngày:
+            </label>
             <input
               type="date"
               id="endDate"
@@ -464,93 +480,95 @@ export default function HomePage() {
             disabled={isExporting} // Disable button when exporting
             className={`inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 ${
               isExporting
-                ? 'bg-gray-400 cursor-not-allowed'
-                : 'bg-green-600 hover:bg-green-700 focus:ring-green-500'
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-green-600 hover:bg-green-700 focus:ring-green-500"
             }`}
           >
-            {isExporting ? 'Đang xuất...' : 'Xuất Báo Cáo'}
+            {isExporting ? "Đang xuất..." : "Xuất Báo Cáo"}
           </button>
         </div>
       </div>
       {/* --------------------------- */}
 
-      {/* --- Quick Actions (Giữ nguyên như HTML mẫu) --- */}
-      <div className="mt-8 grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Link
-          to="/sanpham"
-          className="bg-pink-600 hover:bg-pink-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center space-x-2 no-underline"
-        >
-          <svg
-            className="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-            ></path>
-          </svg>
-          <span>Sản Phẩm</span>
-        </Link>
-        <Link
-          to="/donhang"
-          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center space-x-2 no-underline"
-        >
-          <svg
-            className="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-            ></path>
-          </svg>
-          <span>Đơn Hàng</span>
-        </Link>
-        {/* Nút Báo Cáo có thể link đến trang export hoặc một trang báo cáo chi tiết hơn */}
-        <button className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center space-x-2">
-          <svg
-            className="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"
-            ></path>
-          </svg>
-          <span>Báo Cáo</span>
-        </button>
-        <Link
-          to="/khachhang"
-          className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center space-x-2 no-underline"
-        >
-          <svg
-            className="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-            ></path>
-          </svg>
-          <span>Khách Hàng</span>
-        </Link>
+      {/* ----- ⭐ THÊM PHẦN FEATURES Ở ĐÂY ----- */}
+      <div className="mt-12 pt-8 border-t border-gray-200">
+        {" "}
+        {/* Thêm khoảng cách và đường kẻ trên */}
+        <h2 className="text-2xl font-semibold text-center text-gray-800 mb-8">
+          Tính năng quản lý
+        </h2>
+        {/* Container cho các card, chia cột và tạo khoảng cách */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {/* Gọi component Feature cho từng mục */}
+          <Feature
+            icon="👕"
+            title="Quản lý sản phẩm"
+            link="/sanpham"
+            desc="Quản lý danh sách sản phẩm thời trang, thêm mới, chỉnh sửa thông tin, giá cả và trạng thái có sẵn."
+          />
+          <Feature
+            icon="👥"
+            title="Quản lý khách hàng"
+            link="/khachhang"
+            desc="Lưu trữ thông tin khách hàng, điểm tích lũy, loại thành viên và lịch sử mua hàng."
+          />
+          <Feature
+            icon="📦"
+            title="Quản lý đơn hàng"
+            link="/donhang"
+            desc="Theo dõi đơn hàng, trạng thái, tính toán tổng tiền và hóa đơn."
+          />
+          <Feature
+            icon="📋"
+            title="Chi tiết đơn hàng"
+            link="/chitietdonhang" // Đổi title
+            desc="Quản lý chi tiết từng đơn hàng, sản phẩm trong đơn, số lượng và giá trị."
+          />
+          <Feature
+            icon="👔"
+            title="Quản lý nhân viên"
+            link="/nhanvien"
+            desc="Quản lý thông tin nhân viên, ca làm việc, chức vụ và lương thưởng."
+          />
+          <Feature
+            icon="💳"
+            title="Quản lý thanh toán"
+            link="/thanhtoan"
+            desc="Xử lý thanh toán, theo dõi doanh thu, hóa đơn và các khoản chi."
+          />
+          <Feature
+            icon="🎁"
+            title="Quản lý khuyến mãi"
+            link="/khuyenmai"
+            desc="Tạo và quản lý chương trình khuyến mãi, mã giảm giá và ưu đãi đặc biệt."
+          />
+          {/* Bạn có thể thêm Feature card khác nếu cần */}
+        </div>
       </div>
     </div>
   );
 }
+// ----- ⭐ ĐỊNH NGHĨA COMPONENT FEATURE -----
+// (Đặt ở cuối file hoặc import từ file riêng)
+function Feature({ icon, title, desc, link }) {
+  return (
+    // Card styling: Nền trắng, bo góc, đổ bóng, padding, căn giữa, border top màu hồng
+    <div className="bg-white rounded-lg shadow-md p-6 flex flex-col items-center text-center border-t-4 border-pink-500 hover:shadow-xl transition-shadow duration-300">
+      {/* Icon */}
+      <div className="text-5xl mb-4">{icon}</div>
+      {/* Title */}
+      <h2 className="font-semibold text-lg text-gray-800 mb-2">{title}</h2>
+      {/* Description */}
+      <p className="text-sm text-gray-600 mb-4 flex-grow">{desc}</p>{" "}
+      {/* flex-grow để đẩy link xuống */}
+      {/* Link */}
+      <Link
+        to={link}
+        className="mt-auto inline-block bg-pink-500 hover:bg-pink-600 text-white font-medium text-sm px-4 py-2 rounded-full shadow-md hover:shadow-lg transition-all duration-300"
+      >
+        Xem chi tiết →
+      </Link>
+    </div>
+  );
+}
+// ---------------------------------------------
