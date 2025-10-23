@@ -10,7 +10,7 @@ const SearchIcon = () => (
 export default function SearchBarOrder({
   search,
   setSearch,
-  onAddNew, // Prop là 'onAddNew'
+  onAdd, // Prop là 'onAdd'
 }) {
   return (
     <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
@@ -29,7 +29,7 @@ export default function SearchBarOrder({
 
       {/* ----- KHU VỰC THÊM MỚI ----- */}
       <button 
-        onClick={onAddNew}
+        onClick={onAdd}
         className="w-full md:w-auto py-3 px-6 bg-[#D4E6C4] rounded-full font-semibold text-gray-800 border border-gray-300 hover:bg-[#B2C4A3] hover:text-white transition duration-200 shadow-sm flex-shrink-0"
       >
         + Tạo đơn hàng

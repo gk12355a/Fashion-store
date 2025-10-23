@@ -10,7 +10,7 @@ const SearchIcon = () => (
 export default function SearchBarCustomer({
   search,
   setSearch,
-  onAddNew, // Prop là 'onAddNew'
+  onAdd, // Prop là 'onAddNew'
   suggestions,
   onSuggestionClick,
   onBlur,
@@ -47,7 +47,7 @@ export default function SearchBarCustomer({
 
       {/* ----- KHU VỰC THÊM MỚI ----- */}
       <button 
-        onClick={onAddNew}
+        onClick={onAdd}
         className="w-full md:w-auto py-3 px-6 bg-[#D4E6C4] rounded-full font-semibold text-gray-800 border border-gray-300 hover:bg-[#B2C4A3] hover:text-white transition duration-200 shadow-sm flex-shrink-0"
       >
         + Thêm khách hàng

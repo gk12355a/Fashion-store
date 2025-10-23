@@ -5,7 +5,7 @@ import OrderDetailTable from "../components/OrderDetail/OrderDetailTable";
 import OrderDetailToolbar from "../components/OrderDetail/OrderDetailToolbar"; // Import Toolbar mới
 import OrderDetailForm from "../components/OrderDetail/OrderDetailForm";
 // import "../styles/FeaturePage.css"; // <- ĐÃ XÓA
-import { toast } from 'react-toastify'; // Import Toastify
+import { toast } from "react-toastify"; // Import Toastify
 
 export default function OrderDetailsPage() {
   // --- State cho dữ liệu bảng và phân trang/sắp xếp ---
@@ -24,7 +24,12 @@ export default function OrderDetailsPage() {
   const [showModal, setShowModal] = useState(false);
   const [editingDetail, setEditingDetail] = useState(null); // Lưu trữ object đang sửa
   // State cho dữ liệu trong Form (Modal)
-  const [formData, setFormData] = useState({ orderId: "", productId: "", quantity: "", unitPrice: "" });
+  const [formData, setFormData] = useState({
+    orderId: "",
+    productId: "",
+    quantity: "",
+    unitPrice: "",
+  });
   const [errors, setErrors] = useState({}); // State lưu lỗi validation
 
   // --- Hàm Fetch Dữ liệu (Gọi API GET /order-details hoặc /order-details/search) ---
@@ -52,7 +57,6 @@ export default function OrderDetailsPage() {
         setOrderDetails(response.data); // API search trả về List DTO
         setTotalPages(1); // Search chỉ có 1 trang kết quả
         setCurrentPage(1); // Về trang 1
-
       } else {
         // --- NẾU KHÔNG TÌM KIẾM (Lấy danh sách phân trang) ---
         params = {
@@ -96,21 +100,27 @@ export default function OrderDetailsPage() {
   const handleChange = useCallback((e) => {
     const { name, value } = e.target;
     // Dùng functional update để không phụ thuộc vào state `formData` bên ngoài
-    setFormData(prevData => ({
+    setFormData((prevData) => ({
       ...prevData,
-      [name]: value
+      [name]: value,
     }));
   }, []);
 
   // Hàm kiểm tra lỗi validation trước khi Lưu
   const validate = () => {
     const newErrors = {};
-    if (!formData.orderId) newErrors.orderId = "Mã đơn hàng không được để trống.";
-    if (!formData.productId) newErrors.productId = "Vui lòng chọn hoặc nhập mã sản phẩm.";
-    if (!formData.quantity || Number(formData.quantity) <= 0) newErrors.quantity = "Số lượng phải lớn hơn 0.";
+    if (!formData.orderId)
+      newErrors.orderId = "Mã đơn hàng không được để trống.";
+    if (!formData.productId)
+      newErrors.productId = "Vui lòng chọn hoặc nhập mã sản phẩm.";
+    if (!formData.quantity || Number(formData.quantity) <= 0)
+      newErrors.quantity = "Số lượng phải lớn hơn 0.";
     // Khi Thêm mới, vẫn cần giá (dù đã tự điền) để gửi lên API POST
-    if (!editingDetail && (formData.unitPrice === "" || Number(formData.unitPrice) < 0)) {
-        newErrors.unitPrice = "Đơn giá không hợp lệ.";
+    if (
+      !editingDetail &&
+      (formData.unitPrice === "" || Number(formData.unitPrice) < 0)
+    ) {
+      newErrors.unitPrice = "Đơn giá không hợp lệ.";
     }
     // Khi Sửa, backend chỉ nhận quantity, không cần validate giá ở đây
     setErrors(newErrors);
@@ -119,7 +129,8 @@ export default function OrderDetailsPage() {
 
   // Hàm xử lý khi bấm nút Lưu trong Form (Modal)
   const handleSave = async () => {
-    if (!validate()) { // Kiểm tra lỗi trước
+    if (!validate()) {
+      // Kiểm tra lỗi trước
       toast.error("Vui lòng kiểm tra lại thông tin!");
       return;
     }
@@ -147,7 +158,6 @@ export default function OrderDetailsPage() {
       fetchOrderDetails(); // Tải lại danh sách
       setShowModal(false); // Đóng modal
       toast.success(`${actionText} chi tiết đơn hàng thành công!`);
-
     } catch (error) {
       console.error("Lỗi khi lưu chi tiết đơn hàng:", error);
       // Hiển thị lỗi từ backend (nếu có) hoặc lỗi chung
@@ -169,10 +179,10 @@ export default function OrderDetailsPage() {
     setEditingDetail(detail); // Lưu lại object đang sửa
     // Điền dữ liệu của object vào state formData
     setFormData({
-        orderId: detail.orderId,
-        productId: detail.productId,
-        quantity: detail.quantity,
-        unitPrice: detail.unitPrice
+      orderId: detail.orderId,
+      productId: detail.productId,
+      quantity: detail.quantity,
+      unitPrice: detail.unitPrice,
     });
     setErrors({}); // Xóa lỗi cũ
     setShowModal(true); // Mở modal
@@ -181,7 +191,11 @@ export default function OrderDetailsPage() {
   // Xử lý Xóa
   const handleDelete = async (id) => {
     // Hiện thông báo xác nhận
-    if (window.confirm("Bạn có chắc muốn xóa chi tiết đơn này không? Thao tác này sẽ cập nhật lại Tổng tiền Đơn hàng và Hoàn kho Sản phẩm.")) {
+    if (
+      window.confirm(
+        "Bạn có chắc muốn xóa chi tiết đơn này không? Thao tác này sẽ cập nhật lại Tổng tiền Đơn hàng và Hoàn kho Sản phẩm."
+      )
+    ) {
       try {
         await api.delete(`/order-details/${id}`); // Gọi API DELETE
         fetchOrderDetails(); // Tải lại danh sách
@@ -225,7 +239,7 @@ export default function OrderDetailsPage() {
       {/* Bảng danh sách */}
       <OrderDetailTable
         orderDetails={orderDetails}
-        handleEdit={handleEdit}     // Prop để mở modal sửa
+        handleEdit={handleEdit} // Prop để mở modal sửa
         handleDelete={handleDelete} // Prop để xóa
       />
 
@@ -234,9 +248,9 @@ export default function OrderDetailsPage() {
         show={showModal}
         formData={formData}
         errors={errors}
-        onChange={handleChange}   // Truyền hàm cập nhật state
-        onSave={handleSave}       // Truyền hàm lưu
-        onCancel={handleCancel}   // Truyền hàm hủy
+        onChange={handleChange} // Truyền hàm cập nhật state
+        onSave={handleSave} // Truyền hàm lưu
+        onCancel={handleCancel} // Truyền hàm hủy
         editing={!!editingDetail} // Truyền trạng thái đang sửa (true/false)
       />
     </div>
