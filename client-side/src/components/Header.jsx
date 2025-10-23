@@ -6,7 +6,10 @@ export default function Header() {
   return (
     <header>
       <div className="logo">
-        <Link to="/">Vélin</Link>
+        <Link to="/" className="logo-link">
+          <img src="/images/logo1.png" alt="Logo Vélin" className="logo-img" />
+          <span className="brand-text">Vélin</span>
+        </Link>
       </div>
       <nav>
         <ul>
