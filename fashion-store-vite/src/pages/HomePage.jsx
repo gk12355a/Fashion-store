@@ -28,14 +28,14 @@ export default function HomePage() {
   
   return (
     <div className={pageClass}>
-      <div className={welcomeClass}>
+      {/* <div className={welcomeClass}>
         <h1 className={h1Class}>Chào mừng đến với hệ thống quản lý cửa hàng Vélin</h1>
         <p className={pClass}>
           Hệ thống quản lý cửa hàng thời trang toàn diện, giúp bạn quản lý sản phẩm, đơn hàng, khách hàng, nhân viên, thanh toán và khuyến mãi một cách hiệu quả.
         </p>
         <button className={buttonClass}><Link to="/sanpham" className="text-white no-underline font-poppins">Sản phẩm</Link></button>
         <button className={buttonClass}><Link to="/donhang" className="text-white no-underline font-poppins">Đơn hàng</Link></button>
-      </div>
+      </div> */}
 
       <div className={featuresClass}>
         <Feature icon="👕" title="Quản lý sản phẩm" link="/sanpham"
