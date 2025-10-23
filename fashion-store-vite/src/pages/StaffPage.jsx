@@ -30,7 +30,7 @@ export default function StaffPage() {
       let params = {};
       if (debouncedSearch) {
         // Gọi API Search (Backend File 6)
-        params = { keyword: debouncedSearch };
+        params = { q: debouncedSearch };
         response = await api.get("/staffs/search", { params });
         setStaffs(response.data);
         setTotalPages(1); setCurrentPage(1);
