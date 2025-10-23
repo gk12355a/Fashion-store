@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query; // <-- THÊM IMPORT
 import org.springframework.data.repository.query.Param; // <-- THÊM IMPORT
 import org.springframework.stereotype.Repository;
+
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
@@ -17,16 +19,27 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
      * 'Containing' is equivalent to the LIKE '%...%' clause.
      * 'IgnoreCase' makes the search case-insensitive.
      *
-     * @param name Customer's name
+     * @param name        Customer's name
      * @param phoneNumber Customer's phone number
-     * @param email Customer's email
+     * @param email       Customer's email
      * @return A list of matching customers
      */
     List<Customer> findByNameContainingIgnoreCaseOrPhoneNumberContainingIgnoreCaseOrEmailContainingIgnoreCase(
-            String name, String phoneNumber, String email
-    );
+            String name, String phoneNumber, String email);
+
     // --- THÊM PHƯƠNG THỨC MỚI ---
     @Query("SELECT DISTINCT c.name FROM Customer c WHERE LOWER(c.name) LIKE LOWER(CONCAT('%', :query, '%'))")
     List<String> findSuggestionsByName(@Param("query") String query, Pageable pageable);
 
+    // --- ADD THESE METHODS for Dashboard Summary ---
+    /**
+     * Counts the number of new customers registered within a specific date range.
+     * 
+     * @param startDate Start date (inclusive)
+     * @param endDate   End date (exclusive)
+     * @return Count of new customers.
+     */
+    @Query("SELECT COUNT(c.id) FROM Customer c WHERE c.registrationDate >= :startDate AND c.registrationDate < :endDate")
+    Long countNewCustomersBetweenDates(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+    // ----------------------------------------------
 }
