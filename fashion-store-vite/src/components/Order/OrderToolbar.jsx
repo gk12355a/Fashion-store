@@ -1,5 +1,19 @@
 import React from "react";
-import "../Product/ProductToolbar.css"; // Dùng chung CSS với ProductToolbar
+// import "../Product/ProductToolbar.css"; // <- ĐÃ XÓA
+
+// --- Định nghĩa lớp Tailwind ---
+const toolbarClass = "flex justify-between items-center py-3 px-4 bg-gray-50 rounded-lg mb-5 flex-wrap gap-4";
+const sortOptionsClass = "flex items-center gap-2.5 flex-wrap";
+const sortLabelClass = "text-[15px] font-medium text-gray-800 mr-1.5";
+const baseFormControlClass = "py-2 px-3.5 border border-gray-300 bg-white rounded-md cursor-pointer text-sm transition-all duration-200 ease-in-out text-gray-800 hover:border-gray-400 hover:bg-gray-50";
+// const baseSortBtnClass = `${baseFormControlClass}`;
+const baseSortSelectClass = `${baseFormControlClass} pr-8`;
+// const activeSortBtnClass = "bg-red-600 text-white border-red-600 font-semibold";
+const activeSortSelectClass = "border-red-600 font-semibold ring-2 ring-red-600/20";
+const paginationClass = "flex items-center gap-2";
+const pageInfoClass = "text-sm font-semibold text-gray-800 bg-white py-2 px-3 rounded-md border border-gray-300";
+const pageNavClass = "py-2 px-3 border border-gray-300 bg-white rounded-md cursor-pointer font-semibold disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed disabled:border-gray-200";
+// -----------------------------
 
 export default function OrderToolbar({
   sortField,
@@ -9,15 +23,15 @@ export default function OrderToolbar({
   currentPage,
   totalPages,
   setCurrentPage,
-  startDate,
-  endDate,
-  onDateChange, // Props cho ngày
-  onExportClick,
-  isExporting, // Props cho export
+  // Props không dùng trong file này:
+  // startDate,
+  // endDate,
+  // onDateChange, 
+  // onExportClick,
+  // isExporting, 
 }) {
-  // Xử lý nút/dropdown Sắp xếp
   const handleSortChange = (e) => {
-    const value = e.target.value; // 'field,order'
+    const value = e.target.value; 
     if (value) {
       const [field, order] = value.split(",");
       setSortField(field);
@@ -25,13 +39,10 @@ export default function OrderToolbar({
     }
   };
 
-  // Lấy giá trị hiện tại của select box
-  // (Mặc định là "Mới nhất")
   const currentSortValue = sortField
     ? `${sortField},${sortOrder}`
     : "orderDate,desc";
 
-  // Xử lý chuyển trang
   const handlePrev = () => {
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
@@ -45,16 +56,15 @@ export default function OrderToolbar({
   };
 
   return (
-    <div className="product-toolbar">
+    <div className={toolbarClass}>
       {/* ----- KHU VỰC SẮP XẾP ----- */}
-      <div className="sort-options">
-        <span>Sắp xếp theo</span>
+      <div className={sortOptionsClass}>
+        <span className={sortLabelClass}>Sắp xếp theo</span>
 
-        {/* Dropdown "Giá" */}
         <select
           value={currentSortValue}
           onChange={handleSortChange}
-          className="sort-select active-select" // Luôn active
+          className={`${baseSortSelectClass} ${activeSortSelectClass}`} // Luôn active
         >
           <option value="orderDate,desc">Mới nhất</option>
           <option value="orderDate,asc">Cũ nhất</option>
@@ -64,21 +74,21 @@ export default function OrderToolbar({
       </div>
 
       {/* ----- KHU VỰC PHÂN TRANG ----- */}
-      <div className="pagination-controls">
-        <span className="page-info">
+      <div className={paginationClass}>
+        <span className={pageInfoClass}>
           {totalPages > 0 ? currentPage : 0}/{totalPages}
         </span>
         <button
           onClick={handlePrev}
           disabled={currentPage === 1 || totalPages === 0}
-          className="page-nav"
+          className={pageNavClass}
         >
           &lt;
         </button>
         <button
           onClick={handleNext}
           disabled={currentPage === totalPages || totalPages === 0}
-          className="page-nav"
+          className={pageNavClass}
         >
           &gt;
         </button>

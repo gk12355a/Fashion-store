@@ -1,5 +1,19 @@
 import React from 'react';
-import './ProductToolbar.css'; // Chúng ta sẽ tạo file CSS này ngay sau đây
+// import './ProductToolbar.css'; // <- ĐÃ XÓA
+
+// --- Định nghĩa lớp Tailwind ---
+const toolbarClass = "flex justify-between items-center py-3 px-4 bg-gray-50 rounded-lg mb-5 flex-wrap gap-4";
+const sortOptionsClass = "flex items-center gap-2.5 flex-wrap";
+const sortLabelClass = "text-[15px] font-medium text-gray-800 mr-1.5";
+const baseFormControlClass = "py-2 px-3.5 border border-gray-300 bg-white rounded-md cursor-pointer text-sm transition-all duration-200 ease-in-out text-gray-800 hover:border-gray-400 hover:bg-gray-50";
+const baseSortBtnClass = `${baseFormControlClass}`;
+const baseSortSelectClass = `${baseFormControlClass} pr-8`; // Thêm padding cho mũi tên dropdown
+const activeSortBtnClass = "bg-red-600 text-white border-red-600 font-semibold";
+const activeSortSelectClass = "border-red-600 font-semibold ring-2 ring-red-600/20";
+const paginationClass = "flex items-center gap-2";
+const pageInfoClass = "text-sm font-semibold text-gray-800 bg-white py-2 px-3 rounded-md border border-gray-300";
+const pageNavClass = "py-2 px-3 border border-gray-300 bg-white rounded-md cursor-pointer font-semibold disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed disabled:border-gray-200";
+// -----------------------------
 
 export default function ProductToolbar({
   sortField,
@@ -11,15 +25,13 @@ export default function ProductToolbar({
   setCurrentPage
 }) {
 
-  // Hàm này xử lý các nút bấm (Mới nhất, Tên, Số lượng)
   const handleSortButton = (field, order) => {
     setSortField(field);
     setSortOrder(order);
   };
 
-  // Hàm này xử lý riêng cho dropdown "Giá"
   const handlePriceSortChange = (e) => {
-    const value = e.target.value; // 'price,asc' hoặc 'price,desc'
+    const value = e.target.value;
     if (value) {
       const [field, order] = value.split(',');
       setSortField(field);
@@ -27,15 +39,13 @@ export default function ProductToolbar({
     }
   };
 
-  // Hàm lấy class CSS cho các nút, để tô đậm nút đang active
+  // Sửa hàm này để trả về class active
   const getButtonClass = (field, order) => {
-    return `sort-btn ${sortField === field && sortOrder === order ? 'active' : ''}`;
+    return `${baseSortBtnClass} ${sortField === field && sortOrder === order ? activeSortBtnClass : ''}`;
   };
 
-  // Xác định giá trị hiện tại của dropdown "Giá"
   const priceSelectValue = sortField === 'price' ? `price,${sortOrder}` : '';
 
-  // Xử lý chuyển trang
   const handlePrev = () => {
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
@@ -49,11 +59,10 @@ export default function ProductToolbar({
   };
 
   return (
-    <div className="product-toolbar">
+    <div className={toolbarClass}>
       {/* ----- KHU VỰC SẮP XẾP ----- */}
-      <div className="sort-options">
-        <span>Sắp xếp theo</span>
-        {/* Nút "Mới Nhất" (Giả sử sort theo id, giảm dần) */}
+      <div className={sortOptionsClass}>
+        <span className={sortLabelClass}>Sắp xếp theo</span>
         <button
           className={getButtonClass('id', 'desc')}
           onClick={() => handleSortButton('id', 'desc')}
@@ -66,16 +75,12 @@ export default function ProductToolbar({
         >
           Cũ Nhất
         </button>
-
-        {/* Nút "Tên" (A-Z) */}
         <button
           className={getButtonClass('name', 'asc')}
           onClick={() => handleSortButton('name', 'asc')}
         >
           Tên (A-Z)
         </button>
-        
-        {/* Nút "Số Lượng" (Tồn kho ít nhất) */}
         <button
           className={getButtonClass('stockQuantity', 'asc')}
           onClick={() => handleSortButton('stockQuantity', 'asc')}
@@ -87,7 +92,7 @@ export default function ProductToolbar({
         <select
           value={priceSelectValue}
           onChange={handlePriceSortChange}
-          className={`sort-select ${sortField === 'price' ? 'active-select' : ''}`}
+          className={`${baseSortSelectClass} ${sortField === 'price' ? activeSortSelectClass : ''}`}
         >
           <option value="" disabled>Giá</option>
           <option value="price,asc">Giá: Thấp đến Cao</option>
@@ -96,19 +101,19 @@ export default function ProductToolbar({
       </div>
 
       {/* ----- KHU VỰC PHÂN TRANG ----- */}
-      <div className="pagination-controls">
-        <span className="page-info">{totalPages > 0 ? currentPage : 0}/{totalPages}</span>
+      <div className={paginationClass}>
+        <span className={pageInfoClass}>{totalPages > 0 ? currentPage : 0}/{totalPages}</span>
         <button 
           onClick={handlePrev} 
           disabled={currentPage === 1 || totalPages === 0}
-          className="page-nav"
+          className={pageNavClass}
         >
           &lt;
         </button>
         <button 
           onClick={handleNext} 
           disabled={currentPage === totalPages || totalPages === 0}
-          className="page-nav"
+          className={pageNavClass}
         >
           &gt;
         </button>
