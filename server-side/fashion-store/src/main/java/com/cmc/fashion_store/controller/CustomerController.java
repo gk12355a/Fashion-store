@@ -22,6 +22,7 @@ public class CustomerController {
     @Autowired
     private CustomerService customerService;
 
+
     // API này sẽ xử lý yêu cầu GET đến /api/v1/customers
     @GetMapping
     public ResponseEntity<Page<Customer>> getAllCustomers(Pageable pageable) {
