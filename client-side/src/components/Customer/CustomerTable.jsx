@@ -44,8 +44,8 @@ export default function CustomerTable({
               <td>{c.rewardPoints}</td> 
               <td>
                 {/* 4. Sửa class nút cho đồng bộ (dùng className của Product) */}
-                <button className="action edit" onClick={() => handleEdit(c)}>✏️</button>
-                <button className="action delete" onClick={() => handleDelete(c.id)}>🗑️</button>
+                <button className="edit-btn" onClick={() => handleEdit(c)}>✏️</button>
+                <button className="delete-btn" onClick={() => handleDelete(c.id)}>🗑️</button>
               </td>
             </tr>
           ))

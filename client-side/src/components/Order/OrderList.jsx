@@ -40,8 +40,8 @@ export default function OrderList({ orders, handleEdit, handleDelete }) {
               <td>{o.totalAmount.toLocaleString()}</td> 
               <td>
                 {/* 4. Sửa class nút cho đồng bộ */}
-                <button className="action edit" onClick={() => handleEdit(o)}>✏️</button>
-                <button className="action delete" onClick={() => handleDelete(o.id)}>🗑️</button>
+                <button className="edit-btn" onClick={() => handleEdit(o)}>✏️</button>
+                <button className="delete-btn" onClick={() => handleDelete(o.id)}>🗑️</button>
               </td>
             </tr>
           ))

@@ -29,8 +29,8 @@ export default function StaffTable({ staffs, handleEdit, handleDelete }) {
               <td>{s.workShift}</td>
               <td>
                 {/* 5. Đồng bộ class nút */}
-                <button className="action edit" onClick={() => handleEdit(s)}>✏️</button>
-                <button className="action delete" onClick={() => handleDelete(s.id)}>🗑️</button>
+                <button className="edit-btn" onClick={() => handleEdit(s)}>✏️</button>
+                <button className="delete-btn" onClick={() => handleDelete(s.id)}>🗑️</button>
               </td>
             </tr>
           ))

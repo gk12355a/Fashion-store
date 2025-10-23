@@ -46,8 +46,8 @@ export default function ProductTable({ products, handleEdit, handleDelete }) {
               <td>{p.price.toLocaleString()} đ</td>
               <td>{p.stockQuantity}</td>
               <td>
-                <button className="action edit" onClick={() => handleEdit(p)}>✏️</button>
-                <button className="action delete" onClick={() => handleDelete(p.id)}>🗑️</button>
+                <button className="edit-btn" onClick={() => handleEdit(p)}>✏️</button>
+                <button className="delete-btn" onClick={() => handleDelete(p.id)}>🗑️</button>
               </td>
             </tr>
           ))

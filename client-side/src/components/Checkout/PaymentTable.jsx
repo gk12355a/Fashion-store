@@ -39,8 +39,8 @@ export default function PaymentTable({ payments, handleEdit, handleDelete }) {
               <td>{p.staff?.name || 'N/A'}</td> {/* Hiển thị tên NV */}
               <td>
                 {/* 4. Đồng bộ class nút */}
-                <button className="action edit" onClick={() => handleEdit(p)}>✏️</button>
-                <button className="action delete" onClick={() => handleDelete(p.id)}>🗑️</button>
+                <button className="edit-btn" onClick={() => handleEdit(p)}>✏️</button>
+                <button className="delete-btn" onClick={() => handleDelete(p.id)}>🗑️</button>
               </td>
             </tr>
           ))

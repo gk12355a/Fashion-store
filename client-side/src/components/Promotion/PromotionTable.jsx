@@ -39,8 +39,8 @@ export default function PromotionTable({ promotions, handleEdit, handleDelete })
             <td>{formatDate(p.expiryDate)}</td>
             <td>
               {/* 5. Đồng bộ class nút */}
-              <button className="action edit" onClick={() => handleEdit(p)}>✏️</button>
-              <button className="action delete" onClick={() => handleDelete(p.id)}>🗑️</button>
+              <button className="edit-btn" onClick={() => handleEdit(p)}>✏️</button>
+              <button className="delete-btn" onClick={() => handleDelete(p.id)}>🗑️</button>
             </td>
           </tr>
         )) : <tr><td colSpan="6">Không tìm thấy khuyến mãi</td></tr>}
