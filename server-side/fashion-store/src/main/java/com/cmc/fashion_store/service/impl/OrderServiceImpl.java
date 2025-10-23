@@ -14,13 +14,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
+// import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*; // Import Map and Optional
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+// import java.util.stream.IntStream;
 
 @Service
 @Transactional(readOnly = true) // Default transaction mode is read-only
@@ -332,58 +332,58 @@ public class OrderServiceImpl implements OrderService {
     }
 
     // Converts OrderDetail Entity to OrderDetailResponse DTO (if needed by convertOrderToDto)
-    private OrderDetailResponse convertOrderDetailToDto(OrderDetail orderDetail) {
-        OrderDetailResponse detailDto = new OrderDetailResponse();
-        detailDto.setId(orderDetail.getId());
-        detailDto.setQuantity(orderDetail.getQuantity());
-        detailDto.setUnitPrice(orderDetail.getUnitPrice());
-        if (orderDetail.getOrder() != null) {
-            detailDto.setOrderId(orderDetail.getOrder().getId());
-        }
-        if (orderDetail.getProduct() != null) {
-            detailDto.setProductId(orderDetail.getProduct().getId());
-        }
-        return detailDto;
-    }
+    // private OrderDetailResponse convertOrderDetailToDto(OrderDetail orderDetail) {
+    //     OrderDetailResponse detailDto = new OrderDetailResponse();
+    //     detailDto.setId(orderDetail.getId());
+    //     detailDto.setQuantity(orderDetail.getQuantity());
+    //     detailDto.setUnitPrice(orderDetail.getUnitPrice());
+    //     if (orderDetail.getOrder() != null) {
+    //         detailDto.setOrderId(orderDetail.getOrder().getId());
+    //     }
+    //     if (orderDetail.getProduct() != null) {
+    //         detailDto.setProductId(orderDetail.getProduct().getId());
+    //     }
+    //     return detailDto;
+    // }
 
     // Helper to update total amount (called by OrderDetailService) - Keep this logic here or move to OrderDetailService
     // **NOTE:** If OrderDetailService calls this, it needs OrderRepository injected.
     // Consider moving this logic *entirely* into OrderDetailServiceImpl.
-    private void updateOrderTotalAmount(Long orderId) {
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new EntityNotFoundException("Order not found: " + orderId));
+    // private void updateOrderTotalAmount(Long orderId) {
+    //     Order order = orderRepository.findById(orderId)
+    //             .orElseThrow(() -> new EntityNotFoundException("Order not found: " + orderId));
 
-        List<OrderDetail> details = orderDetailRepository.findByOrderId(orderId);
-        BigDecimal subtotal = BigDecimal.ZERO;
-        for (OrderDetail detail : details) {
-            if (detail.getUnitPrice() != null && detail.getQuantity() > 0) {
-                 subtotal = subtotal.add(detail.getUnitPrice().multiply(BigDecimal.valueOf(detail.getQuantity())));
-            }
-        }
+    //     List<OrderDetail> details = orderDetailRepository.findByOrderId(orderId);
+    //     BigDecimal subtotal = BigDecimal.ZERO;
+    //     for (OrderDetail detail : details) {
+    //         if (detail.getUnitPrice() != null && detail.getQuantity() > 0) {
+    //              subtotal = subtotal.add(detail.getUnitPrice().multiply(BigDecimal.valueOf(detail.getQuantity())));
+    //         }
+    //     }
 
-        BigDecimal finalTotalAmount = subtotal;
-        Promotion promotion = order.getPromotion();
+    //     BigDecimal finalTotalAmount = subtotal;
+    //     Promotion promotion = order.getPromotion();
 
-        if (promotion != null) {
-            // Check expiry date
-            if (promotion.getExpiryDate() == null || !promotion.getExpiryDate().isBefore(LocalDate.now())) {
-                if ("PERCENTAGE".equals(promotion.getType()) && promotion.getDiscountValue() != null) {
-                    BigDecimal discountPercent = promotion.getDiscountValue().divide(BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP);
-                    BigDecimal discountAmount = subtotal.multiply(discountPercent);
-                    finalTotalAmount = subtotal.subtract(discountAmount);
-                } else if ("FIXED_AMOUNT".equals(promotion.getType()) && promotion.getDiscountValue() != null) {
-                    finalTotalAmount = subtotal.subtract(promotion.getDiscountValue());
-                }
-                // Ensure total doesn't go below zero
-                if (finalTotalAmount.compareTo(BigDecimal.ZERO) < 0) {
-                    finalTotalAmount = BigDecimal.ZERO;
-                }
-            }
-            // If expired, finalTotalAmount remains subtotal
-        }
-        order.setTotalAmount(finalTotalAmount);
-        orderRepository.save(order);
-    }
+    //     if (promotion != null) {
+    //         // Check expiry date
+    //         if (promotion.getExpiryDate() == null || !promotion.getExpiryDate().isBefore(LocalDate.now())) {
+    //             if ("PERCENTAGE".equals(promotion.getType()) && promotion.getDiscountValue() != null) {
+    //                 BigDecimal discountPercent = promotion.getDiscountValue().divide(BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP);
+    //                 BigDecimal discountAmount = subtotal.multiply(discountPercent);
+    //                 finalTotalAmount = subtotal.subtract(discountAmount);
+    //             } else if ("FIXED_AMOUNT".equals(promotion.getType()) && promotion.getDiscountValue() != null) {
+    //                 finalTotalAmount = subtotal.subtract(promotion.getDiscountValue());
+    //             }
+    //             // Ensure total doesn't go below zero
+    //             if (finalTotalAmount.compareTo(BigDecimal.ZERO) < 0) {
+    //                 finalTotalAmount = BigDecimal.ZERO;
+    //             }
+    //         }
+    //         // If expired, finalTotalAmount remains subtotal
+    //     }
+    //     order.setTotalAmount(finalTotalAmount);
+    //     orderRepository.save(order);
+    // }
 }
 
 // --- REMINDER: ADD THESE METHODS TO YOUR REPOSITORIES ---
