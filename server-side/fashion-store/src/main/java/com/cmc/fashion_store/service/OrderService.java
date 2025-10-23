@@ -14,19 +14,20 @@ import java.util.List;
 public interface OrderService {
     /**
      * Lấy danh sách đơn hàng có phân trang.
-     * @param pageable đối tượng chứa thông tin phân trang (số trang, kích thước trang).
+     * 
+     * @param pageable đối tượng chứa thông tin phân trang (số trang, kích thước
+     *                 trang).
      * @return một trang (Page) chứa danh sách Order và thông tin phân trang.
      */
-    Page<OrderResponse> getAllOrders(
-            Pageable pageable,
-            Long customerId,
-            String status,
-            LocalDate orderDate // <-- Dùng LocalDate cho đơn giản
-    );
+    // --- SỬA LẠI getAllOrders ĐỂ NHẬN THAM SỐ LỌC ---
+    Page<OrderResponse> getAllOrders(Pageable pageable, Long customerId, String status, LocalDate orderDate);
+    // --------------------------------------------
 
     /**
      * Tạo một đơn hàng mới CÙNG VỚI các chi tiết của nó.
-     * @param request thông tin đơn hàng mới (bao gồm khách hàng, khuyến mãi và danh sách sản phẩm).
+     * 
+     * @param request thông tin đơn hàng mới (bao gồm khách hàng, khuyến mãi và danh
+     *                sách sản phẩm).
      * @return Order đã được tạo.
      */
     // 3. Thay đổi chữ ký phương thức
@@ -34,29 +35,34 @@ public interface OrderService {
 
     /**
      * Xóa một đơn hàng dựa vào ID.
+     * 
      * @param id ID của đơn hàng cần xóa.
      */
     void deleteOrder(Long id);
 
     /**
      * Tìm kiếm đơn hàng dựa trên các tiêu chí tùy chọn.
+     * 
      * @param customerId ID của khách hàng (có thể null).
-     * @param status Trạng thái đơn hàng (có thể null).
+     * @param status     Trạng thái đơn hàng (có thể null).
      * @return Danh sách đơn hàng phù hợp.
      */
     List<OrderResponse> searchOrders(Long customerId, String status);
 
     /**
      * Cập nhật thông tin một đơn hàng.
-     * @param id ID của đơn hàng cần cập nhật.
+     * 
+     * @param id      ID của đơn hàng cần cập nhật.
      * @param request Đối tượng chứa thông tin mới.
      * @return Order đã được cập nhật.
      */
     Order updateOrder(Long id, UpdateOrderRequest request);
+
     /**
      * Dịch vụ xuất dữ liệu đơn hàng ra chuỗi CSV.
+     * 
      * @param startDate Ngày bắt đầu (LocalDate)
-     * @param endDate Ngày kết thúc (LocalDate)
+     * @param endDate   Ngày kết thúc (LocalDate)
      * @return Một chuỗi String chứa nội dung file CSV
      * @throws Exception Nếu có lỗi khi tạo CSV
      */

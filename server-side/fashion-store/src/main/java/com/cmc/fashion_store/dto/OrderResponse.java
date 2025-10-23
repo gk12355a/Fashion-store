@@ -12,5 +12,6 @@ public class OrderResponse {
     private String status;
     private BigDecimal totalAmount;
     private Long customerId; // <-- Trường quan trọng bị thiếu
+    private Long promotionId;
     private List<OrderDetailResponse> orderDetails; // <-- Sẽ chứa danh sách DTO chi tiết đơn
 }

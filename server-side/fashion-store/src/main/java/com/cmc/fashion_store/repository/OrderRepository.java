@@ -4,6 +4,8 @@ import com.cmc.fashion_store.model.Order;
 import org.springframework.data.domain.Page; // <-- 1. Thêm import
 import org.springframework.data.domain.Pageable; // <-- 2. Thêm import
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime; // <-- 3. Thêm import
@@ -79,4 +81,27 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
          * @return Danh sách Order (Entity)
          */
         List<Order> findByOrderDateBetween(LocalDateTime start, LocalDateTime end);
+
+        // --- THÊM PHƯƠNG THỨC CHO BÁO CÁO ---
+        /**
+         * Tìm tất cả đơn hàng trong khoảng thời gian, tải sẵn các thực thể liên quan.
+         * Sử dụng LEFT JOIN FETCH để lấy cả những đơn hàng chưa có thanh toán/khuyến
+         * mãi.
+         * 
+         * @param startDate Thời gian bắt đầu (bao gồm).
+         * @param endDate   Thời gian kết thúc (KHÔNG bao gồm).
+         * @return Danh sách các Order.
+         */
+        @Query("SELECT o FROM Order o " +
+                        "LEFT JOIN FETCH o.customer c " +
+                        "LEFT JOIN FETCH o.promotion p " +
+                        // "LEFT JOIN FETCH o.payment pay " + // Bỏ join payment ở đây nếu là OneToOne
+                        // từ Order
+                        // "LEFT JOIN FETCH pay.staff s " + // Thay vào đó sẽ lấy từ PaymentRepo sau
+                        "WHERE o.orderDate >= :startDate AND o.orderDate < :endDate " +
+                        "ORDER BY o.orderDate ASC")
+        List<Order> findOrdersForReport(
+                        @Param("startDate") LocalDateTime startDate,
+                        @Param("endDate") LocalDateTime endDate);
+        // ----------------- END -------------------
 }

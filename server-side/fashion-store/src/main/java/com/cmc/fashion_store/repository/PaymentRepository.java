@@ -68,4 +68,6 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
            "ORDER BY MONTH(p.paymentDate) ASC")
     List<MonthlyRevenueQueryResult> findMonthlyRevenueByYear(@Param("year") int year);
     // -------------------------------------------------
+    @Query("SELECT p FROM Payment p LEFT JOIN FETCH p.staff s WHERE p.order.id IN :orderIds")
+    List<Payment> findByOrderIdInWithStaff(@Param("orderIds") List<Long> orderIds);
 }
