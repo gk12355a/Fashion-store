@@ -178,7 +178,7 @@ export default function OrderForm({ show, onSave, onCancel }) {
           <div className={formGroupClass}>
             <label className={labelClass}>2. Thêm sản phẩm vào đơn (*)</label>
             <div className={addProductSectionClass}>
-              <div className="flex-[3]"> {/* Tương đương flex: 3 */}
+              <div className=".flex-3"> {/* Tương đương flex: 3 */}
                 <label className={formSubLabelClass}>Sản phẩm</label>
                 <ReusableSearch
                   searchApiUrl="/products/search"
@@ -188,7 +188,7 @@ export default function OrderForm({ show, onSave, onCancel }) {
                   // TODO: Cần prop 'resetKey' để clear search này sau khi thêm
                 />
               </div>
-              <div className="flex-1"> {/* Tương đương quantity-wrapper */}
+              <div className=".flex-1"> {/* Tương đương quantity-wrapper */}
                 <label
                   htmlFor="order-quantity-input"
                   className={formSubLabelClass}

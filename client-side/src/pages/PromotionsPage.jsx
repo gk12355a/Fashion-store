@@ -34,7 +34,7 @@ export default function PromotionPage() {
         sort: `${sortField},${sortOrder}`, // Luôn gửi sort
       };
       if (debouncedSearch) {
-        params.keyword = debouncedSearch; // Thêm keyword nếu có search
+        params.q = debouncedSearch; // Thêm keyword nếu có search
       }
 
       const response = await api.get(endpoint, { params });

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import api from "../api";
 import SearchBar from "../components/OrderDetail/SearchBar";
 import OrderDetailTable from "../components/OrderDetail/OrderDetailTable";
@@ -93,10 +93,14 @@ export default function OrderDetailsPage() {
   // --- Các Hàm Xử Lý Sự Kiện ---
 
   // Hàm được gọi khi input trong Form thay đổi
-  const handleChange = (e) => {
-    // Cập nhật state formData dựa trên 'name' và 'value' của input
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  const handleChange = useCallback((e) => {
+    const { name, value } = e.target;
+    // Dùng functional update để không phụ thuộc vào state `formData` bên ngoài
+    setFormData(prevData => ({
+      ...prevData,
+      [name]: value
+    }));
+  }, []);
 
   // Hàm kiểm tra lỗi validation trước khi Lưu
   const validate = () => {
