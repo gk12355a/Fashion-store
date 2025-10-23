@@ -1,5 +1,6 @@
 package com.cmc.fashion_store.service.impl;
 
+import com.cmc.fashion_store.dto.CategoryCountDto;
 import com.cmc.fashion_store.dto.DashboardSummaryResponse;
 import com.cmc.fashion_store.dto.MonthlyRevenueQueryResult;
 import com.cmc.fashion_store.dto.MonthlyRevenueResponse;
@@ -124,4 +125,11 @@ public class StatisticsServiceImpl implements StatisticsService {
         return new MonthlyRevenueResponse(year, monthlyRevenueList);
     }
     // ------------------------------------
+    // --- ADD THIS METHOD IMPLEMENTATION ---
+    @Override
+    public List<CategoryCountDto> getProductCountByCategory() {
+        // Directly call the repository method
+        return productRepository.findProductCountByCategory();
+    }
+    // ------------------------------
 }

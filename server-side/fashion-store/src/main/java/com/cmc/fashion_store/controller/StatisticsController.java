@@ -1,9 +1,13 @@
 package com.cmc.fashion_store.controller;
 
+import com.cmc.fashion_store.dto.CategoryCountDto;
 import com.cmc.fashion_store.dto.DashboardSummaryResponse;
 import com.cmc.fashion_store.dto.MonthlyRevenueResponse;
 import com.cmc.fashion_store.service.StatisticsService;
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,7 +37,13 @@ public class StatisticsController {
         return ResponseEntity.ok(monthlyRevenue);
     }
     // -------------------------
-    // @GetMapping("/products/by-category") ...
+    // --- ADD THIS ENDPOINT ---
+    @GetMapping("/products/by-category")
+    public ResponseEntity<List<CategoryCountDto>> getProductCountByCategory() {
+        List<CategoryCountDto> categoryCounts = statisticsService.getProductCountByCategory();
+        return ResponseEntity.ok(categoryCounts);
+    }
+    // -------------------------
     // @GetMapping("/customers/new/weekly") ...
 
 }
