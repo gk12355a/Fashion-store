@@ -3,11 +3,11 @@ import React from "react";
 
 // --- Định nghĩa lớp Tailwind ---
 const toolbarClass =
-  "flex justify-between items-center py-3 px-4 bg-gray-50 rounded-lg mb-5 flex-wrap gap-4";
+  "flex justify-between items-center py-3 px-4 bg-[#d4e6c4] rounded-lg mb-5 flex-wrap gap-4";
 const sortOptionsClass = "flex items-center gap-2.5 flex-wrap";
 const sortLabelClass = "text-[15px] font-medium text-gray-800 mr-1.5";
 const baseFormControlClass =
-  "py-2 px-3.5 border border-gray-300 bg-white rounded-md cursor-pointer text-sm transition-all duration-200 ease-in-out text-gray-800 hover:border-gray-400 hover:bg-gray-50";
+  "py-2 px-3.5 border border-gray-300 bg-white rounded-md cursor-pointer text-sm transition-all duration-200 ease-in-out text-gray-800 hover:border-gray-400 hover:bg-[#d4e6c4]";
 const baseSortBtnClass = `${baseFormControlClass}`;
 const baseSortSelectClass = `${baseFormControlClass} pr-8`; // Thêm padding cho mũi tên dropdown
 const activeSortBtnClass = "bg-red-600 text-white border-red-600 font-semibold";
