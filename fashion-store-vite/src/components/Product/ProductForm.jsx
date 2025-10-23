@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-// import "../Form.css"; // <- ĐÃ XÓA
 
 // --- Định nghĩa lớp Tailwind Base (Dịch từ Form.css) ---
 const overlayClass = "fixed inset-0 w-full h-full bg-black/50 flex items-center justify-center z-[1000] backdrop-blur-sm";
@@ -15,49 +14,45 @@ const baseButtonClass = "py-3 px-6 border-none rounded-xl cursor-pointer text-ba
 const saveButtonClass = `${baseButtonClass} bg-gradient-to-r from-green-600 to-green-500 text-white shadow-lg shadow-green-600/30 hover:bg-gradient-to-r hover:from-green-500 hover:to-green-600 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-green-600/40 active:translate-y-0`;
 const cancelButtonClass = `${baseButtonClass} bg-gradient-to-r from-red-500 to-pink-600 text-white shadow-lg shadow-red-500/30 hover:bg-gradient-to-r hover:from-pink-600 hover:to-red-600 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-red-500/40 active:translate-y-0`;
 
-// --- Class mới cho Form này (từ Form.css) ---
+// --- Class mới cho Form này ---
 const fileUploadGroupClass = "flex items-center gap-4 flex-wrap";
 const fileUploadButtonClass = `${baseButtonClass} flex-none bg-gradient-to-r from-blue-600 to-blue-800 text-white shadow-lg shadow-blue-600/30 hover:bg-gradient-to-r hover:from-blue-800 hover:to-blue-700 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-blue-600/40 active:translate-y-0`;
 const fileNameDisplayClass = "text-sm text-gray-600 italic bg-gray-100 py-2 px-3 rounded-lg max-w-[250px] overflow-hidden text-ellipsis whitespace-nowrap";
 const hybridInputGroupClass = "flex gap-2.5";
 const priceSelectClass = `${baseInputClass} flex-1`;
-const priceInputClass = `${baseInputClass} flex-2`; // flex: 2
+const priceInputClass = `${baseInputClass} flex-2`;
 const imagePreviewClass = "w-24 h-24 object-cover rounded-xl block mx-auto my-1.5 border-2 border-gray-200";
-// -----------------------------------------------------
 
-// --- DỮ LIỆU MOCK (Giữ nguyên) ---
-const productTypes = [
-  "Áo Sơ Mi", "Áo Phông", "Áo Polo", "Áo Hoodie", "Áo Khoác", "Áo Len", "Áo Vest", "Áo Tank Top",
-  "Quần Jeans", "Quần Kaki", "Quần Tây", "Quần Short", "Quần Jogger", "Quần Legging", "Quần Thể Thao",
-  "Váy", "Đầm Dạ Hội", "Đầm Công Sở", "Chân Váy",
-  "Phụ Kiện", "Giày Dép", "Túi Xách", "Thắt Lưng", "Mũ Nón", "Kính Mát", "Trang Sức",
-];
+// --- DỮ LIỆU RÚT GỌN ---
+const productTypes = ["Áo", "Quần", "Váy", "Phụ Kiện", "Giày Dép"];
 const productSizes = ["S", "M", "L", "XL", "XXL", "One Size"];
 const predefinedPrices = [100000, 200000, 300000, 500000];
-// --- KẾT THÚC DỮ LIỆU MOCK ---
 
 export default function ProductForm({
-  show, formData, errors, onChange, onFileChange, onSave, onCancel, editing, fileName,
+  show,
+  formData,
+  errors,
+  onChange,
+  onFileChange,
+  onSave,
+  onCancel,
+  editing,
+  fileName,
 }) {
   const [localPreview, setLocalPreview] = useState(null);
 
   useEffect(() => {
     if (!show) {
-      if (localPreview) {
-        URL.revokeObjectURL(localPreview); 
-      }
-      setLocalPreview(null); 
+      if (localPreview) URL.revokeObjectURL(localPreview);
+      setLocalPreview(null);
     }
-  }, [show, localPreview]); // Thêm localPreview vào dependencies
+  }, [show, localPreview]);
 
-  // Cleanup khi unmount
   useEffect(() => {
     return () => {
-      if (localPreview) {
-        URL.revokeObjectURL(localPreview);
-      }
+      if (localPreview) URL.revokeObjectURL(localPreview);
     };
-  }, [localPreview]); 
+  }, [localPreview]);
 
   if (!show) return null;
 
@@ -77,33 +72,47 @@ export default function ProductForm({
     }
   };
 
-  // --- LOGIC SIZE (Giữ nguyên) ---
+  // --- LOGIC SIZE ---
   const clothingSizes = ["S", "M", "L", "XL", "XXL"];
   const shoeSizes = ["36", "37", "38", "39", "40", "41", "42", "43", "44", "45"];
   const oneSize = ["One Size"];
+
   let availableSizes = clothingSizes;
   if (formData.type === "Giày Dép") {
     availableSizes = shoeSizes;
-  } else if (["Phụ Kiện", "Túi Xách", "Thắt Lưng", "Mũ Nón", "Kính Mát", "Trang Sức"].includes(formData.type)) {
+  } else if (formData.type === "Phụ Kiện") {
     availableSizes = oneSize;
   }
-  const priceSelectValue = predefinedPrices.includes(Number(formData.price)) ? formData.price : "";
-  // --- KẾT THÚC LOGIC SIZE ---
 
+  const priceSelectValue = predefinedPrices.includes(Number(formData.price))
+    ? formData.price
+    : "";
+
+  // --- JSX ---
   return (
     <div className={overlayClass}>
       <div className={modalClass}>
-        <h2 className={titleClass}>{editing ? "Chỉnh sửa sản phẩm" : "Thêm sản phẩm mới"}</h2>
+        <h2 className={titleClass}>
+          {editing ? "Chỉnh sửa sản phẩm" : "Thêm sản phẩm mới"}
+        </h2>
         <div className={formClass}>
-          {/* --- UPLOAD FILE --- */}
+          {/* ẢNH */}
           <div className={formGroupClass}>
             <label className={labelClass}>Ảnh sản phẩm</label>
             <div className="mb-2.5 text-center">
               {localPreview && (
-                <img src={localPreview} alt="Ảnh xem trước" className={imagePreviewClass} />
+                <img
+                  src={localPreview}
+                  alt="Ảnh xem trước"
+                  className={imagePreviewClass}
+                />
               )}
               {!localPreview && editing && formData.imageUrl && (
-                <img src={formData.imageUrl} alt="Ảnh hiện tại" className={imagePreviewClass} />
+                <img
+                  src={formData.imageUrl}
+                  alt="Ảnh hiện tại"
+                  className={imagePreviewClass}
+                />
               )}
             </div>
             <input
@@ -112,10 +121,13 @@ export default function ProductForm({
               id="file-upload-input"
               onChange={handleFileChangeInternal}
               accept="image/*"
-              className="hidden" // Ẩn input gốc
+              className="hidden"
             />
             <div className={fileUploadGroupClass}>
-              <label htmlFor="file-upload-input" className={fileUploadButtonClass}>
+              <label
+                htmlFor="file-upload-input"
+                className={fileUploadButtonClass}
+              >
                 {editing ? "Chọn ảnh khác" : "Chọn ảnh sản phẩm"}
               </label>
               {fileName && (
@@ -125,11 +137,10 @@ export default function ProductForm({
             {errors.file && <p className={errorClass}>{errors.file}</p>}
           </div>
 
-          {/* --- TÊN --- */}
+          {/* TÊN */}
           <div className={formGroupClass}>
-            <label className={labelClass} htmlFor="prod-name">Tên</label>
+            <label className={labelClass}>Tên sản phẩm</label>
             <input
-              id="prod-name"
               name="name"
               value={formData.name}
               onChange={onChange}
@@ -139,35 +150,48 @@ export default function ProductForm({
             {errors.name && <p className={errorClass}>{errors.name}</p>}
           </div>
 
-          {/* --- LOẠI --- */}
+          {/* LOẠI */}
           <div className={formGroupClass}>
-            <label className={labelClass} htmlFor="prod-type">Loại</label>
-            <select id="prod-type" name="type" value={formData.type} onChange={onChange} className={baseInputClass}>
+            <label className={labelClass}>Loại</label>
+            <select
+              name="type"
+              value={formData.type}
+              onChange={onChange}
+              className={baseInputClass}
+            >
               <option value="">-- Chọn loại sản phẩm --</option>
               {productTypes.map((type) => (
-                <option key={type} value={type}>{type}</option>
+                <option key={type} value={type}>
+                  {type}
+                </option>
               ))}
             </select>
             {errors.type && <p className={errorClass}>{errors.type}</p>}
           </div>
 
-          {/* --- SIZE --- */}
+          {/* SIZE */}
           <div className={formGroupClass}>
-            <label className={labelClass} htmlFor="prod-size">Size</label>
-            <select id="prod-size" name="size" value={formData.size} onChange={onChange} className={baseInputClass}>
+            <label className={labelClass}>Size</label>
+            <select
+              name="size"
+              value={formData.size}
+              onChange={onChange}
+              className={baseInputClass}
+            >
               <option value="">-- Chọn size --</option>
               {availableSizes.map((size) => (
-                <option key={size} value={size}>{size}</option>
+                <option key={size} value={size}>
+                  {size}
+                </option>
               ))}
             </select>
             {errors.size && <p className={errorClass}>{errors.size}</p>}
           </div>
 
-          {/* --- MÀU --- */}
+          {/* MÀU */}
           <div className={formGroupClass}>
-            <label className={labelClass} htmlFor="prod-color">Màu</label>
+            <label className={labelClass}>Màu</label>
             <input
-              id="prod-color"
               name="color"
               value={formData.color}
               onChange={onChange}
@@ -177,14 +201,14 @@ export default function ProductForm({
             {errors.color && <p className={errorClass}>{errors.color}</p>}
           </div>
 
-          {/* --- GIÁ (Hybrid) --- */}
+          {/* GIÁ */}
           <div className={formGroupClass}>
             <label className={labelClass}>Giá</label>
             <div className={hybridInputGroupClass}>
               <select
                 value={priceSelectValue}
                 onChange={handlePredefinedPriceChange}
-                className={priceSelectClass} // flex-1
+                className={priceSelectClass}
               >
                 <option value="">-- Chọn nhanh --</option>
                 {predefinedPrices.map((price) => (
@@ -199,17 +223,16 @@ export default function ProductForm({
                 value={formData.price}
                 onChange={onChange}
                 placeholder="Hoặc nhập giá (VNĐ)"
-                className={priceInputClass} // flex-2
+                className={priceInputClass}
               />
             </div>
             {errors.price && <p className={errorClass}>{errors.price}</p>}
           </div>
 
-          {/* --- SỐ LƯỢNG --- */}
+          {/* SỐ LƯỢNG */}
           <div className={formGroupClass}>
-            <label className={labelClass} htmlFor="prod-stock">Số lượng tồn kho</label>
+            <label className={labelClass}>Số lượng tồn kho</label>
             <input
-              id="prod-stock"
               type="number"
               name="stockQuantity"
               value={formData.stockQuantity}
@@ -222,10 +245,14 @@ export default function ProductForm({
             )}
           </div>
 
-          {/* --- NÚT BẤM --- */}
+          {/* NÚT */}
           <div className={buttonGroupClass}>
-            <button className={saveButtonClass} onClick={onSave}>Lưu</button>
-            <button className={cancelButtonClass} onClick={onCancel}>Hủy</button>
+            <button className={saveButtonClass} onClick={onSave}>
+              Lưu
+            </button>
+            <button className={cancelButtonClass} onClick={onCancel}>
+              Hủy
+            </button>
           </div>
         </div>
       </div>
