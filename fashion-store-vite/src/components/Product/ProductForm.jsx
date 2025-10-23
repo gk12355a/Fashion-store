@@ -1,280 +1,190 @@
-import React, { useState, useEffect } from "react"; // 1. Import thêm useState và useEffect
-import "../Form.css";
+import React, { useState, useEffect } from "react";
+// import "../Form.css"; // <- ĐÃ XÓA
+
+// --- Định nghĩa lớp Tailwind Base (Dịch từ Form.css) ---
+const overlayClass = "fixed inset-0 w-full h-full bg-black/50 flex items-center justify-center z-[1000] backdrop-blur-sm";
+const modalClass = "bg-white p-6 md:p-9 rounded-2xl w-[90%] max-w-lg max-h-[90vh] overflow-y-auto shadow-xl border-2 border-[#ffd1dc] font-poppins relative animate-modal-appear";
+const titleClass = "font-playfair text-2xl md:text-3xl text-gray-800 mb-6 text-center border-b-2 border-cyan-300 pb-4";
+const formClass = "flex flex-col gap-5";
+const formGroupClass = "flex flex-col gap-2";
+const labelClass = "font-semibold text-gray-800 text-base mb-1";
+const baseInputClass = "py-3 px-4 border-2 border-gray-200 rounded-xl text-base font-poppins transition-all duration-300 ease-in-out bg-gray-50 focus:outline-none focus:border-cyan-300 focus:bg-white focus:shadow-[0_0_0_3px_rgba(156,234,225,0.1)] focus:-translate-y-px hover:border-cyan-300 hover:bg-white";
+const errorClass = "text-red-600 text-sm -mt-1 mb-1 font-medium flex items-center gap-1.5 before:content-['⚠️'] before:text-xs";
+const buttonGroupClass = "flex flex-col md:flex-row justify-between gap-4 mt-6 pt-5 border-t border-gray-200";
+const baseButtonClass = "py-3 px-6 border-none rounded-xl cursor-pointer text-base font-semibold font-poppins transition-all duration-300 ease-in-out flex-1";
+const saveButtonClass = `${baseButtonClass} bg-gradient-to-r from-green-600 to-green-500 text-white shadow-lg shadow-green-600/30 hover:bg-gradient-to-r hover:from-green-500 hover:to-green-600 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-green-600/40 active:translate-y-0`;
+const cancelButtonClass = `${baseButtonClass} bg-gradient-to-r from-red-500 to-pink-600 text-white shadow-lg shadow-red-500/30 hover:bg-gradient-to-r hover:from-pink-600 hover:to-red-600 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-red-500/40 active:translate-y-0`;
+
+// --- Class mới cho Form này (từ Form.css) ---
+const fileUploadGroupClass = "flex items-center gap-4 flex-wrap";
+const fileUploadButtonClass = `${baseButtonClass} flex-none bg-gradient-to-r from-blue-600 to-blue-800 text-white shadow-lg shadow-blue-600/30 hover:bg-gradient-to-r hover:from-blue-800 hover:to-blue-700 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-blue-600/40 active:translate-y-0`;
+const fileNameDisplayClass = "text-sm text-gray-600 italic bg-gray-100 py-2 px-3 rounded-lg max-w-[250px] overflow-hidden text-ellipsis whitespace-nowrap";
+const hybridInputGroupClass = "flex gap-2.5";
+const priceSelectClass = `${baseInputClass} flex-1`;
+const priceInputClass = `${baseInputClass} flex-2`; // flex: 2
+const imagePreviewClass = "w-24 h-24 object-cover rounded-xl block mx-auto my-1.5 border-2 border-gray-200";
+// -----------------------------------------------------
 
 // --- DỮ LIỆU MOCK (Giữ nguyên) ---
 const productTypes = [
-  // 👕 Áo (Topwear)
-  "Áo Sơ Mi",
-  "Áo Phông",
-  "Áo Polo",
-  "Áo Hoodie",
-  "Áo Khoác",
-  "Áo Len",
-  "Áo Vest",
-  "Áo Tank Top",
-
-  // 👖 Quần (Bottomwear)
-  "Quần Jeans",
-  "Quần Kaki",
-  "Quần Tây",
-  "Quần Short",
-  "Quần Jogger",
-  "Quần Legging",
-  "Quần Thể Thao",
-
-  // 👗 Váy & Đầm (Dresswear)
-  "Váy",
-  "Đầm Dạ Hội",
-  "Đầm Công Sở",
-  "Chân Váy",
-
-  // 🧢 Phụ Kiện & Giày Dép (Accessories & Footwear)
-  "Phụ Kiện",
-  "Giày Dép",
-  "Túi Xách",
-  "Thắt Lưng",
-  "Mũ Nón",
-  "Kính Mát",
-  "Trang Sức",
+  "Áo Sơ Mi", "Áo Phông", "Áo Polo", "Áo Hoodie", "Áo Khoác", "Áo Len", "Áo Vest", "Áo Tank Top",
+  "Quần Jeans", "Quần Kaki", "Quần Tây", "Quần Short", "Quần Jogger", "Quần Legging", "Quần Thể Thao",
+  "Váy", "Đầm Dạ Hội", "Đầm Công Sở", "Chân Váy",
+  "Phụ Kiện", "Giày Dép", "Túi Xách", "Thắt Lưng", "Mũ Nón", "Kính Mát", "Trang Sức",
 ];
-
 const productSizes = ["S", "M", "L", "XL", "XXL", "One Size"];
 const predefinedPrices = [100000, 200000, 300000, 500000];
 // --- KẾT THÚC DỮ LIỆU MOCK ---
 
 export default function ProductForm({
-  show,
-  formData,
-  errors,
-  onChange,
-  onFileChange,
-  onSave,
-  onCancel,
-  editing,
-  fileName,
+  show, formData, errors, onChange, onFileChange, onSave, onCancel, editing, fileName,
 }) {
-  // 2. Thêm state để lưu URL xem trước của ảnh local
   const [localPreview, setLocalPreview] = useState(null);
 
-  // 3. Tách style ảnh ra để tái sử dụng
-  const imagePreviewStyle = {
-    width: 100,
-    height: 100,
-    objectFit: "cover",
-    borderRadius: 12,
-    display: "block",
-    margin: "5px auto",
-    border: "2px solid #eee",
-  };
-
-  // 4. Effect để dọn dẹp URL khi form đóng hoặc khi formData thay đổi (chuyển sang edit)
-  //    Điều này đảm bảo khi mở form edit, nó sẽ hiển thị ảnh từ server (formData.imageUrl),
-  //    chứ không phải ảnh preview cũ của lần "Thêm mới" trước đó.
   useEffect(() => {
     if (!show) {
       if (localPreview) {
-        URL.revokeObjectURL(localPreview); // Thu hồi URL cũ
+        URL.revokeObjectURL(localPreview); 
       }
-      setLocalPreview(null); // Reset preview
+      setLocalPreview(null); 
     }
-  }, [show]); // Chỉ chạy khi 'show' thay đổi
+  }, [show, localPreview]); // Thêm localPreview vào dependencies
 
-  // 5. Effect dọn dẹp (cleanup) khi component unmount
-  //    Cũng dùng để dọn dẹp URL cũ *trước khi* tạo URL mới
+  // Cleanup khi unmount
   useEffect(() => {
-    // Trả về một hàm cleanup, sẽ được gọi khi component unmount
-    // hoặc trước khi effect chạy lại (do localPreview thay đổi)
     return () => {
       if (localPreview) {
         URL.revokeObjectURL(localPreview);
       }
     };
-  }, [localPreview]); // Phụ thuộc vào localPreview
+  }, [localPreview]); 
 
   if (!show) return null;
 
-  // Xử lý khi chọn giá định sẵn (Giữ nguyên)
   const handlePredefinedPriceChange = (e) => {
     const newPrice = e.target.value;
-    onChange({
-      target: {
-        name: "price",
-        value: newPrice,
-      },
-    });
+    onChange({ target: { name: "price", value: newPrice } });
   };
 
-  // 6. Tạo hàm xử lý file nội bộ
   const handleFileChangeInternal = (e) => {
-    // 6a. Gọi hàm 'onFileChange' gốc từ component cha (rất quan trọng)
     onFileChange(e);
-
-    // 6b. Lấy file từ event
     const file = e.target.files[0];
-
     if (file) {
-      // 6c. Nếu có file, tạo một URL đối tượng mới
-      // (Effect dọn dẹp ở trên sẽ lo việc thu hồi URL cũ)
       const newPreviewUrl = URL.createObjectURL(file);
       setLocalPreview(newPreviewUrl);
     } else {
-      // 6d. Nếu người dùng hủy chọn file
       setLocalPreview(null);
     }
   };
 
-  // --- CHỌN SIZE PHÙ HỢP THEO LOẠI SẢN PHẨM (Giữ nguyên) ---
+  // --- LOGIC SIZE (Giữ nguyên) ---
   const clothingSizes = ["S", "M", "L", "XL", "XXL"];
-  const shoeSizes = [
-    "36",
-    "37",
-    "38",
-    "39",
-    "40",
-    "41",
-    "42",
-    "43",
-    "44",
-    "45",
-  ];
+  const shoeSizes = ["36", "37", "38", "39", "40", "41", "42", "43", "44", "45"];
   const oneSize = ["One Size"];
-
   let availableSizes = clothingSizes;
   if (formData.type === "Giày Dép") {
     availableSizes = shoeSizes;
-  } else if (
-    [
-      "Phụ Kiện",
-      "Túi Xách",
-      "Thắt Lưng",
-      "Mũ Nón",
-      "Kính Mát",
-      "Trang Sức",
-    ].includes(formData.type)
-  ) {
+  } else if (["Phụ Kiện", "Túi Xách", "Thắt Lưng", "Mũ Nón", "Kính Mát", "Trang Sức"].includes(formData.type)) {
     availableSizes = oneSize;
   }
-
-  // Xác định giá trị cho select box giá (Giữ nguyên)
-  const priceSelectValue = predefinedPrices.includes(Number(formData.price))
-    ? formData.price
-    : "";
+  const priceSelectValue = predefinedPrices.includes(Number(formData.price)) ? formData.price : "";
+  // --- KẾT THÚC LOGIC SIZE ---
 
   return (
-    <div className="modal-overlay">
-      <div className="modal">
-        <h2>{editing ? "Chỉnh sửa sản phẩm" : "Thêm sản phẩm mới"}</h2>
-
-        <div className="form">
-          {/* --- KHU VỰC UPLOAD FILE (ĐÃ CẬP NHẬT LOGIC HIỂN THỊ) --- */}
-          <div className="form-group">
-            <label>Ảnh sản phẩm</label>
-
-            {/* 7. Cập nhật logic hiển thị ảnh */}
-            <div style={{ marginBottom: 10, textAlign: "center" }}>
-              {/* Ưu tiên 1: Hiển thị ảnh preview MỚI CHỌN (localPreview).
-                Điều này áp dụng cho cả "Thêm mới" và "Chỉnh sửa" khi chọn file mới.
-              */}
+    <div className={overlayClass}>
+      <div className={modalClass}>
+        <h2 className={titleClass}>{editing ? "Chỉnh sửa sản phẩm" : "Thêm sản phẩm mới"}</h2>
+        <div className={formClass}>
+          {/* --- UPLOAD FILE --- */}
+          <div className={formGroupClass}>
+            <label className={labelClass}>Ảnh sản phẩm</label>
+            <div className="mb-2.5 text-center">
               {localPreview && (
-                <img
-                  src={localPreview}
-                  alt="Ảnh xem trước"
-                  style={imagePreviewStyle}
-                />
+                <img src={localPreview} alt="Ảnh xem trước" className={imagePreviewClass} />
               )}
-
-              {/* Ưu tiên 2: Nếu KHÔNG có ảnh mới, VÀ đang EDITING, 
-                thì hiển thị ảnh CŨ từ server (formData.imageUrl).
-              */}
               {!localPreview && editing && formData.imageUrl && (
-                <img
-                  src={formData.imageUrl}
-                  alt="Ảnh hiện tại"
-                  style={imagePreviewStyle}
-                />
+                <img src={formData.imageUrl} alt="Ảnh hiện tại" className={imagePreviewClass} />
               )}
             </div>
-
             <input
               type="file"
               name="file"
               id="file-upload-input"
-              onChange={handleFileChangeInternal} // 8. Sử dụng hàm xử lý nội bộ
+              onChange={handleFileChangeInternal}
               accept="image/*"
-              style={{ display: "none" }}
+              className="hidden" // Ẩn input gốc
             />
-            <div className="file-upload-group">
-              <label htmlFor="file-upload-input" className="file-upload-btn">
+            <div className={fileUploadGroupClass}>
+              <label htmlFor="file-upload-input" className={fileUploadButtonClass}>
                 {editing ? "Chọn ảnh khác" : "Chọn ảnh sản phẩm"}
               </label>
-              {/* Vẫn hiển thị tên file như cũ */}
               {fileName && (
-                <span className="file-name-display">{fileName}</span>
+                <span className={fileNameDisplayClass}>{fileName}</span>
               )}
             </div>
-            {errors.file && <p className="error-text">{errors.file}</p>}
+            {errors.file && <p className={errorClass}>{errors.file}</p>}
           </div>
 
-          {/* --- TÊN (Giữ nguyên) --- */}
-          <div className="form-group">
-            <label>Tên</label>
+          {/* --- TÊN --- */}
+          <div className={formGroupClass}>
+            <label className={labelClass} htmlFor="prod-name">Tên</label>
             <input
+              id="prod-name"
               name="name"
               value={formData.name}
               onChange={onChange}
               placeholder="Tên sản phẩm"
+              className={baseInputClass}
             />
-            {errors.name && <p className="error-text">{errors.name}</p>}
+            {errors.name && <p className={errorClass}>{errors.name}</p>}
           </div>
 
-          {/* --- LOẠI (Giữ nguyên) --- */}
-          <div className="form-group">
-            <label>Loại</label>
-            <select name="type" value={formData.type} onChange={onChange}>
+          {/* --- LOẠI --- */}
+          <div className={formGroupClass}>
+            <label className={labelClass} htmlFor="prod-type">Loại</label>
+            <select id="prod-type" name="type" value={formData.type} onChange={onChange} className={baseInputClass}>
               <option value="">-- Chọn loại sản phẩm --</option>
               {productTypes.map((type) => (
-                <option key={type} value={type}>
-                  {type}
-                </option>
+                <option key={type} value={type}>{type}</option>
               ))}
             </select>
-            {errors.type && <p className="error-text">{errors.type}</p>}
+            {errors.type && <p className={errorClass}>{errors.type}</p>}
           </div>
 
-          {/* --- SIZE (Giữ nguyên) --- */}
-          <div className="form-group">
-            <label>Size</label>
-            <select name="size" value={formData.size} onChange={onChange}>
+          {/* --- SIZE --- */}
+          <div className={formGroupClass}>
+            <label className={labelClass} htmlFor="prod-size">Size</label>
+            <select id="prod-size" name="size" value={formData.size} onChange={onChange} className={baseInputClass}>
               <option value="">-- Chọn size --</option>
               {availableSizes.map((size) => (
-                <option key={size} value={size}>
-                  {size}
-                </option>
+                <option key={size} value={size}>{size}</option>
               ))}
             </select>
-            {errors.size && <p className="error-text">{errors.size}</p>}
+            {errors.size && <p className={errorClass}>{errors.size}</p>}
           </div>
 
-          {/* --- MÀU (Giữ nguyên) --- */}
-          <div className="form-group">
-            <label>Màu</label>
+          {/* --- MÀU --- */}
+          <div className={formGroupClass}>
+            <label className={labelClass} htmlFor="prod-color">Màu</label>
             <input
+              id="prod-color"
               name="color"
               value={formData.color}
               onChange={onChange}
               placeholder="Màu"
+              className={baseInputClass}
             />
-            {errors.color && <p className="error-text">{errors.color}</p>}
+            {errors.color && <p className={errorClass}>{errors.color}</p>}
           </div>
 
-          {/* --- GIÁ (Giữ nguyên) --- */}
-          <div className="form-group">
-            <label>Giá</label>
-            <div className="hybrid-input-group">
+          {/* --- GIÁ (Hybrid) --- */}
+          <div className={formGroupClass}>
+            <label className={labelClass}>Giá</label>
+            <div className={hybridInputGroupClass}>
               <select
                 value={priceSelectValue}
                 onChange={handlePredefinedPriceChange}
-                className="price-select"
+                className={priceSelectClass} // flex-1
               >
                 <option value="">-- Chọn nhanh --</option>
                 {predefinedPrices.map((price) => (
@@ -289,35 +199,33 @@ export default function ProductForm({
                 value={formData.price}
                 onChange={onChange}
                 placeholder="Hoặc nhập giá (VNĐ)"
-                className="price-input"
+                className={priceInputClass} // flex-2
               />
             </div>
-            {errors.price && <p className="error-text">{errors.price}</p>}
+            {errors.price && <p className={errorClass}>{errors.price}</p>}
           </div>
 
-          {/* --- SỐ LƯỢNG (Giữ nguyên) --- */}
-          <div className="form-group">
-            <label>Số lượng tồn kho</label>
+          {/* --- SỐ LƯỢNG --- */}
+          <div className={formGroupClass}>
+            <label className={labelClass} htmlFor="prod-stock">Số lượng tồn kho</label>
             <input
+              id="prod-stock"
               type="number"
               name="stockQuantity"
               value={formData.stockQuantity}
               onChange={onChange}
               placeholder="Số lượng"
+              className={baseInputClass}
             />
             {errors.stockQuantity && (
-              <p className="error-text">{errors.stockQuantity}</p>
+              <p className={errorClass}>{errors.stockQuantity}</p>
             )}
           </div>
 
-          {/* --- NÚT BẤM (Giữ nguyên) --- */}
-          <div className="form-buttons">
-            <button className="save-btn" onClick={onSave}>
-              Lưu
-            </button>
-            <button className="cancel-btn" onClick={onCancel}>
-              Hủy
-            </button>
+          {/* --- NÚT BẤM --- */}
+          <div className={buttonGroupClass}>
+            <button className={saveButtonClass} onClick={onSave}>Lưu</button>
+            <button className={cancelButtonClass} onClick={onCancel}>Hủy</button>
           </div>
         </div>
       </div>

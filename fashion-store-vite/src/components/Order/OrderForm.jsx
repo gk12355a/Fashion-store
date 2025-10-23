@@ -1,27 +1,48 @@
 import React, { useState, useEffect } from "react";
-import "../Form.css"; // Dùng chung CSS Form
-import ReusableSearch from "../Common/ReusableSearch"; // Import component tìm kiếm
-import CartTable from "./CartTable"; // Import Bảng giỏ hàng (sẽ tạo ở file sau)
+// import "../Form.css"; // <- ĐÃ XÓA
+import ReusableSearch from "../Common/ReusableSearch";
+import CartTable from "./CartTable";
 import { toast } from "react-toastify";
 
-// Trạng thái ban đầu cho form
+// --- Định nghĩa lớp Tailwind Base (Dịch từ Form.css) ---
+const overlayClass = "fixed inset-0 w-full h-full bg-black/50 flex items-center justify-center z-[1000] backdrop-blur-sm";
+const modalClass = "bg-white p-6 md:p-9 rounded-2xl w-[90%] max-h-[90vh] overflow-y-auto shadow-xl border-2 border-[#ffd1dc] font-poppins relative animate-modal-appear";
+const titleClass = "font-playfair text-2xl md:text-3xl text-gray-800 mb-6 text-center border-b-2 border-cyan-300 pb-4";
+const formClass = "flex flex-col gap-5";
+const formGroupClass = "flex flex-col gap-2";
+const labelClass = "font-semibold text-gray-800 text-base mb-1";
+const baseInputClass = "py-3 px-4 border-2 border-gray-200 rounded-xl text-base font-poppins transition-all duration-300 ease-in-out bg-gray-50 focus:outline-none focus:border-cyan-300 focus:bg-white focus:shadow-[0_0_0_3px_rgba(156,234,225,0.1)] focus:-translate-y-px hover:border-cyan-300 hover:bg-white";
+const errorClass = "text-red-600 text-sm -mt-1 mb-1 font-medium flex items-center gap-1.5 before:content-['⚠️'] before:text-xs";
+const buttonGroupClass = "flex flex-col md:flex-row justify-between gap-4 mt-6 pt-5 border-t border-gray-200";
+const baseButtonClass = "py-3 px-6 border-none rounded-xl cursor-pointer text-base font-semibold font-poppins transition-all duration-300 ease-in-out flex-1";
+// Thêm :disabled
+const saveButtonClass = `${baseButtonClass} bg-gradient-to-r from-green-600 to-green-500 text-white shadow-lg shadow-green-600/30 hover:bg-gradient-to-r hover:from-green-500 hover:to-green-600 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-green-600/40 active:translate-y-0 disabled:bg-gray-400 disabled:shadow-none disabled:translate-y-0 disabled:cursor-not-allowed`;
+const cancelButtonClass = `${baseButtonClass} bg-gradient-to-r from-red-500 to-pink-600 text-white shadow-lg shadow-red-500/30 hover:bg-gradient-to-r hover:from-pink-600 hover:to-red-600 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-red-500/40 active:translate-y-0 disabled:bg-gray-400 disabled:shadow-none disabled:translate-y-0 disabled:cursor-not-allowed`;
+
+// --- Class mới cho Form này (Dịch từ style inline) ---
+const addProductSectionClass = "flex flex-col md:flex-row gap-4 items-end";
+const formSubLabelClass = "block text-sm font-medium text-gray-700 mb-1.5";
+const addCartButtonClass = "self-end py-2.5 px-5 rounded-xl cursor-pointer border-none bg-gradient-to-r from-orange-500 to-orange-300 text-white font-semibold text-base shadow-lg shadow-orange-500/30 transition-all duration-300 ease-in-out hover:bg-gradient-to-r hover:from-orange-400 hover:to-orange-200 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-orange-400/40 active:scale-95 active:shadow-md active:shadow-orange-500/20";
+const orderSummaryClass = "mt-5 pt-5 border-t border-gray-200 space-y-2";
+const summaryLineClass = "flex justify-between text-base";
+const summaryDiscountClass = "flex justify-between text-base text-green-600";
+const summaryTotalClass = "flex justify-between text-xl font-bold text-gray-900 mt-2 pt-2 border-t";
+// -----------------------------------------------------
+
 const initialFormData = {
-  customer: null, // Sẽ lưu object customer đầy đủ
-  promotion: null, // Sẽ lưu object promotion đầy đủ
-  cartItems: [], // Danh sách sản phẩm trong giỏ
+  customer: null,
+  promotion: null,
+  cartItems: [],
 };
 
 export default function OrderForm({ show, onSave, onCancel }) {
   const [formData, setFormData] = useState(initialFormData);
   const [errors, setErrors] = useState({});
   const [isSaving, setIsSaving] = useState(false);
-
-  // State cho khu vực "Thêm sản phẩm"
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [productError, setProductError] = useState("");
 
-  // Tự động reset form mỗi khi modal mở ra
   useEffect(() => {
     if (show) {
       setFormData(initialFormData);
@@ -35,11 +56,9 @@ export default function OrderForm({ show, onSave, onCancel }) {
 
   if (!show) return null;
 
-  // --- XỬ LÝ GIỎ HÀNG (CART) ---
-
+  // --- XỬ LÝ GIỎ HÀNG ---
   const handleAddToCart = () => {
     setProductError("");
-    // 1. Validate
     if (!selectedProduct) {
       setProductError("Vui lòng chọn một sản phẩm.");
       return;
@@ -48,45 +67,34 @@ export default function OrderForm({ show, onSave, onCancel }) {
       setProductError("Số lượng phải lớn hơn 0.");
       return;
     }
-    // 2. Kiểm tra tồn kho
     if (quantity > selectedProduct.stockQuantity) {
-      setProductError(
-        `Không đủ hàng. Chỉ còn ${selectedProduct.stockQuantity} sản phẩm.`
-      );
+      setProductError(`Không đủ hàng. Chỉ còn ${selectedProduct.stockQuantity} sản phẩm.`);
       return;
     }
-    // 3. Kiểm tra xem sản phẩm đã có trong giỏ chưa
     const existingItem = formData.cartItems.find(
       (item) => item.productId === selectedProduct.id
     );
-
     let newCartItems;
     if (existingItem) {
-      // Cập nhật số lượng nếu đã tồn tại
       newCartItems = formData.cartItems.map((item) =>
         item.productId === selectedProduct.id
           ? { ...item, quantity: item.quantity + quantity }
           : item
       );
     } else {
-      // Thêm mới vào giỏ
-      const newItem = {
+      newCartItems = [...formData.cartItems, {
         productId: selectedProduct.id,
         name: selectedProduct.name,
         unitPrice: selectedProduct.price,
         quantity: quantity,
-      };
-      newCartItems = [...formData.cartItems, newItem];
+      }];
     }
     setFormData({ ...formData, cartItems: newCartItems });
-
-    // 4. Reset ô thêm sản phẩm
     setSelectedProduct(null);
     setQuantity(1);
-    // (Chúng ta cần cách để reset ReusableSearch -> sẽ xử lý sau, tạm thời ổn)
+    // TODO: Cần một cách để clear ReusableSearch component (ví dụ: truyền vào 1 prop `resetKey`)
   };
 
-  // Xóa item khỏi giỏ
   const handleRemoveFromCart = (productId) => {
     const newCartItems = formData.cartItems.filter(
       (item) => item.productId !== productId
@@ -100,25 +108,21 @@ export default function OrderForm({ show, onSave, onCancel }) {
       (total, item) => total + item.unitPrice * item.quantity,
       0
     );
-
-    // (Logic giảm giá cơ bản - Sẽ cần API /promotions/validate sau)
     let discount = 0;
     if (formData.promotion) {
-      // Tạm thời hardcode, sau này sẽ thay bằng logic phức tạp hơn
       if (formData.promotion.type === "FIXED_AMOUNT") {
         discount = formData.promotion.discountValue;
       } else if (formData.promotion.type === "PERCENTAGE") {
         discount = subtotal * (formData.promotion.discountValue / 100);
       }
     }
-
-    const total = Math.max(0, subtotal - discount); // Đảm bảo không âm
+    const total = Math.max(0, subtotal - discount);
     return { subtotal, discount, total };
   };
 
   const { subtotal, discount, total } = calculateTotals();
 
-  // --- XỬ LÝ LƯU ĐƠN HÀNG ---
+  // --- XỬ LÝ LƯU ---
   const validateSave = () => {
     const newErrors = {};
     if (!formData.customer) {
@@ -136,10 +140,7 @@ export default function OrderForm({ show, onSave, onCancel }) {
       toast.error("Vui lòng kiểm tra lại thông tin đơn hàng!");
       return;
     }
-
     setIsSaving(true);
-
-    // Chuẩn bị DTO gửi đi
     const requestData = {
       customerId: formData.customer.id,
       promotionId: formData.promotion ? formData.promotion.id : null,
@@ -148,168 +149,124 @@ export default function OrderForm({ show, onSave, onCancel }) {
         quantity: item.quantity,
       })),
     };
-
-    // Gọi hàm onSave (được truyền từ OrdersPage)
     try {
-      // onSave là hàm 'handleSave' của OrdersPage
-      // nó sẽ tự gọi api, toast, và đóng modal
       await onSave(requestData);
     } catch (error) {
-      // Lỗi đã được toast ở OrdersPage, chỉ cần dừng loading
       setIsSaving(false);
     }
   };
 
   return (
-    <div className="modal-overlay">
-      <div className="modal" style={{ maxWidth: "800px", maxHeight: "95vh" }}>
-        <h2>Tạo đơn hàng mới</h2>
-        <div className="form">
-          {/* --- PHẦN 1: THÔNG TIN CHUNG --- */}
-          <div className="form-group">
-            <label>1. Tìm và chọn Khách hàng (*)</label>
+    <div className={overlayClass}>
+      {/* Tăng max-width và max-height cho modal này */}
+      <div className={`${modalClass} max-w-3xl max-h-[95vh]`}>
+        <h2 className={titleClass}>Tạo đơn hàng mới</h2>
+        <div className={formClass}>
+          {/* --- PHẦN 1: KHÁCH HÀNG --- */}
+          <div className={formGroupClass}>
+            <label className={labelClass}>1. Tìm và chọn Khách hàng (*)</label>
             <ReusableSearch
               searchApiUrl="/customers/search"
               placeholder="Tìm theo tên, SĐT, email khách hàng..."
               onSelect={(customer) => setFormData({ ...formData, customer })}
               displayField="name"
             />
-            {errors.customer && <p className="error-text">{errors.customer}</p>}
+            {errors.customer && <p className={errorClass}>{errors.customer}</p>}
           </div>
 
           {/* --- PHẦN 2: GIỎ HÀNG --- */}
-          <div className="form-group">
-            <label>2. Thêm sản phẩm vào đơn (*)</label>
-            <div className="add-product-section">
-              {/* --- Khối 1: Tìm Sản phẩm (Thêm label) --- */}
-              <div style={{ flex: 3 }}>
-                <label className="form-sub-label">Sản phẩm</label>
+          <div className={formGroupClass}>
+            <label className={labelClass}>2. Thêm sản phẩm vào đơn (*)</label>
+            <div className={addProductSectionClass}>
+              <div className="flex-[3]"> {/* Tương đương flex: 3 */}
+                <label className={formSubLabelClass}>Sản phẩm</label>
                 <ReusableSearch
                   searchApiUrl="/products/search"
                   placeholder="Tìm sản phẩm theo tên, loại..."
                   onSelect={(product) => setSelectedProduct(product)}
                   displayField="name"
+                  // TODO: Cần prop 'resetKey' để clear search này sau khi thêm
                 />
               </div>
-
-              {/* --- Khối 2: Số lượng (Thêm label) --- */}
-              <div className="quantity-wrapper">
+              <div className="flex-1"> {/* Tương đương quantity-wrapper */}
                 <label
                   htmlFor="order-quantity-input"
-                  className="form-sub-label"
+                  className={formSubLabelClass}
                 >
                   Số lượng
                 </label>
                 <input
-                  id="order-quantity-input" // Thêm ID để label hoạt động
+                  id="order-quantity-input"
                   type="number"
                   value={quantity}
                   onChange={(e) => setQuantity(Number(e.target.value))}
-                  placeholder="SL" // Giữ "SL" (giờ đã rõ nhờ label)
-                  className="quantity-input"
+                  placeholder="SL"
+                  className={baseInputClass} // Dùng baseInputClass
                   min="1"
                 />
               </div>
-
-              {/* --- Khối 3: Nút bấm (Thêm căn chỉnh) --- */}
               <button
                 onClick={handleAddToCart}
-                className="add-cart-btn"
-                style={{
-                  alignSelf: "flex-end",
-                  background: "linear-gradient(135deg, #ff7b00, #ffb347)",
-                  color: "white",
-                  fontWeight: 600,
-                  fontSize: "1rem",
-                  border: "none",
-                  borderRadius: "12px",
-                  padding: "10px 18px",
-                  cursor: "pointer",
-                  boxShadow: "0 4px 10px rgba(255, 123, 0, 0.3)",
-                  transition: "all 0.3s ease",
-                }}
-                onMouseEnter={(e) => {
-                  e.target.style.background =
-                    "linear-gradient(135deg, #ff9a1f, #ffd280)";
-                  e.target.style.transform = "translateY(-2px)";
-                  e.target.style.boxShadow =
-                    "0 6px 14px rgba(255, 155, 0, 0.4)";
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.background =
-                    "linear-gradient(135deg, #ff7b00, #ffb347)";
-                  e.target.style.transform = "translateY(0)";
-                  e.target.style.boxShadow =
-                    "0 4px 10px rgba(255, 123, 0, 0.3)";
-                }}
-                onMouseDown={(e) => {
-                  e.target.style.transform = "scale(0.96)";
-                  e.target.style.boxShadow = "0 2px 6px rgba(255, 123, 0, 0.2)";
-                }}
-                onMouseUp={(e) => {
-                  e.target.style.transform = "translateY(-2px)";
-                  e.target.style.boxShadow =
-                    "0 6px 14px rgba(255, 155, 0, 0.4)";
-                }}
+                className={addCartButtonClass}
               >
                 + Thêm
               </button>
             </div>
             {productError && (
-              <p className="error-text" style={{ marginTop: "5px" }}>
+              <p className={errorClass} style={{ marginTop: "5px" }}>
                 {productError}
               </p>
             )}
           </div>
 
-          {/* Bảng giỏ hàng */}
+          {/* Bảng giỏ hàng (đã được refactor) */}
           <CartTable
             items={formData.cartItems}
             onRemove={handleRemoveFromCart}
           />
-          {errors.cart && <p className="error-text">{errors.cart}</p>}
+          {errors.cart && <p className={errorClass}>{errors.cart}</p>}
 
           {/* --- PHẦN 3: KHUYẾN MÃI & TỔNG KẾT --- */}
-          <div className="form-group">
-            <label>3. Áp dụng Khuyến mãi (Tùy chọn)</label>
+          <div className={formGroupClass}>
+            <label className={labelClass}>3. Áp dụng Khuyến mãi (Tùy chọn)</label>
             <ReusableSearch
-              searchApiUrl="/promotions/search-active" // <-- Sửa endpoint cho đúng (File 15)
-              placeholder="Tìm khuyến mãi theo tên hoặc loại..." // <-- Sửa placeholder
+              searchApiUrl="/promotions/search-active"
+              placeholder="Tìm khuyến mãi theo tên hoặc loại..."
               onSelect={(promo) =>
                 setFormData({ ...formData, promotion: promo })
               }
-              displayField="name" // <-- SỬA 'code' THÀNH 'name'
+              displayField="name"
             />
           </div>
 
-          <div className="order-summary">
-            <div>
+          <div className={orderSummaryClass}>
+            <div className={summaryLineClass}>
               <span>Tạm tính:</span>
               <span>{subtotal.toLocaleString()} đ</span>
             </div>
             {discount > 0 && (
-              <div className="summary-discount">
-                <span>Giảm giá ({formData.promotion?.code}):</span>
+              <div className={summaryDiscountClass}>
+                <span>Giảm giá ({formData.promotion?.name}):</span> {/* Sửa từ code -> name */}
                 <span>- {discount.toLocaleString()} đ</span>
               </div>
             )}
-            <div className="summary-total">
+            <div className={summaryTotalClass}>
               <span>TỔNG CỘNG:</span>
               <span>{total.toLocaleString()} đ</span>
             </div>
           </div>
 
           {/* --- NÚT BẤM --- */}
-          <div className="form-buttons">
+          <div className={buttonGroupClass}>
             <button
-              className="save-btn"
+              className={saveButtonClass}
               onClick={handleSaveClick}
               disabled={isSaving}
             >
               {isSaving ? "Đang lưu..." : "Lưu Đơn Hàng"}
             </button>
             <button
-              className="cancel-btn"
+              className={cancelButtonClass}
               onClick={onCancel}
               disabled={isSaving}
             >

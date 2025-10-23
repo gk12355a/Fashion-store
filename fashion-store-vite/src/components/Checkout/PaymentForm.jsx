@@ -1,6 +1,23 @@
 import React from "react";
-import "../Form.css"; // Dùng CSS chung
-import ReusableSearch from "../Common/ReusableSearch"; // Import ReusableSearch
+// import "../Form.css"; // <- ĐÃ XÓA
+import ReusableSearch from "../Common/ReusableSearch"; 
+
+// --- Định nghĩa lớp Tailwind Base (Dịch từ Form.css) ---
+const overlayClass = "fixed inset-0 w-full h-full bg-black/50 flex items-center justify-center z-[1000] backdrop-blur-sm";
+const modalClass = "bg-white p-6 md:p-9 rounded-2xl w-[90%] max-w-lg max-h-[90vh] overflow-y-auto shadow-xl border-2 border-[#ffd1dc] font-poppins relative animate-modal-appear";
+const titleClass = "font-playfair text-2xl md:text-3xl text-gray-800 mb-6 text-center border-b-2 border-cyan-300 pb-4";
+const formClass = "flex flex-col gap-5";
+const formGroupClass = "flex flex-col gap-2";
+const labelClass = "font-semibold text-gray-800 text-base mb-1";
+const baseInputClass = "py-3 px-4 border-2 border-gray-200 rounded-xl text-base font-poppins transition-all duration-300 ease-in-out bg-gray-50 focus:outline-none focus:border-cyan-300 focus:bg-white focus:shadow-[0_0_0_3px_rgba(156,234,225,0.1)] focus:-translate-y-px hover:border-cyan-300 hover:bg-white";
+// Thêm style cho input disabled
+const disabledInputClass = `${baseInputClass} bg-gray-100 text-gray-500 cursor-not-allowed hover:border-gray-200 hover:bg-gray-100 focus:border-gray-200 focus:shadow-none focus:-translate-y-0`;
+const errorClass = "text-red-600 text-sm -mt-1 mb-1 font-medium flex items-center gap-1.5 before:content-['⚠️'] before:text-xs";
+const buttonGroupClass = "flex flex-col md:flex-row justify-between gap-4 mt-6 pt-5 border-t border-gray-200";
+const baseButtonClass = "py-3 px-6 border-none rounded-xl cursor-pointer text-base font-semibold font-poppins transition-all duration-300 ease-in-out flex-1";
+const saveButtonClass = `${baseButtonClass} bg-gradient-to-r from-green-600 to-green-500 text-white shadow-lg shadow-green-600/30 hover:bg-gradient-to-r hover:from-green-500 hover:to-green-600 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-green-600/40 active:translate-y-0`;
+const cancelButtonClass = `${baseButtonClass} bg-gradient-to-r from-red-500 to-pink-600 text-white shadow-lg shadow-red-500/30 hover:bg-gradient-to-r hover:from-pink-600 hover:to-red-600 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-red-500/40 active:translate-y-0`;
+// -----------------------------------------------------
 
 const paymentMethods = ["Tiền mặt", "Chuyển khoản", "Thẻ tín dụng", "Momo", "ZaloPay", "VNPay"];
 
@@ -15,43 +32,37 @@ export default function PaymentForm({
 }) {
   if (!show) return null;
 
-  // Format ngày giờ để hiển thị (chỉ dùng khi editing)
   const formatDateTimeLocal = (dateTimeString) => {
     return dateTimeString ? String(dateTimeString).slice(0, 16) : "";
   };
 
-  // --- Hàm xử lý khi chọn Nhân viên ---
   const handleStaffSelect = (staff) => {
     onChange({
       target: {
         name: 'staffId',
-        value: staff ? staff.id : '' // Vẫn lấy ID như cũ
+        value: staff ? staff.id : ''
       }
     });
   };
-  // ------------------------------------------
 
-  // --- HÀM MỚI: Tùy chỉnh cách hiển thị gợi ý Nhân viên ---
   const renderStaffSuggestion = (staff) => {
-    // Trả về JSX hiển thị "Tên (ID: X)"
     return (
       <>
-        {staff.name} <span style={{ color: '#888', marginLeft: '5px' }}>(ID: {staff.id})</span>
+        {staff.name} <span className="text-gray-500 ml-1.5">(ID: {staff.id})</span>
       </>
     );
   };
-  // --------------------------------------------------------
 
   return (
-    <div className="modal-overlay">
-      <div className="modal">
-        <h2>{editing ? "Chỉnh sửa thanh toán" : "Thêm thanh toán mới"}</h2>
-        <div className="form">
+    <div className={overlayClass}>
+      <div className={modalClass}>
+        <h2 className={titleClass}>{editing ? "Chỉnh sửa thanh toán" : "Thêm thanh toán mới"}</h2>
+        <div className={formClass}>
 
           {/* ----- MÃ ĐƠN HÀNG ----- */}
           {!editing && (
-            <div className="form-group">
-              <label htmlFor="payment-orderId">Mã đơn hàng (*)</label>
+            <div className={formGroupClass}>
+              <label className={labelClass} htmlFor="payment-orderId">Mã đơn hàng (*)</label>
               <input
                 id="payment-orderId"
                 name="orderId"
@@ -60,83 +71,85 @@ export default function PaymentForm({
                 placeholder="Nhập mã đơn hàng cần thanh toán"
                 type="number"
                 min="1"
+                className={baseInputClass}
               />
-              {errors.orderId && <p className="error-text">{errors.orderId}</p>}
+              {errors.orderId && <p className={errorClass}>{errors.orderId}</p>}
             </div>
           )}
           {editing && (
-             <div className="form-group">
-               <label>Mã đơn hàng</label>
-               <input type="text" value={String(formData.orderId || '')} disabled />
+             <div className={formGroupClass}>
+               <label className={labelClass}>Mã đơn hàng</label>
+               <input type="text" value={String(formData.orderId || '')} disabled className={disabledInputClass} />
              </div>
           )}
 
           {/* ----- PHƯƠNG THỨC THANH TOÁN ----- */}
-          <div className="form-group">
-            <label htmlFor="payment-method">Phương thức (*)</label>
+          <div className={formGroupClass}>
+            <label className={labelClass} htmlFor="payment-method">Phương thức (*)</label>
             <select
                 id="payment-method"
                 name="paymentMethod"
                 value={formData.paymentMethod}
                 onChange={onChange}
+                className={baseInputClass}
             >
                 <option value="">-- Chọn phương thức --</option>
                 {paymentMethods.map(method => (
                     <option key={method} value={method}>{method}</option>
                 ))}
             </select>
-            {errors.paymentMethod && <p className="error-text">{errors.paymentMethod}</p>}
+            {errors.paymentMethod && <p className={errorClass}>{errors.paymentMethod}</p>}
           </div>
 
-          {/* ----- CHỌN NHÂN VIÊN (Autocomplete - Đã cập nhật) ----- */}
+          {/* ----- CHỌN NHÂN VIÊN (Autocomplete) ----- */}
           {!editing && (
-            <div className="form-group">
-              <label>Nhân viên thực hiện (*)</label>
+            <div className={formGroupClass}>
+              <label className={labelClass}>Nhân viên thực hiện (*)</label>
               <ReusableSearch
-                searchApiUrl="/staffs/search" // Vẫn dùng API search
+                searchApiUrl="/staffs/search"
                 placeholder="Tìm nhân viên theo tên..."
                 onSelect={handleStaffSelect}
-                displayField="name" // Vẫn hiển thị tên trong input sau khi chọn
-                paramName="keyword" // Giữ nguyên paramName="keyword"
-                // --- THÊM PROP NÀY ---
-                renderSuggestion={renderStaffSuggestion} // Truyền hàm tùy chỉnh hiển thị
-                // ---------------------
+                displayField="name"
+                paramName="keyword" 
+                renderSuggestion={renderStaffSuggestion}
               />
               {formData.staffId && (
-                <p style={{ fontSize: '13px', color: '#555', marginTop: '5px' }}>
+                <p className="text-sm text-gray-600 mt-1.5">
                   Mã NV đã chọn: {formData.staffId}
                 </p>
               )}
-              {errors.staffId && <p className="error-text">{errors.staffId}</p>}
+              {errors.staffId && <p className={errorClass}>{errors.staffId}</p>}
             </div>
           )}
 
           {/* ----- HIỂN THỊ THÔNG TIN KHI SỬA ----- */}
           {editing && (
             <>
-              <div className="form-group">
-                <label>Số tiền</label>
+              <div className={formGroupClass}>
+                <label className={labelClass}>Số tiền</label>
                 <input
                   type="text"
                   value={formData.displayAmount != null ? `${Number(formData.displayAmount).toLocaleString('vi-VN')} đ` : ''}
                   disabled
+                  className={disabledInputClass}
                 />
               </div>
-              <div className="form-group">
-                <label>Ngày thanh toán</label>
+              <div className={formGroupClass}>
+                <label className={labelClass}>Ngày thanh toán</label>
                 <input
                   type="datetime-local"
                   value={formatDateTimeLocal(formData.displayPaymentDate)}
                   disabled
+                  className={disabledInputClass}
                 />
               </div>
             </>
           )}
 
           {/* ----- NÚT BẤM ----- */}
-          <div className="form-buttons">
-            <button className="save-btn" onClick={onSave}>Lưu</button>
-            <button className="cancel-btn" onClick={onCancel}>Hủy</button>
+          <div className={buttonGroupClass}>
+            <button className={saveButtonClass} onClick={onSave}>Lưu</button>
+            <button className={cancelButtonClass} onClick={onCancel}>Hủy</button>
           </div>
         </div>
       </div>
