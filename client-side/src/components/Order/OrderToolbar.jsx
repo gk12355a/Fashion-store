@@ -62,18 +62,6 @@ export default function OrderToolbar({
           <option value="totalAmount,asc">Tổng tiền: Thấp đến Cao</option>
         </select>
       </div>
-      {/* --- Lọc Ngày --- */}
-      <div className="date-filter-group">
-        <label htmlFor="start-date">Từ ngày:</label>
-        <input type="date" id="start-date" className="date-input" value={startDate} onChange={(e) => onDateChange('startDate', e.target.value)} />
-        <label htmlFor="end-date">Đến ngày:</label>
-        <input type="date" id="end-date" className="date-input" value={endDate} onChange={(e) => onDateChange('endDate', e.target.value)} />
-      </div>
-      
-      {/* --- Nút Export --- */}
-      <button className="export-btn" onClick={onExportClick} disabled={isExporting}>
-        {isExporting ? 'Đang xuất...' : 'Xuất Báo Cáo'}
-      </button>
 
       {/* ----- KHU VỰC PHÂN TRANG ----- */}
       <div className="pagination-controls">
