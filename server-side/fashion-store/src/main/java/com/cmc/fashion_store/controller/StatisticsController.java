@@ -1,11 +1,13 @@
 package com.cmc.fashion_store.controller;
 
 import com.cmc.fashion_store.dto.DashboardSummaryResponse;
+import com.cmc.fashion_store.dto.MonthlyRevenueResponse;
 import com.cmc.fashion_store.service.StatisticsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -21,8 +23,16 @@ public class StatisticsController {
         return ResponseEntity.ok(summary);
     }
 
-    // --- Add other statistic endpoints here later ---
-    // @GetMapping("/revenue/monthly") ...
+    // --- ADD THIS ENDPOINT ---
+    @GetMapping("/revenue/monthly")
+    public ResponseEntity<MonthlyRevenueResponse> getMonthlyRevenue(
+            // Use defaultValue to automatically get the current year if param is missing
+            @RequestParam(required = false, defaultValue = "#{T(java.time.LocalDate).now().getYear()}") int year
+    ) {
+        MonthlyRevenueResponse monthlyRevenue = statisticsService.getMonthlyRevenue(year);
+        return ResponseEntity.ok(monthlyRevenue);
+    }
+    // -------------------------
     // @GetMapping("/products/by-category") ...
     // @GetMapping("/customers/new/weekly") ...
 

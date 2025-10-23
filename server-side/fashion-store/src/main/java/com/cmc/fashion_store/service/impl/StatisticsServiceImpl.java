@@ -1,6 +1,8 @@
 package com.cmc.fashion_store.service.impl;
 
 import com.cmc.fashion_store.dto.DashboardSummaryResponse;
+import com.cmc.fashion_store.dto.MonthlyRevenueQueryResult;
+import com.cmc.fashion_store.dto.MonthlyRevenueResponse;
 import com.cmc.fashion_store.dto.SummaryStatDto;
 import com.cmc.fashion_store.repository.CustomerRepository;
 import com.cmc.fashion_store.repository.PaymentRepository;
@@ -15,7 +17,10 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
-
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.Map; // <- Import Map
+import java.util.stream.IntStream; // <-- Import IntStream
 @Service
 @RequiredArgsConstructor // Use constructor injection
 @Transactional(readOnly = true) // Most methods here are read-only
@@ -97,4 +102,26 @@ public class StatisticsServiceImpl implements StatisticsService {
                                               .multiply(new BigDecimal(100));
         return percentageChange.doubleValue();
     }
+    // --- ADD THIS METHOD IMPLEMENTATION ---
+    @Override
+    public MonthlyRevenueResponse getMonthlyRevenue(int year) {
+        // 1. Call the repository method
+        List<MonthlyRevenueQueryResult> results = paymentRepository.findMonthlyRevenueByYear(year);
+
+        // 2. Process results into a Map for easy lookup: {1: revenueJan, 2: revenueFeb, ...}
+        Map<Integer, BigDecimal> revenueMap = results.stream()
+                .collect(Collectors.toMap(
+                        MonthlyRevenueQueryResult::getMonth,
+                        MonthlyRevenueQueryResult::getRevenue
+                ));
+
+        // 3. Create the final list of 12 months, filling missing months with ZERO
+        List<BigDecimal> monthlyRevenueList = IntStream.rangeClosed(1, 12) // Generates numbers 1 to 12
+                .mapToObj(month -> revenueMap.getOrDefault(month, BigDecimal.ZERO)) // Get revenue or ZERO
+                .collect(Collectors.toList());
+
+        // 4. Return the response DTO
+        return new MonthlyRevenueResponse(year, monthlyRevenueList);
+    }
+    // ------------------------------------
 }

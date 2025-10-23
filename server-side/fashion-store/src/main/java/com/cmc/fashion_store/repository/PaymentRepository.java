@@ -1,5 +1,6 @@
 package com.cmc.fashion_store.repository;
 
+import com.cmc.fashion_store.dto.MonthlyRevenueQueryResult;
 import com.cmc.fashion_store.model.Payment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -52,4 +53,19 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     BigDecimal findTotalRevenueBetweenDates(@Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate);
     // --------------------------------------------
+
+    // --- ADD THIS METHOD for Monthly Revenue Chart ---
+    /**
+     * Finds the total revenue for each month within a specific year.
+     * Uses MONTH() and YEAR() functions (check compatibility if not using MySQL/MariaDB).
+     * @param year The target year.
+     * @return A list of objects containing month number and total revenue for that month.
+     */
+    @Query("SELECT new com.cmc.fashion_store.dto.MonthlyRevenueQueryResult(MONTH(p.paymentDate), SUM(p.amount)) " +
+           "FROM Payment p " +
+           "WHERE YEAR(p.paymentDate) = :year " +
+           "GROUP BY MONTH(p.paymentDate) " +
+           "ORDER BY MONTH(p.paymentDate) ASC")
+    List<MonthlyRevenueQueryResult> findMonthlyRevenueByYear(@Param("year") int year);
+    // -------------------------------------------------
 }
