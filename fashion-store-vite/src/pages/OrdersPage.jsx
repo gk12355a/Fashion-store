@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import api from "../api";
-import SearchBar from "../components/Order/SearchBar";
+import SearchBar from "../components/Order/SearchBarOrder";
 import OrderList from "../components/Order/OrderList";
 import OrderToolbar from "../components/Order/OrderToolbar";
 import OrderForm from "../components/Order/OrderForm"; // "Smart Modal"

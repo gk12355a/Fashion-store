@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import api from "../api";
-import SearchBar from "../components/Staff/SearchBar";
+import SearchBar from "../components/Staff/SearchBarStaff";
 import StaffTable from "../components/Staff/StaffTable";
 import StaffToolbar from "../components/Staff/StaffToolbar"; // Import Toolbar mới
 import StaffForm from "../components/Staff/StaffForm";

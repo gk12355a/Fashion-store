@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import api from "../api";
-import SearchBar from "../components/OrderDetail/SearchBar";
+import SearchBar from "../components/OrderDetail/SearchBarOrderDetail";
 import OrderDetailTable from "../components/OrderDetail/OrderDetailTable";
 import OrderDetailToolbar from "../components/OrderDetail/OrderDetailToolbar"; // Import Toolbar mới
 import OrderDetailForm from "../components/OrderDetail/OrderDetailForm";

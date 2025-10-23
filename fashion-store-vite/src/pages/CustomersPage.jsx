@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import api from "../api";
-import SearchBar from "../components/Customer/SearchBar";
+import SearchBar from "../components/Customer/SearchBarCustomer";
 import CustomerTable from "../components/Customer/CustomerTable";
 import CustomerToolbar from "../components/Customer/CustomerToolbar";
 import CustomerForm from "../components/Customer/CustomerForm";

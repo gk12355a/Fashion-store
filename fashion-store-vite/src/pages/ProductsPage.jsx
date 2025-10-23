@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import api from "../api";
-import SearchBarProduct from "../components/Product/SearchBar";
+import SearchBarProduct from "../components/Product/SearchBarProduct";
 import ProductTable from "../components/Product/ProductTable";
 // import PaginationProduct from "../components/Product/Pagination";
 import ProductForm from "../components/Product/ProductForm";

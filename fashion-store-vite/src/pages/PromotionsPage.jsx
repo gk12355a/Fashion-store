@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import api from "../api";
-import SearchBar from "../components/Promotion/SearchBar";
+import SearchBar from "../components/Promotion/SearchBarPromotion";
 import PromotionTable from "../components/Promotion/PromotionTable";
 import PromotionToolbar from "../components/Promotion/PromotionToolbar"; // Import Toolbar mới
 import PromotionForm from "../components/Promotion/PromotionForm";

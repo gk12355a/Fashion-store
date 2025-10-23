@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import api from "../api";
-import SearchBar from "../components/Checkout/SearchBar";
+import SearchBar from "../components/Checkout/SearchBarPayment";
 import PaymentTable from "../components/Checkout/PaymentTable";
 import PaymentToolbar from "../components/Checkout/PaymentToolbar"; // Import Toolbar mới
 import PaymentForm from "../components/Checkout/PaymentForm";
