@@ -1,0 +1,81 @@
+.search-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff;
+  border: 1px solid #f0dede;
+  border-radius: 12px;
+  padding: 10px 16px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  margin: 20px 0;
+}
+
+.search-bar input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 15px;
+  outline: none;
+  color: #0ca678;
+}
+
+.search-bar input::placeholder {
+  color: #0ca678;
+}
+
+.search-bar button {
+  background: #0ca678;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  margin-left: 10px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s ease;
+}
+
+.search-bar button:hover {
+  background: #099268;
+}
+/* ----- Thêm CSS cho Autocomplete ----- */
+
+/* Wrapper là cần thiết để định vị danh sách gợi ý */
+.search-bar-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.suggestions-list {
+  position: absolute;
+  top: 100%; /* Nằm ngay dưới thanh tìm kiếm */
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 0 0 8px 8px; /* Bo góc dưới */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 999; /* Nổi lên trên */
+}
+
+.suggestion-item {
+  padding: 12px 18px;
+  font-size: 15px;
+  color: #333;
+  cursor: pointer;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.suggestion-item:last-child {
+  border-bottom: none;
+}
+
+.suggestion-item:hover {
+  background-color: #f9f9f9;
+}
