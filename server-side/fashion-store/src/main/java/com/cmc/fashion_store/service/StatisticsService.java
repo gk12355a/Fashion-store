@@ -33,4 +33,12 @@ public interface StatisticsService {
      */
     List<CategoryCountDto> getProductCountByCategory();
     // ---------------------------------
+    // --- ADD THIS METHOD SIGNATURE ---
+    /**
+     * Gets the count of new customers registered per week for the last N weeks.
+     * @param numberOfWeeks How many recent weeks to include.
+     * @return A list of counts, ordered from oldest week to newest week.
+     */
+    List<Long> getWeeklyNewCustomers(int numberOfWeeks);
+    // ---------------------------------
 }

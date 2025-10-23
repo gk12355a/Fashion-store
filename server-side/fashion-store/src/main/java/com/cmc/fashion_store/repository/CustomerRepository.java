@@ -42,4 +42,20 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
     @Query("SELECT COUNT(c.id) FROM Customer c WHERE c.registrationDate >= :startDate AND c.registrationDate < :endDate")
     Long countNewCustomersBetweenDates(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
     // ----------------------------------------------
+    // --- ADD THIS NATIVE QUERY for Weekly New Customers Chart ---
+    /**
+     * Counts new customers per week starting from a given date.
+     * Uses YEARWEEK function specific to MySQL/MariaDB.
+     * Mode 1 means the week starts on Monday.
+     * @param startDate The earliest registration date to include.
+     * @return A list of counts, ordered by week. The specific week number isn't returned, only the counts in order.
+     */
+    @Query(value = "SELECT COUNT(c.id) " +
+                   "FROM customers c " +
+                   "WHERE c.registration_date >= :startDate " +
+                   "GROUP BY YEARWEEK(c.registration_date, 1) " + // Mode 1: Week starts Monday
+                   "ORDER BY YEARWEEK(c.registration_date, 1) ASC",
+           nativeQuery = true)
+    List<Long> findNewCustomerCountsPerWeek(@Param("startDate") LocalDate startDate);
+    // ---------------------------------------------------------
 }

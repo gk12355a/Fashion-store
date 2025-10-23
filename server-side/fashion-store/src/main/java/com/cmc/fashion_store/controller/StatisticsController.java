@@ -44,6 +44,18 @@ public class StatisticsController {
         return ResponseEntity.ok(categoryCounts);
     }
     // -------------------------
-    // @GetMapping("/customers/new/weekly") ...
+    // --- ADD THIS ENDPOINT ---
+    @GetMapping("/customers/new/weekly")
+    public ResponseEntity<List<Long>> getWeeklyNewCustomers(
+        // Set a default value for the number of weeks
+        @RequestParam(required = false, defaultValue = "8") int weeks
+    ) {
+        if (weeks <= 0) { // Basic validation
+             weeks = 8;
+        }
+        List<Long> weeklyData = statisticsService.getWeeklyNewCustomers(weeks);
+        return ResponseEntity.ok(weeklyData);
+    }
+    // -------------------------
 
 }
