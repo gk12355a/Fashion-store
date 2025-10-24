@@ -4,7 +4,7 @@ FROM node:lts AS build
 WORKDIR /app
 
 COPY . .
-RUN npm install
+RUN npm install chart.js react-chartjs-2 --legacy-peer-deps
 RUN npm run build
 
 # Stage runtime
