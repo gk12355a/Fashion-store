@@ -3,10 +3,8 @@ FROM node:22.21.0-alpine AS build
 
 WORKDIR /app
 
-COPY package*.json ./
-RUN npm ci --no-audit --no-fund
-
 COPY . .
+RUN npm install
 RUN npm run build
 
 # Stage runtime
