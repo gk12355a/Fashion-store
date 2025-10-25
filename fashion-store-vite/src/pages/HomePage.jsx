@@ -111,7 +111,7 @@ export default function HomePage() {
             api.get("/statistics/summary"),
             api.get("/statistics/revenue/monthly"), // Mặc định lấy năm hiện tại
             api.get("/statistics/products/by-category"),
-            api.get("/statistics/customers/new/weekly"), // Mặc định lấy 8 tuần
+            api.get("/statistics/customers/new/weekly?weeks=16"), // Thay đổi từ 8 thành 16 tuần
           ]);
 
         setSummaryData(summaryRes.data);
@@ -299,6 +299,7 @@ export default function HomePage() {
   };
   const customersChartOptions = {
     responsive: true,
+    maintainAspectRatio: false, // Thêm dòng này để chart có thể điều chỉnh tỷ lệ
     plugins: { legend: { display: false } },
     scales: { y: { beginAtZero: true } },
   };
@@ -401,24 +402,26 @@ export default function HomePage() {
       </div>
 
       {/* --- Charts Section --- */}
-      <div className="flex flex-wrap gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         {/* Doanh Thu Theo Tháng */}
-        <div className="flex-1 min-w-[300px] bg-white rounded-xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-all duration-300">
+        <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-all duration-300">
           <h3 className="text-xl font-bold text-[#7B0323] mb-6 border-b border-gray-200 pb-3">
             Doanh Thu Theo Tháng (
             {monthlyRevenueData?.year || new Date().getFullYear()})
           </h3>
-          {monthlyRevenueData && (
-            <Line data={revenueChartData} options={revenueChartOptions} />
-          )}
+          <div className="h-[300px]">
+            {monthlyRevenueData && (
+              <Line data={revenueChartData} options={revenueChartOptions} />
+            )}
+          </div>
         </div>
 
         {/* Danh Mục Sản Phẩm */}
-        <div className="flex-1 min-w-[300px] bg-white rounded-xl shadow-lg p-6 flex flex-col items-center border border-gray-100 hover:shadow-xl transition-all duration-300">
+        <div className="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center border border-gray-100 hover:shadow-xl transition-all duration-300">
           <h3 className="text-xl font-bold text-[#7B0323] mb-6 border-b border-gray-200 pb-3 w-full text-center">
             Danh Mục Sản Phẩm
           </h3>
-          <div className="w-full max-w-[400px]">
+          <div className="w-full max-w-[300px] h-[300px] flex items-center justify-center">
             {categoryData && (
               <Doughnut
                 data={categoryChartData}
@@ -430,14 +433,15 @@ export default function HomePage() {
       </div>
 
       {/* Khách Hàng Mới Theo Tuần */}
-      <div className="bg-white rounded-xl shadow-lg p-6 mb-8 w-[640px] h-[400px] border border-gray-100 hover:shadow-xl transition-all duration-300 mt-6">
+      <div className="bg-white rounded-xl shadow-lg p-6 mb-8 border border-gray-100 hover:shadow-xl transition-all duration-300">
         <h3 className="text-xl font-bold text-[#7B0323] mb-6 border-b border-gray-200 pb-3">
           Khách Hàng Mới Theo Tuần
         </h3>
-        {/* Component Bar */}
-        {weeklyCustomerData && (
-          <Bar data={customersChartData} options={customersChartOptions} />
-        )}
+        <div className="h-[350px]">
+          {weeklyCustomerData && (
+            <Bar data={customersChartData} options={customersChartOptions} />
+          )}
+        </div>
       </div>
       {/* --- 4. ADD EXPORT SECTION --- */}
       <div className="bg-white rounded-xl shadow-lg p-6 mb-8 border border-gray-100 hover:shadow-xl transition-all duration-300">

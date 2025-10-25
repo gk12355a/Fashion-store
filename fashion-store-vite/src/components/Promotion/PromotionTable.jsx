@@ -37,7 +37,7 @@ export default function PromotionTable({
       <thead>
         <tr>
           <th className={thClass}>ID</th>
-          <th className={thClass}>Tên KM</th>
+          <th className={thClass}>Tên khuyến mãi</th>
           <th className={thClass}>Loại</th>
           <th className={thClass}>Giảm giá</th>
           <th className={thClass}>Thời hạn</th>
