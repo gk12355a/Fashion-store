@@ -5,7 +5,7 @@ import ProductTable from "../components/Product/ProductTable";
 // import PaginationProduct from "../components/Product/Pagination";
 import ProductForm from "../components/Product/ProductForm";
 import ProductToolbar from "../components/Product/ProductToolbar";
-// import "../styles/FeaturePage.css"; // <- Đã XÓA
+import Loading from "../components/Loading"; // <-- 1. IMPORT COMPONENT LOADING
 
 // 1. Import toast
 import { toast } from "react-toastify";
@@ -35,6 +35,7 @@ export default function ProductPage() {
   const [file, setFile] = useState(null);
   // 3. State mới cho autocomplete
   const [suggestions, setSuggestions] = useState([]);
+  const [loading, setLoading] = useState(true); // <-- 2. THÊM STATE LOADING
 
   const fetchProducts = async () => {
     try {
@@ -57,12 +58,14 @@ export default function ProductPage() {
         setProducts(response.data.content);
         setTotalPages(response.data.totalPages);
       }
+      setLoading(false); // <-- 3. SET LOADING = FALSE KHI THÀNH CÔNG
     } catch (error) {
       console.error("Lỗi khi tải danh sách sản phẩm:", error);
       // 2. Thêm toast lỗi khi tải dữ liệu
       toast.error("Không thể tải danh sách sản phẩm!");
       setProducts([]);
       setTotalPages(0);
+      setLoading(false); // <-- 4. SET LOADING = FALSE KHI LỖI
     }
   };
 
@@ -77,6 +80,7 @@ export default function ProductPage() {
   }, [search]);
 
   useEffect(() => {
+    setLoading(true); // <-- 5. SET LOADING = TRUE TRƯỚC KHI GỌI API
     fetchProducts();
   }, [currentPage, sortField, sortOrder, debouncedSearch]);
 
@@ -263,14 +267,15 @@ export default function ProductPage() {
     setShowModal(true);
   };
 
-  return (
-    // THAY ĐỔI 1: Áp dụng padding 'p-5' (tương đương 20px) 
+  // <-- 6. THÊM BIỂU THỨC ĐIỀU KIỆN (TERNARY) ĐỂ HIỂN THỊ LOADING -->
+  return loading ? (
+    <Loading />
+  ) : (
     <div className="p-5">
-      {/* THAY ĐỔI 2: Thêm class Tailwind cho H2 (tương đương CSS cũ)  */}
       <h2 className="text-2xl font-bold text-center mt-2 mb-4">
         Danh sách sản phẩm
       </h2>
-      
+
       <SearchBarProduct
         search={search}
         setSearch={setSearch}

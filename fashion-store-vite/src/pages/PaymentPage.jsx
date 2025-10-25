@@ -4,7 +4,7 @@ import SearchBar from "../components/Checkout/SearchBarPayment";
 import PaymentTable from "../components/Checkout/PaymentTable";
 import PaymentToolbar from "../components/Checkout/PaymentToolbar"; // Import Toolbar mới
 import PaymentForm from "../components/Checkout/PaymentForm";
-// import "../styles/FeaturePage.css"; // <- ĐÃ XÓA
+import Loading from "../components/Loading"; // <-- 1. IMPORT COMPONENT LOADING
 import { toast } from 'react-toastify'; // Import Toastify
 
 export default function CheckoutPage() {
@@ -33,6 +33,7 @@ export default function CheckoutPage() {
     displayPaymentDate: "", // Chỉ để hiển thị khi Sửa
   });
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(true); // <-- 2. THÊM STATE LOADING
 
   // --- Hàm Fetch Dữ liệu ---
   const fetchPayments = async () => {
@@ -63,11 +64,13 @@ export default function CheckoutPage() {
         setPayments(response.data.content);
         setTotalPages(response.data.totalPages);
       }
+      setLoading(false); // <-- 3. SET LOADING = FALSE KHI THÀNH CÔNG
     } catch (error) {
       console.error("Lỗi khi tải danh sách thanh toán:", error);
       toast.error("Không thể tải danh sách thanh toán!"); // Thêm Toast
       setPayments([]);
       setTotalPages(0);
+      setLoading(false); // <-- 4. SET LOADING = FALSE KHI LỖI
     }
   };
   // --- 2. useEffect MỚI CHO AUTOCOMPLETE ---
@@ -116,6 +119,7 @@ export default function CheckoutPage() {
   }, [search]);
 
   useEffect(() => {
+    setLoading(true); // <-- 5. SET LOADING = TRUE TRƯỚC KHI GỌI API
     fetchPayments();
   }, [currentPage, sortField, sortOrder, debouncedSearch]); // Chạy lại khi các giá trị này thay đổi
 
@@ -220,10 +224,11 @@ export default function CheckoutPage() {
   };
 
   // --- JSX Render ---
-  return (
-    // THAY ĐỔI 1: Áp dụng padding 'p-5'
+  // <-- 6. THÊM BIỂU THỨC ĐIỀU KIỆN (TERNARY) ĐỂ HIỂN THỊ LOADING -->
+  return loading ? (
+    <Loading />
+  ) : (
     <div className="p-5">
-      {/* THAY ĐỔI 2: Thêm class Tailwind cho H2 */}
       <h2 className="text-2xl font-bold text-center mt-2 mb-4">
         Danh sách thanh toán
       </h2>
