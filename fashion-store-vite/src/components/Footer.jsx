@@ -45,7 +45,7 @@ export default function Footer() {
             <span className="bg-gradient-to-r from-white to-[#ff4757] bg-clip-text text-transparent font-bold">
               Vélin
             </span>{" "}
-            Shop
+            Store
           </h4>
           <p className={colTextClass}>
           Chuyên cung cấp các sản phẩm thời trang nam nữ, cập nhật xu hướng mới nhất với chất lượng cao và giá cả tốt nhất thị trường hiện nay.
