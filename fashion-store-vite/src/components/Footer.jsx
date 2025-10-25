@@ -41,7 +41,7 @@ export default function Footer() {
         {/* Cột 1 */}
         <div className={colClass}>
           <h4 className={colTitleClass}>
-            {/* 🌟 Làm nổi bật chữ Vélin */}
+            {/* Làm nổi bật chữ Vélin */}
             <span className="bg-gradient-to-r from-[#567c2d] to-[#95b46a] bg-clip-text text-transparent font-extrabold">
               Vélin
             </span>{" "}
