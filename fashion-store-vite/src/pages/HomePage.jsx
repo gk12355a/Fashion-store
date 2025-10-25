@@ -269,7 +269,7 @@ export default function HomePage() {
           "#8b5cf6",
           "#ef4444",
           "#6b7280",
-        ], // Thêm màu nếu cần
+        ], 
       },
     ],
   };
