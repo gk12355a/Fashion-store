@@ -31,7 +31,7 @@ export default function Header() {
         <NavLink to="/" className={logoLinkClass} end>
           <span className={logoIconClass}><img src="../../logo.png" alt="Logo" /></span>
 
-          {/* 🌟 Làm nổi bật chữ “Vélin” */}
+          {/* Làm nổi bật chữ “Vélin” */}
           <span
             className="bg-gradient-to-r from-[#567c2d] to-[#95b46a] bg-clip-text text-transparent drop-shadow-sm"
           >
