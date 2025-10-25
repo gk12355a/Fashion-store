@@ -18,6 +18,8 @@ import {
 } from "chart.js";
 import useCountUpAnimation from "../hooks/useCountUpAnimation"; // Import custom hook
 import { toast } from "react-toastify"; // <-- THÊM DÒNG NÀY
+import Loading from "../components/Loading"; // <-- 1. IMPORT COMPONENT LOADING
+
 // Đăng ký các thành phần cần thiết cho Chart.js
 ChartJS.register(
   CategoryScale,
@@ -307,7 +309,8 @@ export default function HomePage() {
 
   // Hiển thị loading hoặc lỗi
   if (loading) {
-    return <div className={pageClass}>Đang tải dữ liệu Dashboard...</div>;
+    // <-- 2. THAY THẾ DIV BẰNG COMPONENT LOADING -->
+    return <Loading />;
   }
   if (error) {
     return <div className={`${pageClass} text-red-600`}>{error}</div>;

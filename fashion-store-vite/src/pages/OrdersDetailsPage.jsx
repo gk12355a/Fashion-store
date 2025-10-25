@@ -4,6 +4,7 @@ import SearchBar from "../components/OrderDetail/SearchBarOrderDetail";
 import OrderDetailTable from "../components/OrderDetail/OrderDetailTable";
 import OrderDetailToolbar from "../components/OrderDetail/OrderDetailToolbar"; // Import Toolbar mới
 import OrderDetailForm from "../components/OrderDetail/OrderDetailForm";
+import LoadingSpinner from "../components/LoadingSpinner";
 // import "../styles/FeaturePage.css"; // <- ĐÃ XÓA
 import { toast } from "react-toastify"; // Import Toastify
 
@@ -31,6 +32,7 @@ export default function OrderDetailsPage() {
     unitPrice: "",
   });
   const [errors, setErrors] = useState({}); // State lưu lỗi validation
+  const [loading, setLoading] = useState(true); // Loading state
 
   // --- Hàm Fetch Dữ liệu (Gọi API GET /order-details hoặc /order-details/search) ---
   const fetchOrderDetails = async () => {
@@ -49,6 +51,7 @@ export default function OrderDetailsPage() {
           setOrderDetails([]);
           setTotalPages(0);
           toast.info("Vui lòng nhập Mã Đơn Hàng (số) để tìm kiếm.");
+          setLoading(false);
           return; // Dừng hàm
         }
 
@@ -70,11 +73,13 @@ export default function OrderDetailsPage() {
         setOrderDetails(response.data.content); // Lấy mảng dữ liệu
         setTotalPages(response.data.totalPages); // Lấy tổng số trang
       }
+      setLoading(false);
     } catch (error) {
       console.error("Lỗi khi tải chi tiết đơn hàng:", error);
       toast.error("Không thể tải danh sách chi tiết đơn hàng!");
       setOrderDetails([]); // Reset bảng nếu lỗi
       setTotalPages(0);
+      setLoading(false);
     }
   };
 
@@ -91,6 +96,7 @@ export default function OrderDetailsPage() {
 
   // Fetch dữ liệu khi các tham số thay đổi
   useEffect(() => {
+    setLoading(true);
     fetchOrderDetails();
   }, [currentPage, sortField, sortOrder, debouncedSearch]); // Chạy lại khi các giá trị này thay đổi
 
@@ -214,7 +220,9 @@ export default function OrderDetailsPage() {
   };
 
   // --- JSX Render ---
-  return (
+  return loading ? (
+    <LoadingSpinner />
+  ) : (
     // THAY ĐỔI 1: Áp dụng padding 'p-5'
     <div className="p-5">
       {/* THAY ĐỔI 2: Thêm class Tailwind cho H2 */}

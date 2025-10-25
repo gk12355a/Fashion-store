@@ -4,7 +4,7 @@ import SearchBar from "../components/Order/SearchBarOrder";
 import OrderList from "../components/Order/OrderList";
 import OrderToolbar from "../components/Order/OrderToolbar";
 import OrderForm from "../components/Order/OrderForm"; // "Smart Modal"
-// import "../styles/FeaturePage.css"; // <- ĐÃ XÓA
+import Loading from "../components/Loading"; // <-- 1. IMPORT COMPONENT LOADING
 import { toast } from "react-toastify";
 
 // TẠO MỘT FORM RIÊNG BIỆT ĐỂ SỬA STATUS
@@ -76,6 +76,7 @@ export default function OrdersPage() {
 
   const [editFormData, setEditFormData] = useState({ id: null, status: "" });
   const [isSaving, setIsSaving] = useState(false);
+  const [loading, setLoading] = useState(true); // <-- 2. THÊM STATE LOADING
 
   // --- SỬA HÀM fetchOrders ĐỂ GỌI API MỚI ---
   const fetchOrders = async () => {
@@ -117,11 +118,13 @@ export default function OrdersPage() {
 
       setOrders(response.data.content);
       setTotalPages(response.data.totalPages);
+      setLoading(false); // <-- 3. SET LOADING = FALSE KHI THÀNH CÔNG
     } catch (error) {
       console.error("Lỗi khi tải danh sách đơn hàng:", error);
       toast.error("Không thể tải danh sách đơn hàng!");
       setOrders([]);
       setTotalPages(0);
+      setLoading(false); // <-- 4. SET LOADING = FALSE KHI LỖI
     }
   };
   // --- KẾT THÚC SỬA HÀM ---
@@ -135,6 +138,7 @@ export default function OrdersPage() {
   }, [search]);
 
   useEffect(() => {
+    setLoading(true); // <-- 5. SET LOADING = TRUE TRƯỚC KHI GỌI API
     fetchOrders();
   }, [currentPage, sortField, sortOrder, debouncedSearch]);
 
@@ -199,10 +203,11 @@ export default function OrdersPage() {
     }
   };
 
-  return (
-    // THAY ĐỔI 1: Áp dụng padding 'p-5'
+  // <-- 6. THÊM BIỂU THỨC ĐIỀU KIỆN (TERNARY) ĐỂ HIỂN THỊ LOADING -->
+  return loading ? (
+    <Loading />
+  ) : (
     <div className="p-5">
-      {/* THAY ĐỔI 2: Thêm class Tailwind cho H2 */}
       <h2 className="text-2xl font-bold text-center mt-2 mb-4">
         Danh sách đơn hàng
       </h2>

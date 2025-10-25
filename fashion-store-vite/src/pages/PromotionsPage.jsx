@@ -4,7 +4,7 @@ import SearchBar from "../components/Promotion/SearchBarPromotion";
 import PromotionTable from "../components/Promotion/PromotionTable";
 import PromotionToolbar from "../components/Promotion/PromotionToolbar"; // Import Toolbar mới
 import PromotionForm from "../components/Promotion/PromotionForm";
-// import "../styles/FeaturePage.css"; // <- ĐÃ XÓA
+import Loading from "../components/Loading"; // <-- 1. IMPORT COMPONENT LOADING
 import { toast } from 'react-toastify'; // Import Toastify
 
 export default function PromotionPage() {
@@ -22,6 +22,7 @@ export default function PromotionPage() {
   const [editingPromotion, setEditingPromotion] = useState(null);
   const [formData, setFormData] = useState({ name: "", type: "", discountValue: "", expiryDate: "" });
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(true); // <-- 2. THÊM STATE LOADING
 
   // --- Fetch Data ---
   const fetchPromotions = async () => {
@@ -40,11 +41,13 @@ export default function PromotionPage() {
       const response = await api.get(endpoint, { params });
       setPromotions(response.data.content);
       setTotalPages(response.data.totalPages);
+      setLoading(false); // <-- 3. SET LOADING = FALSE KHI THÀNH CÔNG
 
     } catch (error) {
       console.error("Lỗi khi tải danh sách khuyến mãi:", error);
       toast.error("Không thể tải danh sách khuyến mãi!");
       setPromotions([]); setTotalPages(0);
+      setLoading(false); // <-- 4. SET LOADING = FALSE KHI LỖI
     }
   };
 
@@ -55,6 +58,7 @@ export default function PromotionPage() {
   }, [search]);
 
   useEffect(() => { // Fetch on change
+    setLoading(true); // <-- 5. SET LOADING = TRUE TRƯỚC KHI GỌI API
     fetchPromotions();
   }, [currentPage, sortField, sortOrder, debouncedSearch]);
 
@@ -142,10 +146,11 @@ export default function PromotionPage() {
   const handleCancel = () => { setShowModal(false); setEditingPromotion(null); };
 
   // --- JSX Render ---
-  return (
-    // THAY ĐỔI 1: Áp dụng padding 'p-5'
+  // <-- 6. THÊM BIỂU THỨC ĐIỀU KIỆN (TERNARY) ĐỂ HIỂN THỊ LOADING -->
+  return loading ? (
+    <Loading />
+  ) : (
     <div className="p-5">
-      {/* THAY ĐỔI 2: Thêm class Tailwind cho H2 */}
       <h2 className="text-2xl font-bold text-center mt-2 mb-4">
         Danh sách khuyến mãi
       </h2>
@@ -164,4 +169,4 @@ export default function PromotionPage() {
       />
     </div>
   );
-} 
+}
