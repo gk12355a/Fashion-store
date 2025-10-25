@@ -4,7 +4,7 @@ import React from "react";
 export default function Footer() {
   // --- Định nghĩa lớp Tailwind mới, đồng bộ với Header ---
 
-  // Toàn bộ footer - đổi màu nền thành đỏ đậm như header
+  // Toàn bộ footer 
   const footerClass =
     "bg-[#7B0323] text-white pt-12 px-6 pb-6 mt-auto font-['Helvetica_Neue',_'Arial',_sans-serif] shadow-inner border-t-2 border-[#5a0219]";
 
@@ -15,21 +15,21 @@ export default function Footer() {
   // Cột nội dung
   const colClass = "flex-1 min-w-[250px] m-2.5";
 
-  // Tiêu đề mỗi cột - đổi màu chữ thành trắng và gradient
+  // Tiêu đề mỗi cột 
   const colTitleClass =
     "text-white text-lg font-bold mb-5 relative uppercase tracking-wide after:content-[''] after:absolute after:left-0 after:bottom-[-6px] after:bg-gradient-to-r after:from-white after:to-[#ff4757] after:h-0.5 after:w-16";
 
-  // Đoạn mô tả - đổi màu chữ thành trắng
+  // Đoạn mô tả 
   const colTextClass = "text-sm leading-relaxed text-white font-light opacity-90";
 
-  // Item trong danh sách - đổi màu chữ thành trắng
+  // Item trong danh sách 
   const colListItemClass = "text-sm text-white mb-2.5 font-light opacity-90";
 
-  // Liên kết mạng xã hội - đổi màu và hover effect
+  // Liên kết mạng xã hội 
   const socialLinkClass =
     "inline-block mr-4 text-white no-underline text-sm font-medium transition-colors duration-300 hover:text-[#ff4757] hover:underline";
 
-  // Đáy footer - đổi màu border và text
+  // Đáy footer
   const bottomClass =
     "border-t border-[#5a0219] pt-5 mt-8 text-center text-xs text-white font-light opacity-80";
 
@@ -41,15 +41,14 @@ export default function Footer() {
         {/* Cột 1 */}
         <div className={colClass}>
           <h4 className={colTitleClass}>
-            {/* 🌟 Làm nổi bật chữ Vélin - đổi gradient thành trắng và đỏ */}
+            {/* Làm nổi bật chữ Vélin*/}
             <span className="bg-gradient-to-r from-white to-[#ff4757] bg-clip-text text-transparent font-bold">
               Vélin
             </span>{" "}
             Shop
           </h4>
           <p className={colTextClass}>
-            Chuyên cung cấp các sản phẩm thời trang nam nữ, xu hướng mới nhất
-            với chất lượng và giá cả tốt nhất thị trường.
+          Chuyên cung cấp các sản phẩm thời trang nam nữ, cập nhật xu hướng mới nhất với chất lượng cao và giá cả tốt nhất thị trường hiện nay.
           </p>
         </div>
 
@@ -57,9 +56,9 @@ export default function Footer() {
         <div className={colClass}>
           <h4 className={colTitleClass}>Liên hệ</h4>
           <ul className="list-none p-0">
-            <li className={colListItemClass}>🏢 Địa điểm: 80 Dịch Vọng Hậu</li>
-            <li className={colListItemClass}>📱 Hotline: 0363 636 363</li>
-            <li className={colListItemClass}>✉️ Email: hotro36@velinshop.vn</li>
+            <li className={colListItemClass}>Địa điểm: 80 Dịch Vọng Hậu</li>
+            <li className={colListItemClass}>Hotline: 0823 855 518</li>
+            <li className={colListItemClass}>Email: contact@velinshop.vn</li>
           </ul>
         </div>
 
