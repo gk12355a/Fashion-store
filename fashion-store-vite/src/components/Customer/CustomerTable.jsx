@@ -14,6 +14,24 @@ const editButtonClass =
   "py-2 px-3 mx-1 text-lg bg-gray-50 text-gray-600 rounded-lg transition-all duration-300 ease-in-out cursor-pointer hover:bg-gray-100 hover:text-gray-700 hover:scale-110 hover:shadow-lg hover:shadow-gray-400/30 border border-gray-200 hover:border-gray-300";
 const deleteButtonClass =
   "py-2 px-3 mx-1 text-lg bg-red-50 text-[#7B0323] rounded-lg transition-all duration-300 ease-in-out cursor-pointer hover:bg-[#7B0323]/200 hover:text-white hover:scale-110 hover:shadow-lg hover:shadow-red-400/30 border border-[#7B0323]/10 hover:border-[#7B0323]/20";
+
+// --- Hàm lấy style cho badge loại thành viên ---
+const getMembershipBadgeStyle = (membershipType) => {
+  const baseStyle = "px-3 py-1 rounded-full text-sm font-semibold text-center inline-block min-w-[80px] shadow-sm";
+  
+  switch (membershipType?.toLowerCase()) {
+    case 'thường':
+      return `${baseStyle} bg-slate-100 text-slate-700 border border-slate-200`;
+    case 'bạc':
+      return `${baseStyle} bg-blue-100 text-blue-700 border border-blue-200`;
+    case 'vàng':
+      return `${baseStyle} bg-yellow-100 text-yellow-700 border border-yellow-200`;
+    case 'kim cương':
+      return `${baseStyle} bg-purple-100 text-purple-700 border border-purple-200`;
+    default:
+      return `${baseStyle} bg-gray-100 text-gray-700 border border-gray-200`;
+  }
+};
 // ------------------------------------
 
 export default function CustomerTable({ customers, handleEdit, handleDelete }) {
@@ -38,7 +56,11 @@ export default function CustomerTable({ customers, handleEdit, handleDelete }) {
               <td className={`${tdClass} text-left pl-3`}>{c.name}</td>
               <td className={tdClass}>{c.phoneNumber}</td>
               <td className={tdClass}>{c.email}</td>
-              <td className={tdClass}>{c.membershipType}</td>
+              <td className={tdClass}>
+                <span className={getMembershipBadgeStyle(c.membershipType)}>
+                  {c.membershipType}
+                </span>
+              </td>
               <td className={tdClass}>{c.rewardPoints}</td>
               <td className={tdClass}>
                 <button
