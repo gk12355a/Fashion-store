@@ -29,7 +29,13 @@ export default function Header() {
     <header className={headerClass}>
       <div className="flex items-center">
         <NavLink to="/" className={logoLinkClass} end>
-          <span className={logoIconClass}><img src="../../logo.png" alt="Logo" /></span>
+          <span className={logoIconClass}>
+  <img
+    src="../../logo.png"
+    alt="Logo"
+    className="w-30 h-30 md:w-20 md:h-20 object-contain"
+  />
+</span>
 
           {/* 🌟 Làm nổi bật chữ “Vélin” */}
           <span
