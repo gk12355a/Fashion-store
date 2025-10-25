@@ -546,7 +546,7 @@ export default function HomePage() {
             link="/khuyenmai"
             desc="Tạo và quản lý chương trình khuyến mãi, mã giảm giá và ưu đãi đặc biệt."
           />
-          {/* Bạn có thể thêm Feature card khác nếu cần */}
+        
         </div>
       </div>
     </div>
