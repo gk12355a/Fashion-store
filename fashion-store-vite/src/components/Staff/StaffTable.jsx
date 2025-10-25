@@ -22,7 +22,7 @@ export default function StaffTable({ staffs, handleEdit, handleDelete }) {
       <thead>
         <tr>
           <th className={thClass}>ID</th>
-          <th className={thClass}>Tên</th>
+          <th className={thClass}>Tên nhân viên</th>
           <th className={thClass}>Chức vụ</th>
           <th className={thClass}>Lương (VNĐ)</th>
           <th className={thClass}>Ca làm việc</th>
