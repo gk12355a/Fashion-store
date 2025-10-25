@@ -2,7 +2,7 @@ import React from "react";
 // import "../Form.css"; // <- ĐÃ XÓA
 import ReusableSearch from "../Common/ReusableSearch"; 
 
-// --- Định nghĩa lớp Tailwind Base (Cập nhật theo ProductForm) ---
+// --- Định nghĩa lớp Tailwind Base ---
 const overlayClass = "fixed inset-0 w-full h-full bg-black/50 flex items-center justify-center z-[1000] backdrop-blur-sm";
 const modalClass = "bg-white p-6 md:p-9 rounded-2xl w-[90%] max-w-lg max-h-[90vh] overflow-y-auto shadow-xl border-2 border-[#7B0323] font-['Helvetica_Neue',_'Arial',_sans-serif] relative animate-modal-appear";
 const titleClass = "font-['Helvetica_Neue',_'Arial',_sans-serif] text-2xl md:text-3xl font-bold text-[#7B0323] mb-6 text-center border-b-2 border-[#7B0323] pb-4 tracking-wider";
