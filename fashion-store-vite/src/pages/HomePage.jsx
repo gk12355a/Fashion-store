@@ -492,7 +492,7 @@ export default function HomePage() {
       </div>
       {/* --------------------------- */}
 
-      {/* ----- ⭐ THÊM PHẦN FEATURES Ở ĐÂY ----- */}
+      {/* ----- THÊM PHẦN FEATURES Ở ĐÂY ----- */}
       <div className="mt-12 pt-8 border-t-2 border-[#7B0323] border-opacity-20">
         <h2 className="text-3xl font-bold text-center text-[#7B0323] mb-8 tracking-wide">
           Tính năng quản lý
