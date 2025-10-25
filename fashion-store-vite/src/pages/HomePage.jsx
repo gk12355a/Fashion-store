@@ -552,7 +552,6 @@ export default function HomePage() {
   );
 }
 // ----- ĐỊNH NGHĨA COMPONENT FEATURE -----
-// (Đặt ở cuối file hoặc import từ file riêng)
 function Feature({ icon, title, desc, link }) {
   return (
     // Card styling: Nền trắng, bo góc, đổ bóng, padding, căn giữa, border top màu hồng
