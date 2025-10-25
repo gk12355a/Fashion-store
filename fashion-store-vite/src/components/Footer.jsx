@@ -49,7 +49,7 @@ export default function Footer() {
           </h4>
           <p className={colTextClass}>
             Chuyên cung cấp các sản phẩm thời trang nam nữ, xu hướng mới nhất
-            với chất lượng và giá cả tốt nhất thị trường.
+            với chất lượng và giá cả tốt nhất trên thị trường.
           </p>
         </div>
 
