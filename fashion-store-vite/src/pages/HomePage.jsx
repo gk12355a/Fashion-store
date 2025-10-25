@@ -123,7 +123,7 @@ export default function HomePage() {
         setError("Không thể tải dữ liệu dashboard. Vui lòng thử lại.");
         // Không cần toast ở đây vì có thể làm phiền nếu trang tự refresh
       } finally {
-        setLoading(false);
+        // setLoading(false);
       }
     };
 

@@ -4,7 +4,7 @@ import SearchBar from "../components/Customer/SearchBarCustomer";
 import CustomerTable from "../components/Customer/CustomerTable";
 import CustomerToolbar from "../components/Customer/CustomerToolbar";
 import CustomerForm from "../components/Customer/CustomerForm";
-import LoadingSpinner from "../components/LoadingSpinner";
+import Loading from "../components/Loading";
 import { toast } from 'react-toastify';
 
 export default function CustomerPage() {
@@ -52,7 +52,7 @@ export default function CustomerPage() {
       toast.error("Không thể tải danh sách khách hàng!");
       setCustomers([]);
       setTotalPages(0);
-      setLoading(false);
+      // setLoading(false);
     }
   };
 
@@ -192,7 +192,7 @@ export default function CustomerPage() {
   };
 
   return loading ? (
-    <LoadingSpinner />
+    <Loading />
   ) : (
     // THAY ĐỔI 1: Áp dụng padding 'p-5' (tương đương 20px)
     <div className="p-5">

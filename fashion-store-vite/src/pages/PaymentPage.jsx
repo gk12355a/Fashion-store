@@ -70,7 +70,7 @@ export default function CheckoutPage() {
       toast.error("Không thể tải danh sách thanh toán!"); // Thêm Toast
       setPayments([]);
       setTotalPages(0);
-      setLoading(false); // <-- 4. SET LOADING = FALSE KHI LỖI
+      // setLoading(false); // <-- 4. SET LOADING = FALSE KHI LỖI
     }
   };
   // --- 2. useEffect MỚI CHO AUTOCOMPLETE ---
