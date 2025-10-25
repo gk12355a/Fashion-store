@@ -430,7 +430,7 @@ export default function HomePage() {
       </div>
 
       {/* Khách Hàng Mới Theo Tuần */}
-      <div className="bg-white rounded-xl shadow-lg p-6 mb-8 h-[400px] border border-gray-100 hover:shadow-xl transition-all duration-300 mt-6">
+      <div className="bg-white rounded-xl shadow-lg p-6 mb-8 w-[640px] h-[400px] border border-gray-100 hover:shadow-xl transition-all duration-300 mt-6">
         <h3 className="text-xl font-bold text-[#7B0323] mb-6 border-b border-gray-200 pb-3">
           Khách Hàng Mới Theo Tuần
         </h3>
