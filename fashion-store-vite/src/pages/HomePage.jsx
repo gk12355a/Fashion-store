@@ -504,7 +504,7 @@ export default function HomePage() {
             icon="👕"
             title="Quản lý sản phẩm"
             link="/sanpham"
-            desc="Quản lý danh sách sản phẩm thời trang, thêm mới, chỉnh sửa thông tin, giá cả và trạng thái có sẵn."
+            desc="Quản lý danh sách sản phẩm thời trang, thêm mới, sửa thông tin, giá cả và trạng thái có sẵn."
           />
           <Feature
             icon="👥"
