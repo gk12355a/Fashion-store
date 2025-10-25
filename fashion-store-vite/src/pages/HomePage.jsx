@@ -552,7 +552,7 @@ export default function HomePage() {
 // (Đặt ở cuối file hoặc import từ file riêng)
 function Feature({ icon, title, desc, link }) {
   return (
-    // Card styling: Nền trắng, bo góc, đổ bóng, padding,
+    // Card styling: Nền trắng, bo góc, đổ bóng,
     <div className="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center text-center border-t-4 border-[#7B0323] hover:shadow-2xl hover:transform hover:scale-105 transition-all duration-300 font-['Helvetica_Neue',_'Arial',_sans-serif] border border-gray-100">
       {/* Icon */}
       <div className="text-5xl mb-4 transform hover:scale-110 transition-transform duration-300">{icon}</div>
