@@ -548,7 +548,7 @@ export default function HomePage() {
     </div>
   );
 }
-// ----- ⭐ ĐỊNH NGHĨA COMPONENT FEATURE -----
+// ----- ĐỊNH NGHĨA COMPONENT FEATURE -----
 // (Đặt ở cuối file hoặc import từ file riêng)
 function Feature({ icon, title, desc, link }) {
   return (
