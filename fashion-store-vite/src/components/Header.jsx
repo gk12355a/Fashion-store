@@ -33,7 +33,7 @@ export default function Header() {
   <img
     src="../../logo.png"
     alt="Logo"
-    className="w-30 h-30 md:w-20 md:h-20 object-contain"
+    className="w-30 h-30 md:w-20 md:h-30 object-contain"
   />
 </span>
 
