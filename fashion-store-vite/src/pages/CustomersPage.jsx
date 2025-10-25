@@ -4,7 +4,7 @@ import SearchBar from "../components/Customer/SearchBarCustomer";
 import CustomerTable from "../components/Customer/CustomerTable";
 import CustomerToolbar from "../components/Customer/CustomerToolbar";
 import CustomerForm from "../components/Customer/CustomerForm";
-// import "../styles/FeaturePage.css"; // <- ĐÃ XÓA
+import Loading from "../components/Loading";
 import { toast } from 'react-toastify';
 
 export default function CustomerPage() {
@@ -23,6 +23,7 @@ export default function CustomerPage() {
   const itemsPerPage = 10;
   const [totalPages, setTotalPages] = useState(0);
   const [suggestions, setSuggestions] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const fetchCustomers = async () => {
     try {
@@ -45,11 +46,13 @@ export default function CustomerPage() {
         setCustomers(response.data.content);
         setTotalPages(response.data.totalPages);
       }
+      setLoading(false);
     } catch (error) {
       console.error("Lỗi khi tải danh sách khách hàng:", error);
       toast.error("Không thể tải danh sách khách hàng!");
       setCustomers([]);
       setTotalPages(0);
+      // setLoading(false);
     }
   };
 
@@ -64,6 +67,7 @@ export default function CustomerPage() {
 
   // useEffect cho tải dữ liệu (khi sort, page, search thay đổi)
   useEffect(() => {
+    setLoading(true);
     fetchCustomers();
   }, [currentPage, sortField, sortOrder, debouncedSearch]);
 
@@ -187,7 +191,9 @@ export default function CustomerPage() {
     }
   };
 
-  return (
+  return loading ? (
+    <Loading />
+  ) : (
     // THAY ĐỔI 1: Áp dụng padding 'p-5' (tương đương 20px)
     <div className="p-5">
       {/* THAY ĐỔI 2: Thêm class Tailwind cho H2 */}
