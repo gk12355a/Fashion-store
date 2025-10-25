@@ -19,7 +19,7 @@ export default function Header() {
     "flex items-center whitespace-nowrap font-['Imperial_Script'] text-3xl md:text-5xl font-extrabold text-gray-900 no-underline tracking-wide";
   const logoIconClass = "mr-3 text-2xl md:text-4xl";
 
-  // ✅ Header có nền và border
+  // Header có nền và border
   const headerClass =
     "sticky top-0 z-[1000] mx-auto flex w-full flex-wrap items-center justify-between bg-[#B2C4A3] py-5 px-6 shadow-xl border-b-[3px] border-[#a5b58e]";
 
