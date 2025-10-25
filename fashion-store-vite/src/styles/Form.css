@@ -92,7 +92,6 @@
 
 /* Wrapper cho ô số lượng (để giữ đúng layout) */
 .quantity-wrapper {
-  /* Lấy độ rộng 80px từ class .quantity-input (đã có ở File 11) */
   width: 80px; 
 }
 
