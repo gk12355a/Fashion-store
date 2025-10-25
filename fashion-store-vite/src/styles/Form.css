@@ -20,6 +20,8 @@
   box-sizing: border-box;
 }
 
+
+
 .quantity-input:focus {
   outline: none;
   border-color: #9ceae1;
