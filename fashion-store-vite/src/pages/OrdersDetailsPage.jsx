@@ -4,7 +4,7 @@ import SearchBar from "../components/OrderDetail/SearchBarOrderDetail";
 import OrderDetailTable from "../components/OrderDetail/OrderDetailTable";
 import OrderDetailToolbar from "../components/OrderDetail/OrderDetailToolbar"; // Import Toolbar mới
 import OrderDetailForm from "../components/OrderDetail/OrderDetailForm";
-import LoadingSpinner from "../components/LoadingSpinner";
+import Loading from "../components/Loading";
 // import "../styles/FeaturePage.css"; // <- ĐÃ XÓA
 import { toast } from "react-toastify"; // Import Toastify
 
@@ -51,7 +51,7 @@ export default function OrderDetailsPage() {
           setOrderDetails([]);
           setTotalPages(0);
           toast.info("Vui lòng nhập Mã Đơn Hàng (số) để tìm kiếm.");
-          setLoading(false);
+          // setLoading(false);
           return; // Dừng hàm
         }
 
@@ -79,7 +79,7 @@ export default function OrderDetailsPage() {
       toast.error("Không thể tải danh sách chi tiết đơn hàng!");
       setOrderDetails([]); // Reset bảng nếu lỗi
       setTotalPages(0);
-      setLoading(false);
+      // setLoading(false);
     }
   };
 
@@ -221,7 +221,7 @@ export default function OrderDetailsPage() {
 
   // --- JSX Render ---
   return loading ? (
-    <LoadingSpinner />
+    <Loading />
   ) : (
     // THAY ĐỔI 1: Áp dụng padding 'p-5'
     <div className="p-5">

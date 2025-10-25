@@ -47,7 +47,7 @@ export default function PromotionPage() {
       console.error("Lỗi khi tải danh sách khuyến mãi:", error);
       toast.error("Không thể tải danh sách khuyến mãi!");
       setPromotions([]); setTotalPages(0);
-      setLoading(false); // <-- 4. SET LOADING = FALSE KHI LỖI
+      // setLoading(false); // <-- 4. SET LOADING = FALSE KHI LỖI
     }
   };
 

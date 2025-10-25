@@ -47,7 +47,7 @@ export default function StaffPage() {
       console.error("Lỗi khi tải danh sách nhân viên:", error);
       toast.error("Không thể tải danh sách nhân viên!");
       setStaffs([]); setTotalPages(0);
-      setLoading(false); // <-- 4. SET LOADING = FALSE KHI LỖI
+      // setLoading(false); // <-- 4. SET LOADING = FALSE KHI LỖI
     }
   };
 

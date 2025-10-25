@@ -124,7 +124,7 @@ export default function OrdersPage() {
       toast.error("Không thể tải danh sách đơn hàng!");
       setOrders([]);
       setTotalPages(0);
-      setLoading(false); // <-- 4. SET LOADING = FALSE KHI LỖI
+      // setLoading(false); // <-- 4. SET LOADING = FALSE KHI LỖI
     }
   };
   // --- KẾT THÚC SỬA HÀM ---
