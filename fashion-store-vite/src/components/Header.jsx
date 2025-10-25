@@ -37,7 +37,7 @@ export default function Header() {
           >
             Vélin
           </span>
-          <span className="ml-1 text-white text-lg md:text-xl font-light opacity-100 mt-[-10px]">
+          <span className="ml-1 text-white text-lg md:text-s font-light opacity-85 mt-[-14px]">
             Store
           </span>
         </NavLink>
