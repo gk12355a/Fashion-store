@@ -30,7 +30,6 @@
 
 /* Nút "Thêm" vào giỏ */
 .add-cart-btn {
-  /* Mượn style của save-btn nhưng màu khác */
   padding: 12px 20px;
   border: none;
   border-radius: 12px;
