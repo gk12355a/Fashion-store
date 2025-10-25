@@ -246,6 +246,7 @@ export default function HomePage() {
   };
   const revenueChartOptions = {
     responsive: true,
+    maintainAspectRatio: false, // Cho phép chart điều chỉnh tỷ lệ theo container
     plugins: { legend: { display: false } },
     scales: {
       y: {
