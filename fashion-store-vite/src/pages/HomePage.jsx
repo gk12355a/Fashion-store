@@ -64,18 +64,18 @@ function StatsCard({
 
   return (
     <div
-      className={`bg-white rounded-lg shadow-md p-6 border-l-4 ${borderColor}`}
+      className={`bg-white rounded-xl shadow-lg p-6 border-l-4 ${borderColor} hover:shadow-xl transition-all duration-300 font-['Helvetica_Neue',_'Arial',_sans-serif]`}
     >
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm font-medium text-gray-600">{title}</p>
-          <p className="text-3xl font-bold text-gray-900">{displayValue}</p>
+          <p className="text-sm font-medium text-[#7B0323] opacity-80">{title}</p>
+          <p className="text-3xl font-bold text-[#7B0323]">{displayValue}</p>
           <p className={`text-sm ${changeColor} mt-1`}>
             <span className="font-medium">{displayChange}</span> so với tháng
             trước
           </p>
         </div>
-        <div className={`${iconBgColor} p-3 rounded-full`}>
+        <div className={`${iconBgColor} p-3 rounded-full shadow-md`}>
           {React.cloneElement(icon, { className: `w-8 h-8 ${iconColor}` })}
         </div>
       </div>
@@ -306,7 +306,7 @@ export default function HomePage() {
   // --- JSX Rendering ---
 
   // Lớp gốc cho page (lấy padding từ .main-content)
-  const pageClass = "p-5";
+  const pageClass = "p-5 font-['Helvetica_Neue',_'Arial',_sans-serif]";
 
   // Hiển thị loading hoặc lỗi
   if (loading) {
@@ -314,7 +314,7 @@ export default function HomePage() {
     return <Loading />;
   }
   if (error) {
-    return <div className={`${pageClass} text-red-600`}>{error}</div>;
+    return <div className={`${pageClass} text-[#7B0323] text-center text-lg font-medium`}>{error}</div>;
   }
 
   // Hàm format tiền tệ (Ví dụ: 2.4 tỷ, 500 triệu)
@@ -345,9 +345,9 @@ export default function HomePage() {
           // Truyền giá trị từ summaryData
           value={summaryData?.totalProducts?.currentValue}
           changePercent={summaryData?.totalProducts?.changePercent}
-          borderColor="border-blue-500"
-          iconBgColor="bg-blue-100"
-          iconColor="text-blue-600"
+          borderColor="border-[#7B0323]"
+          iconBgColor="bg-gradient-to-br from-[#7B0323] to-[#5a0219]"
+          iconColor="text-white"
           icon={
             // SVG Icon
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -365,9 +365,9 @@ export default function HomePage() {
           title="Tổng Doanh Thu (Tháng)" // Rõ ràng hơn là doanh thu tháng này
           value={summaryData?.totalRevenue?.currentValue}
           changePercent={summaryData?.totalRevenue?.changePercent}
-          borderColor="border-green-500"
-          iconBgColor="bg-green-100"
-          iconColor="text-green-600"
+          borderColor="border-[#7B0323]"
+          iconBgColor="bg-gradient-to-br from-[#7B0323] to-[#5a0219]"
+          iconColor="text-white"
           icon={
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -384,9 +384,9 @@ export default function HomePage() {
           title="Tổng Khách Hàng"
           value={summaryData?.totalCustomers?.currentValue}
           changePercent={summaryData?.totalCustomers?.changePercent}
-          borderColor="border-purple-500"
-          iconBgColor="bg-purple-100"
-          iconColor="text-purple-600"
+          borderColor="border-[#7B0323]"
+          iconBgColor="bg-gradient-to-br from-[#7B0323] to-[#5a0219]"
+          iconColor="text-white"
           icon={
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -403,8 +403,8 @@ export default function HomePage() {
       {/* --- Charts Section --- */}
       <div className="flex flex-wrap gap-6">
         {/* Doanh Thu Theo Tháng */}
-        <div className="flex-1 min-w-[300px] bg-white rounded-lg shadow-md p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+        <div className="flex-1 min-w-[300px] bg-white rounded-xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-all duration-300">
+          <h3 className="text-xl font-bold text-[#7B0323] mb-6 border-b border-gray-200 pb-3">
             Doanh Thu Theo Tháng (
             {monthlyRevenueData?.year || new Date().getFullYear()})
           </h3>
@@ -414,8 +414,8 @@ export default function HomePage() {
         </div>
 
         {/* Danh Mục Sản Phẩm */}
-        <div className="flex-1 min-w-[300px] bg-white rounded-lg shadow-md p-6 flex flex-col items-center">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+        <div className="flex-1 min-w-[300px] bg-white rounded-xl shadow-lg p-6 flex flex-col items-center border border-gray-100 hover:shadow-xl transition-all duration-300">
+          <h3 className="text-xl font-bold text-[#7B0323] mb-6 border-b border-gray-200 pb-3 w-full text-center">
             Danh Mục Sản Phẩm
           </h3>
           <div className="w-full max-w-[400px]">
@@ -430,10 +430,8 @@ export default function HomePage() {
       </div>
 
       {/* Khách Hàng Mới Theo Tuần */}
-      <div className="bg-white rounded-lg shadow-md p-6 mb-8 h-[350px]">
-        {" "}
-        {/* Thêm mb-8 */}
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+      <div className="bg-white rounded-xl shadow-lg p-6 mb-8 h-[400px] border border-gray-100 hover:shadow-xl transition-all duration-300 mt-6">
+        <h3 className="text-xl font-bold text-[#7B0323] mb-6 border-b border-gray-200 pb-3">
           Khách Hàng Mới Theo Tuần
         </h3>
         {/* Component Bar */}
@@ -442,15 +440,15 @@ export default function HomePage() {
         )}
       </div>
       {/* --- 4. ADD EXPORT SECTION --- */}
-      <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+      <div className="bg-white rounded-xl shadow-lg p-6 mb-8 border border-gray-100 hover:shadow-xl transition-all duration-300">
+        <h3 className="text-xl font-bold text-[#7B0323] mb-6 border-b border-gray-200 pb-3">
           Xuất Báo Cáo Đơn Hàng (CSV)
         </h3>
         <div className="flex flex-col sm:flex-row sm:items-end gap-4">
           <div className="flex-1">
             <label
               htmlFor="startDate"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-semibold text-[#7B0323] mb-2"
             >
               Từ ngày:
             </label>
@@ -460,13 +458,13 @@ export default function HomePage() {
               name="startDate"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
+              className="mt-1 block w-full rounded-lg border-2 border-gray-200 shadow-sm focus:border-[#7B0323] focus:ring-[#7B0323] focus:ring-2 focus:ring-opacity-50 sm:text-sm p-3 transition-all duration-300"
             />
           </div>
           <div className="flex-1">
             <label
               htmlFor="endDate"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-semibold text-[#7B0323] mb-2"
             >
               Đến ngày:
             </label>
@@ -476,16 +474,16 @@ export default function HomePage() {
               name="endDate"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
+              className="mt-1 block w-full rounded-lg border-2 border-gray-200 shadow-sm focus:border-[#7B0323] focus:ring-[#7B0323] focus:ring-2 focus:ring-opacity-50 sm:text-sm p-3 transition-all duration-300"
             />
           </div>
           <button
             onClick={handleExport}
             disabled={isExporting} // Disable button when exporting
-            className={`inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+            className={`inline-flex items-center justify-center px-6 py-3 border border-transparent text-sm font-semibold rounded-lg shadow-lg text-white focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-300 ${
               isExporting
                 ? "bg-gray-400 cursor-not-allowed"
-                : "bg-green-600 hover:bg-green-700 focus:ring-green-500"
+                : "bg-gradient-to-r from-[#7B0323] to-[#5a0219] hover:from-[#5a0219] hover:to-[#7B0323] focus:ring-[#7B0323] transform hover:scale-105"
             }`}
           >
             {isExporting ? "Đang xuất..." : "Xuất Báo Cáo"}
@@ -495,10 +493,8 @@ export default function HomePage() {
       {/* --------------------------- */}
 
       {/* ----- ⭐ THÊM PHẦN FEATURES Ở ĐÂY ----- */}
-      <div className="mt-12 pt-8 border-t border-gray-200">
-        {" "}
-        {/* Thêm khoảng cách và đường kẻ trên */}
-        <h2 className="text-2xl font-semibold text-center text-gray-800 mb-8">
+      <div className="mt-12 pt-8 border-t-2 border-[#7B0323] border-opacity-20">
+        <h2 className="text-3xl font-bold text-center text-[#7B0323] mb-8 tracking-wide">
           Tính năng quản lý
         </h2>
         {/* Container cho các card, chia cột và tạo khoảng cách */}
@@ -556,19 +552,18 @@ export default function HomePage() {
 // (Đặt ở cuối file hoặc import từ file riêng)
 function Feature({ icon, title, desc, link }) {
   return (
-    // Card styling: Nền trắng, bo góc, đổ bóng, padding, căn giữa, border top màu hồng
-    <div className="bg-white rounded-lg shadow-md p-6 flex flex-col items-center text-center border-t-4 border-pink-500 hover:shadow-xl transition-shadow duration-300">
+    // Card styling: Nền trắng, bo góc, đổ bóng, padding, căn giữa, border top màu đỏ đậm
+    <div className="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center text-center border-t-4 border-[#7B0323] hover:shadow-2xl hover:transform hover:scale-105 transition-all duration-300 font-['Helvetica_Neue',_'Arial',_sans-serif] border border-gray-100">
       {/* Icon */}
-      <div className="text-5xl mb-4">{icon}</div>
+      <div className="text-5xl mb-4 transform hover:scale-110 transition-transform duration-300">{icon}</div>
       {/* Title */}
-      <h2 className="font-semibold text-lg text-gray-800 mb-2">{title}</h2>
+      <h2 className="font-bold text-lg text-[#7B0323] mb-3 tracking-wide">{title}</h2>
       {/* Description */}
-      <p className="text-sm text-gray-600 mb-4 flex-grow">{desc}</p>{" "}
-      {/* flex-grow để đẩy link xuống */}
+      <p className="text-sm text-gray-600 mb-6 flex-grow leading-relaxed">{desc}</p>
       {/* Link */}
       <Link
         to={link}
-        className="mt-auto inline-block bg-pink-500 hover:bg-pink-600 text-white font-medium text-sm px-4 py-2 rounded-full shadow-md hover:shadow-lg transition-all duration-300"
+        className="mt-auto inline-block bg-gradient-to-r from-[#7B0323] to-[#5a0219] hover:from-[#5a0219] hover:to-[#7B0323] text-white font-semibold text-sm px-6 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 tracking-wide"
       >
         Xem chi tiết →
       </Link>
