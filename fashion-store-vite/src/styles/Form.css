@@ -111,7 +111,7 @@
   color: white;
   box-shadow: 0 4px 15px rgba(40, 138, 79, 0.3);
 
-  height: 50px; /* Bằng chiều cao input */
+  height: 50px; 
   
   /* 2. Căn icon và text vào giữa */
   display: flex;
