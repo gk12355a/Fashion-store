@@ -41,7 +41,7 @@
   background: linear-gradient(135deg, #007bff, #0056b3); /* Màu xanh dương */
   color: white;
   box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
-  height: 50px; /* Bằng chiều cao input */
+  height: 50px; 
 }
 
 .add-cart-btn:hover {
