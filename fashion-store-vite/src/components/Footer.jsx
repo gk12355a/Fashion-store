@@ -59,7 +59,7 @@ export default function Footer() {
           <ul className="list-none p-0">
             <li className={colListItemClass}>🏢 Địa chỉ: 80 Dịch Vọng Hậu</li>
             <li className={colListItemClass}>📱 Hotline: 082 385 5518</li>
-            <li className={colListItemClass}>✉️ Email: hotro36@velinshop.vn</li>
+            <li className={colListItemClass}>✉️ Email: velin@contact.vn</li>
           </ul>
         </div>
 
