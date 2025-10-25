@@ -272,7 +272,7 @@ export default function ProductPage() {
     <Loading />
   ) : (
     <div className="p-5">
-      <h2 className="text-2xl font-bold text-center mt-2 mb-4">
+      <h2 className="text-2xl font-['Helvetica_Neue',_'Arial',_sans-serif] font-bold text-center mt-2 mb-4">
         Danh sách sản phẩm
       </h2>
 

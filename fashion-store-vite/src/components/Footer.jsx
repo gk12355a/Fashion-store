@@ -4,9 +4,9 @@ import React from "react";
 export default function Footer() {
   // --- Định nghĩa lớp Tailwind mới, đồng bộ với Header ---
 
-  // Toàn bộ footer 
+  // Toàn bộ footer - đổi từ màu đỏ sang xám đậm
   const footerClass =
-    "bg-[#7B0323] text-white pt-12 px-6 pb-6 mt-auto font-['Helvetica_Neue',_'Arial',_sans-serif] shadow-inner border-t-2 border-[#5a0219]";
+    "bg-gradient-to-b from-gray-800 to-gray-600 text-white pt-12 px-6 pb-6 mt-auto font-['Helvetica_Neue',_'Arial',_sans-serif] shadow-inner border-t-2 border-gray-700";
 
   // Khu vực nội dung chính
   const contentClass =
@@ -15,7 +15,7 @@ export default function Footer() {
   // Cột nội dung
   const colClass = "flex-1 min-w-[250px] m-2.5";
 
-  // Tiêu đề mỗi cột 
+  // Tiêu đề mỗi cột - giữ gradient cho gạch chân giống Header
   const colTitleClass =
     "text-white text-lg font-bold mb-5 relative uppercase tracking-wide after:content-[''] after:absolute after:left-0 after:bottom-[-6px] after:bg-gradient-to-r after:from-white after:to-[#ff4757] after:h-0.5 after:w-16";
 
@@ -29,9 +29,9 @@ export default function Footer() {
   const socialLinkClass =
     "inline-block mr-4 text-white no-underline text-sm font-medium transition-colors duration-300 hover:text-[#ff4757] hover:underline";
 
-  // Đáy footer
+  // Đáy footer - đổi border sang màu xám
   const bottomClass =
-    "border-t border-[#5a0219] pt-5 mt-8 text-center text-xs text-white font-light opacity-80";
+    "border-t border-gray-700 pt-5 mt-8 text-center text-xs text-white font-light opacity-80";
 
   const bottomTextClass = "my-1.5";
 
@@ -41,7 +41,7 @@ export default function Footer() {
         {/* Cột 1 */}
         <div className={colClass}>
           <h4 className={colTitleClass}>
-            {/* Làm nổi bật chữ Vélin*/}
+            {/* Làm nổi bật chữ Vélin - giữ nguyên gradient giống Header*/}
             <span className="bg-gradient-to-r from-white to-[#ff4757] bg-clip-text text-transparent font-bold">
               Vélin
             </span>{" "}
