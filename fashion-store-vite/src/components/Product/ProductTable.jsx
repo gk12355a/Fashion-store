@@ -1,7 +1,7 @@
 import React from "react";
 // import "../Table.css"; // <- Đã XÓA
 
-// --- Định nghĩa các lớp Tailwind Base với font và màu giống Header ---
+// --- Định nghĩa các lớp Tailwind Base ---
 const tableClass =
   "w-full border-separate border-spacing-0 bg-white rounded-xl overflow-hidden shadow-xl border-2 border-[#7B0323] font-['Helvetica_Neue',_'Arial',_sans-serif] my-5";
 const thClass =
