@@ -359,7 +359,7 @@ export default function HomePage() {
               ></path>
             </svg>
           }
-          // Không cần format đặc biệt, dùng toLocaleString mặc định
+          
         />
         <StatsCard
           title="Tổng Doanh Thu (Tháng)" // Rõ ràng hơn là doanh thu tháng này
