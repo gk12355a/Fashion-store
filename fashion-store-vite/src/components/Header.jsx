@@ -14,7 +14,7 @@ export default function Header() {
   const getNavLinkClass = ({ isActive }) =>
     `${baseLinkClass} ${isActive ? activeLinkClass : inactiveLinkClass}`;
 
-  // 🏷️ Logo chính
+  // Logo chính
   const logoLinkClass =
     "flex items-center whitespace-nowrap font-['Imperial_Script'] text-3xl md:text-5xl font-extrabold text-gray-900 no-underline tracking-wide";
   const logoIconClass = "mr-3 text-2xl md:text-4xl";
