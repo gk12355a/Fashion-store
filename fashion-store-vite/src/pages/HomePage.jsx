@@ -492,7 +492,7 @@ export default function HomePage() {
           </button>
         </div>
       </div>
-      {/* --------------------------- */}
+      
 
       {/* ----- THÊM PHẦN FEATURES Ở ĐÂY ----- */}
       <div className="mt-12 pt-8 border-t border-gray-200">
