@@ -23,7 +23,7 @@ export default function ProductTable({ products, handleEdit, handleDelete }) {
         <tr>
           <th className={thClass}>ID</th>
           <th className={thClass}>Ảnh</th>
-          <th className={thClass}>Tên</th>
+          <th className={thClass}>Tên sản phẩm</th>
           <th className={thClass}>Loại</th>
           <th className={thClass}>Size</th>
           <th className={thClass}>Màu</th>
