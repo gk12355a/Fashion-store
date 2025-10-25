@@ -525,7 +525,7 @@ export default function HomePage() {
           <Feature
             icon="📋"
             title="Chi tiết đơn hàng"
-            link="/chitietdonhang" // Đổi title
+            link="/chitietdonhang" 
             desc="Quản lý chi tiết từng đơn hàng, sản phẩm trong đơn, số lượng và giá trị."
           />
           <Feature
