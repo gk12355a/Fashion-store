@@ -1,15 +1,15 @@
 import React from "react";
 // import "../Table.css"; // <- Đã XÓA
 
-// --- Định nghĩa các lớp Tailwind Base ---
+// --- Định nghĩa các lớp Tailwind Base với font và màu giống Header ---
 const tableClass =
-  "w-full border-separate border-spacing-0 bg-white rounded-xl overflow-hidden shadow-lg border-2 border-[#ffd1dc] font-poppins my-5";
+  "w-full border-separate border-spacing-0 bg-white rounded-xl overflow-hidden shadow-xl border-2 border-[#7B0323] font-['Helvetica_Neue',_'Arial',_sans-serif] my-5";
 const thClass =
-  "py-3 px-2 md:py-4 md:px-3 text-center border-b-2 border-[#b8cf9b] bg-[#d4e6c4] text-gray-800 font-semibold font-playfair text-[15px] md:text-[17px] transition-all duration-300 ease-in-out hover:bg-[#9bb47a] hover:text-white";
+  "py-3 px-2 md:py-4 md:px-3 text-center border-b-2 border-[#7B0323] bg-[#7B0323] text-white font-semibold font-['Helvetica_Neue',_'Arial',_sans-serif] text-[15px] md:text-[17px] transition-all duration-300 ease-in-out hover:bg-[#5a0219] hover:text-white";
 const trClass =
-  "transition-all duration-300 ease-in-out even:bg-gray-50 hover:bg-gray-100 hover:-translate-y-0.5 hover:shadow-md";
+  "transition-all duration-300 ease-in-out even:bg-gray-50 hover:bg-[#ffeef1] hover:-translate-y-0.5 hover:shadow-md";
 const tdClass =
-  "py-3 px-2 md:py-4 md:px-3 text-center border-b border-gray-100 text-gray-700 font-normal text-sm md:text-[15px] transition-all duration-300 ease-in-out";
+  "py-3 px-2 md:py-4 md:px-3 text-center border-b border-gray-100 text-gray-700 font-normal text-sm md:text-[15px] transition-all duration-300 ease-in-out font-['Helvetica_Neue',_'Arial',_sans-serif]";
 const editButtonClass =
   "py-2 px-3 mx-1 text-lg bg-green-100 text-green-700 rounded-lg transition-all duration-300 ease-in-out cursor-pointer hover:bg-green-600 hover:text-white hover:scale-110 hover:shadow-lg hover:shadow-green-600/30";
 const deleteButtonClass =
@@ -41,14 +41,14 @@ export default function ProductTable({ products, handleEdit, handleDelete }) {
                 <img
                   src={p.imageUrl || "https://via.placeholder.com/80"}
                   alt={p.name}
-                  className="w-20 h-20 object-cover rounded-md mx-auto" // Dùng class Tailwind
+                  className="w-20 h-20 object-cover rounded-md mx-auto border border-[#7B0323]/20" // Thêm border nhẹ
                 />
               </td>
-              <td className={`${tdClass} text-left pl-3`}>{p.name}</td>
+              <td className={`${tdClass} text-left pl-3 font-medium`}>{p.name}</td>
               <td className={tdClass}>{p.type}</td>
               <td className={tdClass}>{p.size}</td>
               <td className={tdClass}>{p.color}</td>
-              <td className={`${tdClass} whitespace-nowrap`}>
+              <td className={`${tdClass} whitespace-nowrap font-semibold text-[#7B0323]`}>
                 {p.price.toLocaleString()} đ
               </td>
               <td className={tdClass}>{p.stockQuantity}</td>
@@ -70,7 +70,7 @@ export default function ProductTable({ products, handleEdit, handleDelete }) {
           ))
         ) : (
           <tr>
-            <td colSpan="9" className="py-4 px-3 text-center text-gray-500">
+            <td colSpan="9" className="py-4 px-3 text-center text-gray-500 font-['Helvetica_Neue',_'Arial',_sans-serif]">
               Không tìm thấy sản phẩm
             </td>
           </tr>
