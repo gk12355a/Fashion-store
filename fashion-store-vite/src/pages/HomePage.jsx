@@ -494,7 +494,7 @@ export default function HomePage() {
       </div>
       {/* --------------------------- */}
 
-      {/* ----- ⭐ THÊM PHẦN FEATURES Ở ĐÂY ----- */}
+      {/* ----- THÊM PHẦN FEATURES Ở ĐÂY ----- */}
       <div className="mt-12 pt-8 border-t border-gray-200">
         {" "}
         {/* Thêm khoảng cách và đường kẻ trên */}
