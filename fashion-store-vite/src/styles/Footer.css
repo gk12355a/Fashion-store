@@ -36,7 +36,7 @@
   position: absolute;
   left: 0;
   bottom: -6px;
-  background-color: #dc3545; /* Màu đỏ làm điểm nhấn */
+  background-color: #dc3545; 
   height: 2px;
   width: 50px;
 }
