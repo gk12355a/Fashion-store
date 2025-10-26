@@ -1,6 +1,5 @@
 import React from 'react';
 
-
 /**
  * Bảng hiển thị các sản phẩm trong giỏ hàng (bên trong OrderForm Modal)
  * @param {array} items - Danh sách cartItems
