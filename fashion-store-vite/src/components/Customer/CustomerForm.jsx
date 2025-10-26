@@ -1,6 +1,5 @@
 import React from "react";
 
-
 // --- Định nghĩa lớp Tailwind Base (Dịch từ Form.css) ---
 const overlayClass = "fixed inset-0 w-full h-full bg-black/50 flex items-center justify-center z-[1000] backdrop-blur-sm";
 const modalClass = "bg-white p-6 md:p-9 rounded-2xl w-[90%] max-w-lg max-h-[90vh] overflow-y-auto shadow-xl border-2 border-[#ffd1dc] font-poppins relative animate-modal-appear";
