@@ -1,6 +1,5 @@
 import React from "react";
 
-
 // --- Định nghĩa các lớp Tailwind Base ---
 const tableClass =
   "w-full border-separate border-spacing-0 bg-white rounded-xl overflow-hidden shadow-lg border-2 border-[#ffd1dc] font-poppins my-5";
