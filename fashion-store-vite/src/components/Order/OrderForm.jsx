@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-
 import ReusableSearch from "../Common/ReusableSearch";
 import CartTable from "./CartTable";
 import { toast } from "react-toastify";
