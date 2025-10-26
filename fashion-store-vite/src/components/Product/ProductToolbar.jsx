@@ -1,5 +1,4 @@
 import React from "react";
-// import './ProductToolbar.css'; // <- ĐÃ XÓA
 
 // --- Định nghĩa lớp Tailwind ---
 const toolbarClass =
