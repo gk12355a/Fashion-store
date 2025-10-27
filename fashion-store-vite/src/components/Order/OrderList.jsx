@@ -52,11 +52,14 @@ export default function OrderList({ orders, handleEdit, handleDelete }) {
               </td>
               <td className={tdClass}>
                 <button
-                className={`${editButtonClass} opacity-50 cursor-not-allowed hover:scale-100 hover:shadow-none`}
+                className={`${editButtonClass} relative opacity-50 cursor-not-allowed hover:scale-100 hover:shadow-none group`}
                 disabled
                 >
-                  ✏️
-                </button>
+                  <span className="transition-opacity duration-200 group-hover:opacity-0">✏️</span>
+                  <span className="absolute inset-0 flex items-center justify-center text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                    🚫
+                    </span>
+                    </button>
                 <button
                   className={deleteButtonClass}
                   onClick={() => handleDelete(o.id)}
