@@ -52,8 +52,8 @@ export default function OrderList({ orders, handleEdit, handleDelete }) {
               </td>
               <td className={tdClass}>
                 <button
-                  className={editButtonClass}
-                  onClick={() => handleEdit(o)}
+                className={`${editButtonClass} opacity-50 cursor-not-allowed hover:scale-100 hover:shadow-none`}
+                disabled
                 >
                   ✏️
                 </button>
