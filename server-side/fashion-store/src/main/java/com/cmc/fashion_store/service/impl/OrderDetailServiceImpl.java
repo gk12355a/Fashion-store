@@ -17,7 +17,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional; // Sử dụng annotation này
-
+import java.util.Arrays; // <-- Thêm import này
 import java.math.BigDecimal;
 import java.math.RoundingMode; // Import RoundingMode
 import java.time.LocalDate;
@@ -37,6 +37,8 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 
     @Autowired
     private ProductRepository productRepository;
+
+    private static final List<String> LOCKED_ORDER_STATUSES = Arrays.asList("Đã thanh toán");
 
     @Override
     public Page<OrderDetailResponse> getAllOrderDetails(Pageable pageable) {
@@ -62,47 +64,62 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 
     @Override
     @Transactional // Ghi đè chỉ đọc
-    public OrderDetailResponse createOrderDetail(CreateOrderDetailRequest request) { // <-- Kiểu trả về ĐÚNG
+    public OrderDetailResponse createOrderDetail(CreateOrderDetailRequest request) { // <-- Sửa kiểu trả về
+        // 1. Lấy Order và KIỂM TRA TRẠNG THÁI
         Order order = orderRepository.findById(request.getOrderId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy Đơn hàng với ID: " + request.getOrderId()));
+
+        // *** THÊM KIỂM TRA ***
+        if (LOCKED_ORDER_STATUSES.contains(order.getStatus())) {
+            throw new IllegalStateException("Không thể thêm chi tiết vào đơn hàng đã '" + order.getStatus() + "'.");
+        }
+        // *********************
+
+        // 2. Tìm Product và xử lý kho (logic cũ)
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy Sản phẩm với ID: " + request.getProductId()));
-
-        int requestedQuantity = request.getQuantity();
+        // ... (kiểm tra kho, trừ kho) ...
+         int requestedQuantity = request.getQuantity();
         int currentStock = product.getStockQuantity();
-
         if (currentStock < requestedQuantity) {
-            throw new RuntimeException("Không đủ hàng cho sản phẩm '" + product.getName() + "'. Chỉ còn " + currentStock);
+             throw new RuntimeException("Không đủ hàng cho sản phẩm '" + product.getName() + "'. Chỉ còn " + currentStock);
         }
-
         product.setStockQuantity(currentStock - requestedQuantity);
-        // Không cần save product
 
+
+        // 3. Tạo và lưu OrderDetail (logic cũ)
         OrderDetail newOrderDetail = new OrderDetail();
         newOrderDetail.setOrder(order);
         newOrderDetail.setProduct(product);
         newOrderDetail.setQuantity(requestedQuantity);
-        newOrderDetail.setUnitPrice(product.getPrice()); // Tự động lấy giá
+        newOrderDetail.setUnitPrice(product.getPrice());
 
         OrderDetail savedDetail = orderDetailRepository.save(newOrderDetail);
         updateOrderTotalAmount(savedDetail.getOrder().getId()); // Cập nhật tổng tiền
 
-        return convertToDto(savedDetail); // <-- Sửa return: Trả về DTO
+        return convertToDto(savedDetail); // Trả về DTO
     }
 
     @Override
-    @Transactional // Ghi đè chỉ đọc
-    public OrderDetailResponse updateOrderDetail(Long id, UpdateOrderDetailRequest request) { // <-- Kiểu trả về ĐÚNG
+    @Transactional
+    public OrderDetailResponse updateOrderDetail(Long id, UpdateOrderDetailRequest request) {
         OrderDetail existingDetail = orderDetailRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy chi tiết đơn hàng với ID: " + id));
+        Order order = existingDetail.getOrder();
+
+        if (order == null) {
+             throw new IllegalStateException("Chi tiết đơn hàng không liên kết với đơn hàng nào.");
+        }
+        // Sử dụng biến đã khai báo
+        if (LOCKED_ORDER_STATUSES.contains(order.getStatus())) {
+            throw new IllegalStateException("Không thể sửa chi tiết của đơn hàng đã '" + order.getStatus() + "'.");
+        }
 
         Product oldProduct = existingDetail.getProduct();
         int oldQuantity = existingDetail.getQuantity();
-        Long orderId = existingDetail.getOrder().getId();
-
+        Long orderId = order.getId();
         Long newProductId = request.getProductId();
         int newQuantity = request.getQuantity();
-
         Product productToSet;
         boolean productChanged = oldProduct == null || !oldProduct.getId().equals(newProductId);
 
@@ -115,46 +132,60 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                 if (newStock < 0) {
                     throw new RuntimeException("Không đủ hàng cho sản phẩm '" + productToSet.getName() + "'. Chỉ còn " + currentStock);
                 }
+                // --- ⭐ SỬA LỖI Ở ĐÂY: Truyền newStock vào ⭐ ---
                 productToSet.setStockQuantity(newStock);
+                // ---------------------------------------------
             }
-        } else {
-            Product newProduct = productRepository.findById(newProductId)
-                    .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy Sản phẩm mới với ID: " + newProductId));
-            productToSet = newProduct;
-
-            if (oldProduct != null) {
-                oldProduct.setStockQuantity(oldProduct.getStockQuantity() + oldQuantity);
-            }
-            int currentNewStock = newProduct.getStockQuantity();
-            if (currentNewStock < newQuantity) {
-                throw new RuntimeException("Không đủ hàng cho sản phẩm '" + newProduct.getName() + "'. Chỉ còn " + currentNewStock);
-            }
-            newProduct.setStockQuantity(currentNewStock - newQuantity);
-        }
+         } else {
+             Product newProduct = productRepository.findById(newProductId)
+                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy Sản phẩm mới với ID: " + newProductId));
+             productToSet = newProduct;
+             if (oldProduct != null) {
+                 // --- ⭐ SỬA LỖI Ở ĐÂY: Truyền giá trị hoàn kho ⭐ ---
+                 oldProduct.setStockQuantity(oldProduct.getStockQuantity() + oldQuantity);
+                 // -------------------------------------------------
+             }
+             int currentNewStock = newProduct.getStockQuantity();
+             if (currentNewStock < newQuantity) {
+                 throw new RuntimeException("Không đủ hàng cho sản phẩm '" + newProduct.getName() + "'. Chỉ còn " + currentNewStock);
+             }
+             // --- ⭐ SỬA LỖI Ở ĐÂY: Truyền giá trị kho mới ⭐ ---
+             newProduct.setStockQuantity(currentNewStock - newQuantity);
+             // ----------------------------------------------
+         }
 
         existingDetail.setProduct(productToSet);
         existingDetail.setQuantity(newQuantity);
         existingDetail.setUnitPrice(productToSet.getPrice());
 
-        // Không cần save existingDetail rõ ràng nếu entity được quản lý
-        updateOrderTotalAmount(orderId); // Cập nhật tổng tiền
+        updateOrderTotalAmount(orderId);
 
-        return convertToDto(existingDetail); // <-- Sửa return: Trả về DTO
+        return convertToDto(existingDetail);
     }
 
 
     @Override
-    @Transactional // Ghi đè chỉ đọc
+    @Transactional
     public void deleteOrderDetail(Long id) {
         OrderDetail detailToDelete = orderDetailRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy chi tiết đơn hàng với ID: " + id));
-        Long orderId = detailToDelete.getOrder().getId();
+        Order order = detailToDelete.getOrder();
 
+        if (order == null) {
+             throw new IllegalStateException("Chi tiết đơn hàng không liên kết với đơn hàng nào.");
+        }
+        // Sử dụng biến đã khai báo
+        if (LOCKED_ORDER_STATUSES.contains(order.getStatus())) {
+            throw new IllegalStateException("Không thể xóa chi tiết của đơn hàng đã '" + order.getStatus() + "'.");
+        }
+
+        Long orderId = order.getId();
         Product product = detailToDelete.getProduct();
         if (product != null) {
             int deletedQuantity = detailToDelete.getQuantity();
+            // --- ⭐ SỬA LỖI Ở ĐÂY: Truyền giá trị hoàn kho ⭐ ---
             product.setStockQuantity(product.getStockQuantity() + deletedQuantity);
-            // Không cần save product
+            // -------------------------------------------------
         }
 
         orderDetailRepository.delete(detailToDelete);
