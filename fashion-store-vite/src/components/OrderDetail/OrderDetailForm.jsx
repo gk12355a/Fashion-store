@@ -74,10 +74,10 @@ export default function OrderDetailForm({
               name="orderId"
               value={formData.orderId || ''}
               onChange={onChange}
-              placeholder="Mã đơn hàng"
+              placeholder="Nhập mã đơn hàng" // Có thể đổi placeholder
               type="number"
-              disabled={true} // Always disable Order ID after creation
-              className={disabledInputClass} // Use disabled style
+              disabled={!!editing} 
+              className={editing ? disabledInputClass : baseInputClass}
             />
             {errors.orderId && <p className={errorClass}>{errors.orderId}</p>}
           </div>
