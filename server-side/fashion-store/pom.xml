@@ -30,6 +30,7 @@
 		<tag />
 		<url />
 	</scm>
+	<!-- <inceptionYear>2023</inceptionYear> -->
 	<properties>
 		<java.version>21</java.version>
 	</properties>
