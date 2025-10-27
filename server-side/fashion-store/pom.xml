@@ -17,7 +17,6 @@
 	<name>fashion-store</name>
 	<description>Demo project for Spring Boot</description>
 	<url />
-	<!-- <inceptionYear>2023</inceptionYear> -->
 	<licenses>
 		<license />
 	</licenses>
@@ -30,7 +29,6 @@
 		<tag />
 		<url />
 	</scm>
-	<!-- <inceptionYear>2023</inceptionYear> -->
 	<properties>
 		<java.version>21</java.version>
 	</properties>
