@@ -10,7 +10,6 @@
 		<version>3.5.6</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
-	<!-- Project -->
 	<groupId>com.cmc</groupId>
 	<artifactId>fashion-store</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
