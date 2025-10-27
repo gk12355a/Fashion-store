@@ -6,9 +6,9 @@ const toolbarClass = "flex justify-between items-center py-3 px-4 bg-[#f8f9fa] r
 const sortOptionsClass = "flex items-center gap-2.5 flex-wrap";
 const sortLabelClass = "text-[15px] font-medium text-[#7B0323] mr-1.5 font-['Helvetica_Neue',_'Arial',_sans-serif]";
 const baseFormControlClass = "py-2 px-3.5 border border-gray-300 bg-white rounded-md cursor-pointer text-sm transition-all duration-200 ease-in-out text-[#7B0323] hover:border-[#7B0323] hover:bg-[#f8f9fa] font-['Helvetica_Neue',_'Arial',_sans-serif] font-medium";
-// const baseSortBtnClass = `${baseFormControlClass}`;
+
 const baseSortSelectClass = `${baseFormControlClass} pr-8`;
-// const activeSortBtnClass = "bg-[#7B0323] text-white border-[#7B0323] font-semibold shadow-lg";
+
 const activeSortSelectClass = "border-[#7B0323] font-semibold ring-2 ring-[#7B0323]/20 bg-[#f8f9fa]";
 const paginationClass = "flex items-center gap-2";
 const pageInfoClass = "text-sm font-semibold text-[#7B0323] bg-white py-2 px-3 rounded-md border border-[#7B0323] font-['Helvetica_Neue',_'Arial',_sans-serif]";
@@ -33,7 +33,7 @@ export default function PromotionToolbar({
 
   return (
     <div className={toolbarClass}>
-      {/* Sắp xếp */}
+      {/* --- Sắp xếp --- */}
       <div className={sortOptionsClass}>
         <span className={sortLabelClass}>Sắp xếp theo</span>
         <select 
