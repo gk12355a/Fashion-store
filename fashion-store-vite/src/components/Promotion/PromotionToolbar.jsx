@@ -1,5 +1,5 @@
 import React from 'react';
-// import '../Product/ProductToolbar.css'; // <- ĐÃ XÓ
+// import '../Product/ProductToolbar.css'; // <- ĐÃ X
 
 // --- Định nghĩa lớp Tailwind ---
 const toolbarClass = "flex justify-between items-center py-3 px-4 bg-[#f8f9fa] rounded-lg mb-5 flex-wrap gap-4 shadow-md border border-gray-200 font-['Helvetica_Neue',_'Arial',_sans-serif]";
