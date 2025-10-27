@@ -3,17 +3,35 @@ import React from "react";
 
 // --- Định nghĩa các lớp Tailwind Base ---
 const tableClass =
-  "w-full border-separate border-spacing-0 bg-white rounded-xl overflow-hidden shadow-lg border-2 border-[#ffd1dc] font-poppins my-5";
+  "w-full border-separate border-spacing-0 bg-white rounded-xl overflow-hidden shadow-xl border-2 border-[#7B0323] font-['Helvetica_Neue',_'Arial',_sans-serif] my-5";
 const thClass =
-  "py-3 px-2 md:py-4 md:px-3 text-center border-b-2 border-[#b8cf9b] bg-[#d4e6c4] text-gray-800 font-semibold font-playfair text-[15px] md:text-[17px] transition-all duration-300 ease-in-out hover:bg-[#9bb47a] hover:text-white";
+  "py-3 px-2 md:py-4 md:px-3 text-center border-b-2 border-[#7B0323] bg-[#7B0323] text-white font-semibold font-['Helvetica_Neue',_'Arial',_sans-serif] text-[15px] md:text-[17px] transition-all duration-300 ease-in-out hover:bg-[#5a0219] hover:text-white";
 const trClass =
-  "transition-all duration-300 ease-in-out even:bg-gray-50 hover:bg-gray-100 hover:-translate-y-0.5 hover:shadow-md";
+  "transition-all duration-300 ease-in-out even:bg-gray-50 hover:bg-[#ffeef1] hover:-translate-y-0.5 hover:shadow-md";
 const tdClass =
-  "py-3 px-2 md:py-4 md:px-3 text-center border-b border-gray-100 text-gray-700 font-normal text-sm md:text-[15px] transition-all duration-300 ease-in-out";
+  "py-3 px-2 md:py-4 md:px-3 text-center border-b border-gray-100 text-gray-700 font-normal text-sm md:text-[15px] transition-all duration-300 ease-in-out font-['Helvetica_Neue',_'Arial',_sans-serif]";
 const editButtonClass =
-  "py-2 px-3 mx-1 text-lg bg-green-100 text-green-700 rounded-lg transition-all duration-300 ease-in-out cursor-pointer hover:bg-green-600 hover:text-white hover:scale-110 hover:shadow-lg hover:shadow-green-600/30";
+  "py-2 px-3 mx-1 text-lg bg-gray-50 text-gray-600 rounded-lg transition-all duration-300 ease-in-out cursor-pointer hover:bg-gray-100 hover:text-gray-700 hover:scale-110 hover:shadow-lg hover:shadow-gray-400/30 border border-gray-200 hover:border-gray-300";
 const deleteButtonClass =
-  "py-2 px-3 mx-1 text-lg bg-red-100 text-red-600 rounded-lg transition-all duration-300 ease-in-out cursor-pointer hover:bg-red-700 hover:text-white hover:scale-110 hover:shadow-lg hover:shadow-red-700/30";
+  "py-2 px-3 mx-1 text-lg bg-red-50 text-[#7B0323] rounded-lg transition-all duration-300 ease-in-out cursor-pointer hover:bg-[#7B0323]/200 hover:text-white hover:scale-110 hover:shadow-lg hover:shadow-red-400/30 border border-[#7B0323]/10 hover:border-[#7B0323]/20";
+
+// --- Hàm lấy style cho badge loại thành viên ---
+const getMembershipBadgeStyle = (membershipType) => {
+  const baseStyle = "px-3 py-1 rounded-full text-sm font-semibold text-center inline-block min-w-[80px] shadow-sm";
+  
+  switch (membershipType?.toLowerCase()) {
+    case 'thường':
+      return `${baseStyle} bg-slate-100 text-slate-700 border border-slate-200`;
+    case 'bạc':
+      return `${baseStyle} bg-blue-100 text-blue-700 border border-blue-200`;
+    case 'vàng':
+      return `${baseStyle} bg-yellow-100 text-yellow-700 border border-yellow-200`;
+    case 'kim cương':
+      return `${baseStyle} bg-purple-100 text-purple-700 border border-purple-200`;
+    default:
+      return `${baseStyle} bg-gray-100 text-gray-700 border border-gray-200`;
+  }
+};
 // ------------------------------------
 
 export default function CustomerTable({ customers, handleEdit, handleDelete }) {
@@ -38,7 +56,11 @@ export default function CustomerTable({ customers, handleEdit, handleDelete }) {
               <td className={`${tdClass} text-left pl-3`}>{c.name}</td>
               <td className={tdClass}>{c.phoneNumber}</td>
               <td className={tdClass}>{c.email}</td>
-              <td className={tdClass}>{c.membershipType}</td>
+              <td className={tdClass}>
+                <span className={getMembershipBadgeStyle(c.membershipType)}>
+                  {c.membershipType}
+                </span>
+              </td>
               <td className={tdClass}>{c.rewardPoints}</td>
               <td className={tdClass}>
                 <button
@@ -58,7 +80,7 @@ export default function CustomerTable({ customers, handleEdit, handleDelete }) {
           ))
         ) : (
           <tr>
-            <td colSpan="7" className="py-4 px-3 text-center text-gray-500">
+            <td colSpan="7" className="py-4 px-3 text-center text-gray-500 font-['Helvetica_Neue',_'Arial',_sans-serif]">
               Không tìm thấy khách hàng
             </td>
           </tr>

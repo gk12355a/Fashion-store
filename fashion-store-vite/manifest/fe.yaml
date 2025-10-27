@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: online-fashion-frontend
+  name: online-fashion-frontend-deployment
+  namespace: online-fashion
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: online-fashion-frontend
+  template:
+    metadata:
+      labels:
+        app: online-fashion-frontend
+    spec:
+      containers:
+        - image: gk123a/fashioncmcg:v1
+          name: online-fashion-frontend
+          ports:
+            - containerPort: 80
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: online-fashion-frontend-service
+  namespace: online-fashion
+spec:
+  ports:
+    - port: 5173
+      protocol: TCP
+      targetPort: 80
+  selector:
+    app: online-fashion-frontend
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: online-fashion-frontend-ingress
+  namespace: online-fashion
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: fashionstore.vn
+      http:
+        paths:
+          - backend:
+              service:
+                name: online-fashion-frontend-service
+                port:
+                  number: 5173
+            path: /
+            pathType: Prefix  

@@ -20,7 +20,7 @@ public interface OrderDetailService {
      * @param request thông tin chi tiết đơn hàng mới.
      * @return OrderDetail đã được tạo.
      */
-    OrderDetail createOrderDetail(CreateOrderDetailRequest request);
+    OrderDetailResponse createOrderDetail(CreateOrderDetailRequest request);
     /**
      * Xóa một chi tiết đơn hàng dựa vào ID.
      * @param id ID của chi tiết đơn hàng cần xóa.
@@ -39,5 +39,5 @@ public interface OrderDetailService {
      * @param request Đối tượng chứa thông tin mới.
      * @return OrderDetail đã được cập nhật.
      */
-    OrderDetail updateOrderDetail(Long id, UpdateOrderDetailRequest request);
+    OrderDetailResponse updateOrderDetail(Long id, UpdateOrderDetailRequest request);
 }

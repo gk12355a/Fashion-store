@@ -13,6 +13,9 @@ public class UpdateOrderDetailRequest {
     @Min(value = 1, message = "Số lượng phải lớn hơn 0")
     private int quantity;
 
+    @NotNull(message = "Mã sản phẩm mới không được để trống")
+    private Long productId;
+
     // @NotNull(message = "Đơn giá không được để trống")
     // @DecimalMin(value = "0.0", inclusive = true, message = "Đơn giá phải lớn hơn hoặc bằng 0")
     // private BigDecimal unitPrice;

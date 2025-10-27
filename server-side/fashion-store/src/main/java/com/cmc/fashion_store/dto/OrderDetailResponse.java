@@ -10,4 +10,5 @@ public class OrderDetailResponse {
     private BigDecimal unitPrice;
     private Long orderId;
     private Long productId;
+    private String productName;
 }
