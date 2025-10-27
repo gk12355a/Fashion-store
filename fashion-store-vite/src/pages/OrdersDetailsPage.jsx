@@ -33,7 +33,32 @@ export default function OrderDetailsPage() {
   });
   const [errors, setErrors] = useState({}); // State lưu lỗi validation
   const [loading, setLoading] = useState(true); // Loading state
+  const [isSaving, setIsSaving] = useState(false); // Add isSaving
 
+  const handleProductSelect = (selectedProduct) => {
+        if (selectedProduct && selectedProduct.id) { // Chỉ cập nhật nếu có sản phẩm hợp lệ được chọn
+            setFormData(prevData => ({
+                ...prevData,
+                productId: selectedProduct.id,
+                productName: selectedProduct.name,
+                unitPrice: selectedProduct.price
+            }));
+            setErrors(prev => ({...prev, productId: undefined}));
+        } else {
+            // Quan trọng: KHÔNG reset productId về rỗng/null ở đây nữa
+            // Chỉ reset productName và unitPrice nếu người dùng xóa lựa chọn
+             setFormData(prevData => ({
+                ...prevData,
+                // productId: "", // <-- BỎ DÒNG NÀY
+                productName: "",
+                unitPrice: ""
+            }));
+             // Có thể thêm lỗi nếu ô search bị xóa trắng và đang thêm mới
+             if (!editingDetail) {
+                 setErrors(prev => ({...prev, productId: "Vui lòng chọn sản phẩm"}));
+             }
+        }
+    };
   // --- Hàm Fetch Dữ liệu (Gọi API GET /order-details hoặc /order-details/search) ---
   const fetchOrderDetails = async () => {
     try {
@@ -135,41 +160,56 @@ export default function OrderDetailsPage() {
 
   // Hàm xử lý khi bấm nút Lưu trong Form (Modal)
   const handleSave = async () => {
-    if (!validate()) {
-      // Kiểm tra lỗi trước
-      toast.error("Vui lòng kiểm tra lại thông tin!");
-      return;
-    }
+        // Chạy validate trước
+        if (!validate()) {
+            toast.warn("Vui lòng kiểm tra lại thông tin.");
+            return;
+        }
 
-    try {
-      let actionText = "";
-      if (editingDetail) {
-        // --- PUT (Sửa) ---
-        // Chỉ gửi số lượng (theo yêu cầu API backend)
-        const updateData = { quantity: Number(formData.quantity) };
-        await api.put(`/order-details/${editingDetail.id}`, updateData);
-        actionText = "Cập nhật";
-      } else {
-        // --- POST (Thêm mới) ---
-        // Gửi đủ thông tin (API backend sẽ tự lấy giá nếu không gửi, nhưng ta đã có)
-        const requestData = {
-          orderId: Number(formData.orderId),
-          productId: Number(formData.productId),
-          quantity: Number(formData.quantity),
-          // unitPrice: Number(formData.unitPrice), // Không cần gửi, backend tự lấy
+        // Đảm bảo productId không phải là null/undefined/0 trước khi gửi
+        if (!formData.productId || Number(formData.productId) <= 0) {
+             setErrors(prev => ({...prev, productId: "Mã sản phẩm không hợp lệ."}));
+             toast.error("Vui lòng chọn sản phẩm hợp lệ.");
+             return;
+        }
+
+
+        setIsSaving(true);
+
+        // Dữ liệu gửi đi cho POST (Thêm mới)
+        const createData = {
+            orderId: Number(formData.orderId),
+            productId: Number(formData.productId),
+            quantity: Number(formData.quantity),
+            // unitPrice không cần gửi
         };
-        await api.post("/order-details", requestData);
-        actionText = "Thêm mới";
-      }
-      fetchOrderDetails(); // Tải lại danh sách
-      setShowModal(false); // Đóng modal
-      toast.success(`${actionText} chi tiết đơn hàng thành công!`);
-    } catch (error) {
-      console.error("Lỗi khi lưu chi tiết đơn hàng:", error);
-      // Hiển thị lỗi từ backend (nếu có) hoặc lỗi chung
-      toast.error(`Lỗi: ${error.response?.data?.message || error.message}`);
-    }
-  };
+
+        // Dữ liệu gửi đi cho PUT (Sửa)
+        const updateData = {
+            productId: Number(formData.productId), // Gửi productId mới hoặc cũ
+            quantity: Number(formData.quantity),
+            // unitPrice không cần gửi
+        };
+
+        try {
+            if (editingDetail) {
+                await api.put(`/order-details/${editingDetail.id}`, updateData);
+                toast.success("Cập nhật chi tiết đơn hàng thành công!");
+            } else {
+                await api.post("/order-details", createData);
+                toast.success("Thêm chi tiết đơn hàng thành công!");
+            }
+            await fetchOrderDetails();
+            setShowModal(false);
+
+        } catch (error) {
+            console.error("Lỗi khi lưu chi tiết đơn hàng:", error);
+            const errorMsg = error.response?.data?.message || "Đã xảy ra lỗi khi lưu.";
+            toast.error(`Lỗi: ${errorMsg}`);
+        } finally {
+            setIsSaving(false);
+        }
+    };
 
   // Mở modal Thêm mới
   const handleAddNew = () => {
@@ -256,10 +296,12 @@ export default function OrderDetailsPage() {
         show={showModal}
         formData={formData}
         errors={errors}
-        onChange={handleChange} // Truyền hàm cập nhật state
-        onSave={handleSave} // Truyền hàm lưu
-        onCancel={handleCancel} // Truyền hàm hủy
-        editing={!!editingDetail} // Truyền trạng thái đang sửa (true/false)
+        onChange={handleChange}
+        onProductSelect={handleProductSelect} // <--- THÊM PROP NÀY VÀO
+        onSave={handleSave}
+        onCancel={() => {setShowModal(false); setEditingDetail(null);}}
+        editing={editingDetail}
+        isSaving={isSaving} // Truyền nếu Form cần
       />
     </div>
   );

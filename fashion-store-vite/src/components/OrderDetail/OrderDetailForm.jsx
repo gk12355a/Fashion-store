@@ -1,8 +1,8 @@
-import React, { useEffect } from "react";
-// import "../Form.css"; // <- ĐÃ XÓA
-import ReusableSearch from "../Common/ReusableSearch"; 
+import React, { useEffect, useState } from "react"; // Added useState
+import ReusableSearch from '../Common/ReusableSearch';
+import '../Common/ReusableSearch.css'; // Import search CSS if not already global
 
-// --- Định nghĩa lớp Tailwind Base ---
+// --- Tailwind Base Classes (Copied from your file) ---
 const overlayClass = "fixed inset-0 w-full h-full bg-black/50 flex items-center justify-center z-[1000] backdrop-blur-sm";
 const modalClass = "bg-white p-6 md:p-9 rounded-2xl w-[90%] max-w-lg max-h-[90vh] overflow-y-auto shadow-xl border-2 border-[#7B0323] font-['Helvetica_Neue',_'Arial',_sans-serif] relative animate-modal-appear";
 const titleClass = "font-['Helvetica_Neue',_'Arial',_sans-serif] text-2xl md:text-3xl font-bold text-[#7B0323] mb-6 text-center border-b-2 border-[#7B0323] pb-4 tracking-wider";
@@ -18,44 +18,47 @@ const saveButtonClass = `${baseButtonClass} bg-gradient-to-r from-[#7B0323] to-[
 const cancelButtonClass = `${baseButtonClass} bg-gradient-to-r from-gray-500 to-gray-600 text-white shadow-lg shadow-gray-500/30 hover:bg-gradient-to-r hover:from-gray-600 hover:to-gray-700 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-gray-500/40 active:translate-y-0`;
 // -----------------------------------------------------
 
-const predefinedPrices = [100000, 150000, 200000, 250000, 300000, 500000];
-
 export default function OrderDetailForm({
   show,
-  formData,
+  formData, // Expects { orderId, productId, productName, quantity, unitPrice }
   errors,
   onChange,
+  onProductSelect, // Callback when product is selected via ReusableSearch
   onSave,
   onCancel,
   editing,
+  isSaving // Add isSaving prop
 }) {
+
+  // State to hold the product name for display in ReusableSearch during edit
+  const [currentProductName, setCurrentProductName] = useState('');
+
+  // Update display name when formData changes (especially in edit mode)
   useEffect(() => {
-    if (!editing) {
-      onChange({ target: { name: 'productId', value: '' } });
-      onChange({ target: { name: 'unitPrice', value: '' } });
+    if (editing && formData.productName) {
+      setCurrentProductName(formData.productName);
+    } else {
+       // Clear name if not editing or product name missing
+       setCurrentProductName('');
     }
-  }, [formData.orderId, editing, onChange]); // Thêm 'onChange' vào dependency array
+  }, [editing, formData.productName]);
+
 
   if (!show) return null;
 
-  const handleProductSelect = (product) => {
+  // --- INTERNAL HANDLER FOR PRODUCT SELECTION ---
+  // This calls the prop passed from the parent AND updates the local display name
+  const handleInternalProductSelect = (product) => {
     if (product) {
-      onChange({ target: { name: 'productId', value: product.id } });
-      onChange({ target: { name: 'unitPrice', value: product.price } });
+        setCurrentProductName(product.name); // Update local display name
+        onProductSelect(product); // Call parent handler to update main formData
     } else {
-      onChange({ target: { name: 'productId', value: '' } });
-      onChange({ target: { name: 'unitPrice', value: '' } });
+         setCurrentProductName('');
+         onProductSelect(null); // Notify parent that selection cleared
     }
   };
+  // ---------------------------------------------
 
-  const handlePredefinedPriceChange = (e) => {
-    const newPrice = e.target.value;
-    onChange({ target: { name: 'unitPrice', value: newPrice } });
-  };
-
-  const priceSelectValue = predefinedPrices.includes(Number(formData.unitPrice))
-    ? formData.unitPrice
-    : "";
 
   return (
     <div className={overlayClass}>
@@ -63,94 +66,90 @@ export default function OrderDetailForm({
         <h2 className={titleClass}>{editing ? "Chỉnh sửa chi tiết đơn hàng" : "Thêm chi tiết đơn hàng mới"}</h2>
         <div className={formClass}>
 
-          {/* ----- MÃ ĐƠN HÀNG ----- */}
+          {/* ----- MÃ ĐƠN HÀNG (Disabled on Edit) ----- */}
           <div className={formGroupClass}>
             <label className={labelClass} htmlFor="orderDetail-orderId">Mã đơn hàng (*)</label>
             <input
               id="orderDetail-orderId"
               name="orderId"
-              value={formData.orderId}
+              value={formData.orderId || ''}
               onChange={onChange}
-              placeholder="Nhập mã đơn hàng"
+              placeholder="Mã đơn hàng"
               type="number"
-              disabled={editing}
-              className={editing ? disabledInputClass : baseInputClass}
+              disabled={true} // Always disable Order ID after creation
+              className={disabledInputClass} // Use disabled style
             />
             {errors.orderId && <p className={errorClass}>{errors.orderId}</p>}
           </div>
 
-          {/* ----- MÃ SẢN PHẨM (Autocomplete) ----- */}
+          {/* ----- SẢN PHẨM (ReusableSearch - Enabled for Edit) ----- */}
           <div className={formGroupClass}>
             <label className={labelClass}>Sản phẩm (*)</label>
             <ReusableSearch
               searchApiUrl="/products/search"
-              placeholder="Tìm sản phẩm theo tên, loại..."
-              onSelect={handleProductSelect}
+              placeholder="Tìm sản phẩm theo tên..."
+              onSelect={handleInternalProductSelect} // Use internal handler
               displayField="name"
-              disabled={editing}
+              // Pass currentProductName for initial display in edit mode
+              initialValue={currentProductName}
+              // Allow changing product in edit mode
+              // disabled={editing} // Remove disabled if you want to allow changing product
             />
-            {formData.productId && !editing && (
-              <p className="text-sm text-[#7B0323] mt-1.5 font-['Helvetica_Neue',_'Arial',_sans-serif]">
-                Mã SP đã chọn: {formData.productId}
+            {/* Optionally display selected ID */}
+            {formData.productId && (
+              <p className="text-xs text-gray-500 ml-2 mt-1 font-['Helvetica_Neue',_'Arial',_sans-serif]">
+                (Mã SP: {formData.productId})
               </p>
             )}
             {errors.productId && <p className={errorClass}>{errors.productId}</p>}
           </div>
 
-          {/* ----- SỐ LƯỢNG ----- */}
+          {/* ----- SỐ LƯỢNG (Always Editable) ----- */}
           <div className={formGroupClass}>
             <label className={labelClass} htmlFor="orderDetail-quantity">Số lượng (*)</label>
             <input
               id="orderDetail-quantity"
               name="quantity"
-              value={formData.quantity}
+              value={formData.quantity || ''}
               onChange={onChange}
               placeholder="Nhập số lượng"
               type="number"
               min="1"
-              className={baseInputClass} // Luôn cho phép sửa số lượng
+              className={baseInputClass} // Always editable
             />
             {errors.quantity && <p className={errorClass}>{errors.quantity}</p>}
           </div>
 
-          {/* ----- ĐƠN GIÁ (Hybrid) ----- */}
+          {/* ----- ĐƠN GIÁ (Display Only - Auto-updated) ----- */}
           <div className={formGroupClass}>
-            <label className={labelClass}>Đơn giá (*)</label>
-            {/* Dịch .hybrid-input-group */}
-            <div className="flex gap-2.5">
-              {/* Dịch .price-select */}
-              <select
-                value={priceSelectValue}
-                onChange={handlePredefinedPriceChange}
-                className={`${editing ? disabledInputClass : baseInputClass} flex-1`} // flex: 1
-                disabled={editing}
-              >
-                <option value="">-- Chọn nhanh --</option>
-                {predefinedPrices.map(price => (
-                  <option key={price} value={price}>
-                    {price.toLocaleString('vi-VN')} đ
-                  </option>
-                ))}
-              </select>
-              {/* Dịch .price-input */}
-              <input
-                name="unitPrice"
-                value={formData.unitPrice}
-                onChange={onChange}
-                placeholder="Hoặc nhập giá (VNĐ)"
-                type="number"
-                min="0"
-                className={`${editing ? disabledInputClass : baseInputClass} flex-2`} // flex: 2
-                disabled={editing}
-              />
-            </div>
-            {errors.unitPrice && <p className={errorClass}>{errors.unitPrice}</p>}
+            <label className={labelClass}>Đơn giá (Tự động)</label>
+            <input
+              name="unitPrice"
+              value={formData.unitPrice ? Number(formData.unitPrice).toLocaleString('vi-VN') + ' đ' : ''} // Format currency
+              placeholder="Tự động theo sản phẩm"
+              type="text" // Change to text for display formatting
+              disabled // Always disabled
+              className={disabledInputClass}
+            />
+            {/* No error message needed as it's not user-editable */}
           </div>
 
           {/* ----- NÚT BẤM ----- */}
           <div className={buttonGroupClass}>
-            <button className={saveButtonClass} onClick={onSave}>Lưu</button>
-            <button className={cancelButtonClass} onClick={onCancel}>Hủy</button>
+            <button
+                className={saveButtonClass}
+                onClick={onSave}
+                disabled={isSaving} // Disable when saving
+            >
+                {isSaving ? 'Đang lưu...' : 'Lưu'}
+            </button>
+            <button
+                className={cancelButtonClass}
+                onClick={onCancel}
+                disabled={isSaving} // Also disable cancel during save
+            >
+                Hủy
+            </button>
           </div>
         </div>
       </div>
