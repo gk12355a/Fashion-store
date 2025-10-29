@@ -41,8 +41,8 @@ export default function Footer() {
         {/* Cột 1 */}
         <div className={colClass}>
           <h4 className={colTitleClass}>
-            {/* Làm nổi bật chữ Vélin - giữ nguyên gradient giống Header*/}
-            <span className="bg-gradient-to-r from-white to-[#ff4757] bg-clip-text text-transparent font-bold">
+            {/* Làm nổi bật chữ Vélin */}
+            <span className="bg-gradient-to-r from-[#567c2d] to-[#95b46a] bg-clip-text text-transparent font-extrabold">
               Vélin
             </span>{" "}
             Store
@@ -56,9 +56,9 @@ export default function Footer() {
         <div className={colClass}>
           <h4 className={colTitleClass}>Liên hệ</h4>
           <ul className="list-none p-0">
-            <li className={colListItemClass}>Địa điểm: 80 Dịch Vọng Hậu</li>
-            <li className={colListItemClass}>Hotline: 0823 855 518</li>
-            <li className={colListItemClass}>Email: contact@velinshop.vn</li>
+            <li className={colListItemClass}>🏢 Địa chỉ: 80 Dịch Vọng Hậu</li>
+            <li className={colListItemClass}>📱 Hotline: 082 385 5518</li>
+            <li className={colListItemClass}>✉️ Email: velin@contact.vn</li>
           </ul>
         </div>
 
@@ -107,4 +107,5 @@ export default function Footer() {
       </div>
     </footer>
   );
+  
 }

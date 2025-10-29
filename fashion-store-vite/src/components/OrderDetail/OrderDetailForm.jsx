@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react"; // Added useState
-import ReusableSearch from '../Common/ReusableSearch';
-import '../Common/ReusableSearch.css'; // Import search CSS if not already global
+import React, { useEffect } from "react";
+import ReusableSearch from "../Common/ReusableSearch"; 
 
 // --- Tailwind Base Classes (Copied from your file) ---
 const overlayClass = "fixed inset-0 w-full h-full bg-black/50 flex items-center justify-center z-[1000] backdrop-blur-sm";

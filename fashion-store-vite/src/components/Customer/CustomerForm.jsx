@@ -1,5 +1,4 @@
 import React from "react";
-// import "../Form.css"; // <- ĐÃ XÓA
 
 // --- Định nghĩa lớp Tailwind Base ---
 const overlayClass = "fixed inset-0 w-full h-full bg-black/50 flex items-center justify-center z-[1000] backdrop-blur-sm";

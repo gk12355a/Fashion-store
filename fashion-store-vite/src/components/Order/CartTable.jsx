@@ -1,5 +1,4 @@
 import React from 'react';
-// import './CartTable.css'; // <- ĐÃ XÓA
 
 /**
  * Bảng hiển thị các sản phẩm trong giỏ hàng (bên trong OrderForm Modal)

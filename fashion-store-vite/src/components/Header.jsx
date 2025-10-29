@@ -14,7 +14,7 @@ export default function Header() {
   const getNavLinkClass = ({ isActive }) =>
     `${baseLinkClass} ${isActive ? activeLinkClass : inactiveLinkClass}`;
 
-  // Logo chính 
+  // Logo chính
   const logoLinkClass =
     "flex items-center whitespace-nowrap font-['Helvetica_Neue',_'Arial',_sans-serif] text-3xl md:text-4xl font-light text-white no-underline tracking-wider";
   const logoIconClass = "mr-3 w-8 h-8 md:w-14 md:h-10";
@@ -31,7 +31,7 @@ export default function Header() {
         <NavLink to="/" className={logoLinkClass} end>
           <img src="../../logo.png" alt="Logo" className={logoIconClass} />
 
-          {/* Làm nổi bật chữ "Vélin" */}
+          {/* Làm nổi bật chữ “Vélin” */}
           <span
             className="bg-gradient-to-r from-white to-[#ff4757] bg-clip-text text-transparent drop-shadow-sm font-bold"
           >

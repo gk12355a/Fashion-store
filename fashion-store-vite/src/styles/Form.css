@@ -8,7 +8,6 @@
 
 /* Ô nhập số lượng */
 .quantity-input {
-  /* Mượn style của input trong form-group */
   padding: 12px 15px;
   border: 2px solid #e0e0e0;
   border-radius: 12px;
@@ -31,7 +30,6 @@
 
 /* Nút "Thêm" vào giỏ */
 .add-cart-btn {
-  /* Mượn style của save-btn nhưng màu khác */
   padding: 12px 20px;
   border: none;
   border-radius: 12px;
@@ -40,10 +38,10 @@
   font-weight: 600;
   font-family: "Poppins", sans-serif;
   transition: all 0.3s ease;
-  background: linear-gradient(135deg, #007bff, #0056b3); /* Màu xanh dương */
+  background: linear-gradient(135deg, #007bff, #0056b3); 
   color: white;
   box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
-  height: 50px; /* Bằng chiều cao input */
+  height: 50px; 
 }
 
 .add-cart-btn:hover {
@@ -69,13 +67,13 @@
 }
 
 .order-summary .summary-discount {
-  color: #dc3545; /* Màu đỏ */
+  color: #dc3545; 
 }
 
 .order-summary .summary-total {
   font-size: 20px;
   font-weight: 700;
-  color: #1cb65f; /* Màu xanh lá đậm */
+  color: #1cb65f; 
   margin-top: 15px;
   padding-top: 15px;
   border-top: 1px solid #e0e0e0;
@@ -94,7 +92,6 @@
 
 /* Wrapper cho ô số lượng (để giữ đúng layout) */
 .quantity-wrapper {
-  /* Lấy độ rộng 80px từ class .quantity-input (đã có ở File 11) */
   width: 80px; 
 }
 
@@ -113,8 +110,7 @@
   background: linear-gradient(135deg, #288a4f, #1cb65f); 
   color: white;
   box-shadow: 0 4px 15px rgba(40, 138, 79, 0.3);
-
-  height: 50px; /* Bằng chiều cao input */
+  height: 50px; 
   
   /* 2. Căn icon và text vào giữa */
   display: flex;

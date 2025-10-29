@@ -28,6 +28,7 @@ public class CustomerController {
         Page<Customer> customersPage = customerService.getAllCustomers(pageable);
         return ResponseEntity.ok(customersPage);
     }
+    
     // API này sẽ xử lý yêu cầu POST đến /api/v1/customers
     @PostMapping
     public ResponseEntity<Customer> createCustomer(@Valid @RequestBody CreateCustomerRequest request) {

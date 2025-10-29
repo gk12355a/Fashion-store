@@ -82,7 +82,6 @@ function StatsCard({
     </div>
   );
 }
-// -----------------------------------------------------------------
 
 // --- Component Chính HomePage ---
 export default function HomePage() {
@@ -270,7 +269,7 @@ export default function HomePage() {
           "#8b5cf6",
           "#ef4444",
           "#6b7280",
-        ], // Thêm màu nếu cần
+        ], 
       },
     ],
   };
@@ -361,7 +360,7 @@ export default function HomePage() {
               ></path>
             </svg>
           }
-          // Không cần format đặc biệt, dùng toLocaleString mặc định
+          
         />
         <StatsCard
           title="Tổng Doanh Thu (Tháng)" // Rõ ràng hơn là doanh thu tháng này
@@ -495,11 +494,12 @@ export default function HomePage() {
           </button>
         </div>
       </div>
-      {/* --------------------------- */}
 
-      {/* ----- THÊM PHẦN FEATURES ----- */}
-      <div className="mt-12 pt-8 border-t-2 border-[#7B0323] border-opacity-20">
-        <h2 className="text-3xl font-bold text-center text-[#7B0323] mb-8 tracking-wide">
+      {/* ----- THÊM PHẦN FEATURES Ở ĐÂY ----- */}
+      <div className="mt-12 pt-8 border-t border-gray-200">
+        {" "}
+        {/* Thêm khoảng cách và đường kẻ trên */}
+        <h2 className="text-2xl font-semibold text-center text-gray-800 mb-8">
           Tính năng quản lý
         </h2>
         {/* Container cho các card, chia cột và tạo khoảng cách */}
@@ -526,7 +526,7 @@ export default function HomePage() {
           <Feature
             icon="📋"
             title="Chi tiết đơn hàng"
-            link="/chitietdonhang" // Đổi title
+            link="/chitietdonhang" 
             desc="Quản lý chi tiết từng đơn hàng, sản phẩm trong đơn, số lượng và giá trị."
           />
           <Feature
@@ -547,14 +547,13 @@ export default function HomePage() {
             link="/khuyenmai"
             desc="Tạo và quản lý chương trình khuyến mãi, mã giảm giá và ưu đãi đặc biệt."
           />
-          {/* Bạn có thể thêm Feature card khác nếu cần */}
         </div>
       </div>
     </div>
   );
 }
+
 // ----- ĐỊNH NGHĨA COMPONENT FEATURE -----
-// (Đặt ở cuối file hoặc import từ file riêng)
 function Feature({ icon, title, desc, link }) {
   return (
     // Card styling
@@ -575,4 +574,3 @@ function Feature({ icon, title, desc, link }) {
     </div>
   );
 }
-// ---------------------------------------------

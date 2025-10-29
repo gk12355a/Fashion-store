@@ -1,5 +1,4 @@
 import React from "react";
-// import "../Table.css"; // <- Đã XÓA
 
 // --- Định nghĩa các lớp Tailwind Base ---
 const tableClass =
