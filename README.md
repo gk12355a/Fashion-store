@@ -1,13 +1,4 @@
-Tuyệt vời! Bạn đã có **một server Nginx làm Load Balancer (LB)** tại `192.168.23.110` và đã **tự ký SSL (self-signed certificates)** cho 2 domain:
 
-- `fashionstore.vn`
-- `api-fashionstore.vn`
-
-Dưới đây là **phiên bản cập nhật `README.md`** tích hợp **Nginx Load Balancer + SSL tự ký**, thay vì dùng trực tiếp Ingress Controller (phù hợp với môi trường **on-premise / private cluster**).
-
----
-
-```markdown
 # Dự án Cửa hàng Thời trang (Fashion Store) - Triển khai Kubernetes + Nginx LB + SSL Tự Ký
 
 Dự án triển khai **ứng dụng cửa hàng thời trang** với **backend (Spring Boot)** và **frontend (Node.js + Nginx)**, chạy trên **Kubernetes**, truy cập qua **Nginx Load Balancer (192.168.23.110)** với **SSL tự ký**.
