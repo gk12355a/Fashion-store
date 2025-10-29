@@ -2,21 +2,21 @@ import React from "react";
 
 // --- Định nghĩa lớp Tailwind ---
 const toolbarClass =
-  "flex justify-between items-center py-3 px-4 bg-[#d4e6c4] rounded-lg mb-5 flex-wrap gap-4";
+  "flex justify-between items-center py-3 px-4 bg-[#f8f9fa] rounded-lg mb-5 flex-wrap gap-4 shadow-md border border-gray-200 font-['Helvetica_Neue',_'Arial',_sans-serif]";
 const sortOptionsClass = "flex items-center gap-2.5 flex-wrap";
-const sortLabelClass = "text-[15px] font-medium text-gray-800 mr-1.5";
+const sortLabelClass = "text-[15px] font-medium text-[#7B0323] mr-1.5 font-['Helvetica_Neue',_'Arial',_sans-serif]";
 const baseFormControlClass =
-  "py-2 px-3.5 border border-gray-300 bg-white rounded-md cursor-pointer text-sm transition-all duration-200 ease-in-out text-gray-800 hover:border-gray-400 hover:bg-[#d4e6c4]";
+  "py-2 px-3.5 border border-gray-300 bg-white rounded-md cursor-pointer text-sm transition-all duration-200 ease-in-out text-[#7B0323] hover:border-[#7B0323] hover:bg-[#f8f9fa] font-['Helvetica_Neue',_'Arial',_sans-serif] font-medium";
 const baseSortBtnClass = `${baseFormControlClass}`;
 const baseSortSelectClass = `${baseFormControlClass} pr-8`; // Thêm padding cho mũi tên dropdown
-const activeSortBtnClass = "bg-red-600 text-white border-red-600 font-semibold";
+const activeSortBtnClass = "bg-[#7B0323] text-white border-[#7B0323] font-semibold shadow-lg";
 const activeSortSelectClass =
-  "border-red-600 font-semibold ring-2 ring-red-600/20";
+  "border-[#7B0323] font-semibold ring-2 ring-[#7B0323]/20 bg-[#f8f9fa]";
 const paginationClass = "flex items-center gap-2";
 const pageInfoClass =
-  "text-sm font-semibold text-gray-800 bg-white py-2 px-3 rounded-md border border-gray-300";
+  "text-sm font-semibold text-[#7B0323] bg-white py-2 px-3 rounded-md border border-[#7B0323] font-['Helvetica_Neue',_'Arial',_sans-serif]";
 const pageNavClass =
-  "py-2 px-3 border border-gray-300 bg-white rounded-md cursor-pointer font-semibold disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed disabled:border-gray-200";
+  "py-2 px-3 border border-[#7B0323] bg-white rounded-md cursor-pointer font-semibold text-[#7B0323] hover:bg-[#7B0323] hover:text-white transition-all duration-200 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed disabled:border-gray-200 disabled:hover:bg-gray-100 disabled:hover:text-gray-400 font-['Helvetica_Neue',_'Arial',_sans-serif]";
 // -----------------------------
 
 export default function ProductToolbar({

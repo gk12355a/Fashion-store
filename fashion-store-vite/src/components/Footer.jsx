@@ -4,34 +4,34 @@ import React from "react";
 export default function Footer() {
   // --- Định nghĩa lớp Tailwind mới, đồng bộ với Header ---
 
-  // Toàn bộ footer
+  // Toàn bộ footer - đổi từ màu đỏ sang xám đậm
   const footerClass =
-    "bg-[#B2C4A3] text-gray-900 pt-12 px-6 pb-6 mt-auto font-poppins shadow-inner border-t-2 border-[#a5b58e]";
+    "bg-gradient-to-b from-gray-800 to-gray-600 text-white pt-12 px-6 pb-6 mt-auto font-['Helvetica_Neue',_'Arial',_sans-serif] shadow-inner border-t-2 border-gray-700";
 
   // Khu vực nội dung chính
   const contentClass =
-    "flex justify-around flex-wrap max-w-6xl mx-auto mb-10 gap-8 text-[15px] font-semibold";
+    "flex justify-around flex-wrap max-w-6xl mx-auto mb-10 gap-8 text-[15px] font-medium";
 
   // Cột nội dung
   const colClass = "flex-1 min-w-[250px] m-2.5";
 
-  // Tiêu đề mỗi cột
+  // Tiêu đề mỗi cột - giữ gradient cho gạch chân giống Header
   const colTitleClass =
-    "text-gray-900 text-lg font-extrabold mb-5 relative uppercase tracking-wide after:content-[''] after:absolute after:left-0 after:bottom-[-6px] after:bg-gradient-to-r after:from-[#567c2d] after:to-[#95b46a] after:h-0.5 after:w-16";
+    "text-white text-lg font-bold mb-5 relative uppercase tracking-wide after:content-[''] after:absolute after:left-0 after:bottom-[-6px] after:bg-gradient-to-r after:from-white after:to-[#ff4757] after:h-0.5 after:w-16";
 
-  // Đoạn mô tả
-  const colTextClass = "text-sm leading-relaxed text-gray-800 font-medium";
+  // Đoạn mô tả 
+  const colTextClass = "text-sm leading-relaxed text-white font-light opacity-90";
 
-  // Item trong danh sách
-  const colListItemClass = "text-sm text-gray-800 mb-2.5 font-medium";
+  // Item trong danh sách 
+  const colListItemClass = "text-sm text-white mb-2.5 font-light opacity-90";
 
-  // Liên kết mạng xã hội
+  // Liên kết mạng xã hội 
   const socialLinkClass =
-    "inline-block mr-4 text-gray-800 no-underline text-sm font-semibold transition-colors duration-300 hover:text-[#567c2d] hover:underline";
+    "inline-block mr-4 text-white no-underline text-sm font-medium transition-colors duration-300 hover:text-[#ff4757] hover:underline";
 
-  // Đáy footer
+  // Đáy footer - đổi border sang màu xám
   const bottomClass =
-    "border-t border-gray-400 pt-5 mt-8 text-center text-xs text-gray-700 font-medium";
+    "border-t border-gray-700 pt-5 mt-8 text-center text-xs text-white font-light opacity-80";
 
   const bottomTextClass = "my-1.5";
 
@@ -45,11 +45,10 @@ export default function Footer() {
             <span className="bg-gradient-to-r from-[#567c2d] to-[#95b46a] bg-clip-text text-transparent font-extrabold">
               Vélin
             </span>{" "}
-            Shop
+            Store
           </h4>
           <p className={colTextClass}>
-            Chuyên cung cấp các sản phẩm thời trang nam nữ, xu hướng mới nhất
-            với chất lượng và giá cả tốt nhất thị trường.
+          Chuyên cung cấp các sản phẩm thời trang nam nữ, cập nhật xu hướng mới nhất với chất lượng cao và giá cả tốt nhất thị trường hiện nay.
           </p>
         </div>
 
@@ -99,7 +98,7 @@ export default function Footer() {
       <div className={bottomClass}>
         <p className={bottomTextClass}>
           &copy; {new Date().getFullYear()}{" "}
-          <span className="bg-gradient-to-r from-[#567c2d] to-[#eaebea] bg-clip-text text-transparent font-bold">
+          <span className="bg-gradient-to-r from-white to-[#ff4757] bg-clip-text text-transparent font-bold">
             Vélin
           </span>{" "}
           Fashion. All rights reserved.
